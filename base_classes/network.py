@@ -35,7 +35,7 @@ class Network:
         # Add the pipe and angle to the adjacency list for both nodes
         if angle is not None:
             self.adjacency_list[node1_id][node2_id] = (pipe, angle)
-            self.adjacency_list[node2_id][node1_id] = (pipe, angle)
+            self.adjacency_list[node2_id][node1_id] = (pipe, 180 + angle)
 
         else:
             self.adjacency_list[node1_id][node2_id] = (pipe,)
