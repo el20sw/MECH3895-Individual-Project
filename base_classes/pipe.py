@@ -3,7 +3,7 @@ class Pipe:
     # Constructor for the pipe class (takes a given length)
     def __init__(self, length):
         # TODO: Define a default value for the length of the pipe
-        self.length = length
+        self.length = float(length)
 
     # Method to get the length of the pipe
     def get_length(self):
