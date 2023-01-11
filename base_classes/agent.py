@@ -1,3 +1,7 @@
+### Imports ###
+import random
+
+
 # Agent class represents an agent (robot) in the simulation moves between nodes at a set speed
 class Agent:
     # Constructor given speed (m/s), start location, the network and an id
@@ -9,6 +13,7 @@ class Agent:
         self.current_node = start_node
         self.current_path = []
         self.running_time = 0
+        self.visited_nodes = {}
 
     ### Getters and Setters ###
     # Method to get the id of the agent
@@ -59,13 +64,21 @@ class Agent:
     def set_running_time(self, running_time):
         self.running_time = running_time
 
+    # Method to get the visited nodes
+    def get_visited_nodes(self):
+        return self.visited_nodes
+
+    # Method to set the visited nodes
+    def set_visited_nodes(self, visited_nodes):
+        self.visited_nodes = visited_nodes
+
     ### Getting Possible Moves ###
     # Method to get the possible moves the agent can make given the node it is at
     def get_possible_moves(self, node):
         # Get the adjacency list
         adjacency_list = self.network.get_adjacency_list()
         # Get the possible moves
-        possible_moves = adjacency_list[node].keys()
+        possible_moves = list(adjacency_list[node].keys())
         return possible_moves
 
 
@@ -75,35 +88,12 @@ class Agent:
 
     ### Moving the Agent ###
     # Method to move the agent to a given node
-    """
-    def move_to_node(self, node=None):
-        # Get the current path
-        current_path = self.get_current_path()
-        # Add the node to the current path
-        current_path.append(node)
-        # Set the current path
-        self.set_current_path(current_path)
-        # Set the current node
-        self.set_current_node(node)
-        # Get the current time
-        current_time = self.get_running_time()
-        # Get the pipe length
-        pipe_length = self.network.get_pipe_length(self.current_node, node)
-        # Calculate the time to move to the node
-        time_to_move = pipe_length / self.speed
-        # Update the running time
-        self.set_running_time(current_time + time_to_move)
-    """
-
     def move_to_node(self, node=None):
         # check if the target node is in the possible moves
         if node not in self.get_possible_moves(self.current_node):
-            print(f"{node} is not a possible move from node {self.current_node}")
-            return
+            return False
         # get the pipe length of the desired move
         pipe_length = self.network.get_pipe_length(self.current_node, node)
-        # get the current time
-        current_time = self.get_running_time()
         # add the agents current node to the path
         self.update_path(self.current_node)
         # set the agents current node to the target node
@@ -111,7 +101,24 @@ class Agent:
         # calculate the time to move to the node
         time_to_move = pipe_length / self.speed
         # update the running time
-        self.set_running_time(current_time + time_to_move)
+        self.update_time(time_to_move)
+
+    # Debug method to move the agent to a given node
+    def debug_move_to_node(self, node=None):
+        # check if the target node is in the possible moves
+        if node not in self.get_possible_moves(self.current_node):
+            print(f"{node} is not a possible move from node {self.current_node}")
+            return False
+        # get the pipe length of the desired move
+        pipe_length = self.network.get_pipe_length(self.current_node, node)
+        # add the agents current node to the path
+        self.update_path(self.current_node)
+        # set the agents current node to the target node
+        self.set_current_node(node)
+        # calculate the time to move to the node
+        time_to_move = pipe_length / self.speed
+        # update the running time
+        self.update_time(time_to_move)
         ### Debugging ###
         # print the pipe length
         print(f"Pipe length: {pipe_length}")
@@ -122,12 +129,28 @@ class Agent:
         # print the agents running time
         print(f"Agent {self.id} running time: {self.running_time}")
 
+    # Method to move the agent to a random node
+    def move_to_random_node(self):
+        # get the possible moves
+        possible_moves = self.get_possible_moves(self.current_node)
+        # get a random node
+        random_node = random.choice(possible_moves)
+        # move to the random node
+        self.move_to_node(random_node)
+
     # Method to update the path
     def update_path(self, node):
         # get the agent's current path
         current_path = self.get_current_path()
         # add the current node to the path
         current_path.append(node)
+
+    # Method to update the time
+    def update_time(self, time):
+        # get the current time
+        current_time = self.get_running_time()
+        # update the time
+        self.set_running_time(current_time + time)
 
     # Method to get metadata
     def get_metadata(self):
