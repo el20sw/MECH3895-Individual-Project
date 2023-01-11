@@ -49,6 +49,16 @@ class Network:
     def get_adjacency_list(self):
         return self.adjacency_list
 
+    # Method to get local adjacency list given a node
+    def get_local_adjacency_list(self, node_id):
+        return self.adjacency_list[node_id]
+
+    # Method to get the length of a pipe from the adjacency list given a start and end node
+    def get_pipe_length(self, node1_id, node2_id):
+        if node2_id in self.adjacency_list[node1_id]:
+            return self.adjacency_list[node1_id][node2_id][0].get_length()
+    
+
     # Method to print the network
     def print_network(self):
         # Print the adjacency list
