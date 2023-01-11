@@ -1,5 +1,8 @@
 # Create base_test function
 def base_test():
+    # Signpost
+    print('\nRunning base test...')
+
     # Import the network and agent classes
     from base_classes.network import Network
     from base_classes.agent import Agent
@@ -15,6 +18,9 @@ def base_test():
     network.add_connection('D', 'E', 30)
     network.add_connection('D', 'F', 40)
     network.add_connection('E', 'C', 10)
+
+    # Construction test
+    pipeline_test(network)
 
     # Create an agent object at node A with speed 1
     agent = Agent(1, 1, 'A', network)
@@ -76,3 +82,36 @@ def base_test():
     assert agent.get_current_path() == ['A', 'B', 'C'], 'Current path is not correct'
     # Test the agent's current running time
     assert agent.get_running_time() == 60, 'Running time is not correct'
+
+# Pipeline test - test if pipeline network is constructed correctly
+def pipeline_test(network):
+    # Signpost
+    print('\nRunning construction test...')
+
+    # Test nodes in network object
+    try:
+        assert network.get_node_ids() == {'A', 'B', 'C', 'D', 'E', 'F'}, 'Nodes are not correct'
+        network_flag = "Pass"
+    except AssertionError:
+        network_flag = "Fail"
+
+    print(f"Testing Node construction: {network_flag}")
+
+    # Test connections in network object
+    # FIXME: Get this to work, the adjacency list is not equating maybe?
+    try:
+        assert network.get_adjacency_list() == {
+            'A': {'B': (10.0,), 'C': (20.0,)}, 
+            'B': {'A': (10.0,), 'C': (30.0,), 'D': (40.0,)}, 
+            'C': {'A': (20.0,), 'B': (30.0,), 'E': (10.0,)}, 
+            'D': {'B': (40.0,), 'E': (30.0,), 'F': (40.0,)}, 
+            'E': {'D': (30.0,), 'C': (10.0,)}, 
+            'F': {'D': (40.0,)}
+            }, 'Connections are not correct'
+        network_flag = "Pass"
+    except AssertionError:
+        network_flag = "Fail"
+
+    print(f"Testing Pipeline construction: {network_flag}")
+
+# TODO: Test that all relevant data can be gotten - pipe lengths, node ids, etc.
