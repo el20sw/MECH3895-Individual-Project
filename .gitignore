@@ -1,2 +1,3 @@
 # Ignore the virtualenv directory
 env/
+base_classes/__pycache__
