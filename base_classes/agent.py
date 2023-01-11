@@ -75,26 +75,6 @@ class Agent:
 
     ### Moving the Agent ###
     # Method to move the agent to a given node
-    """
-    def move_to_node(self, node=None):
-        # Get the current path
-        current_path = self.get_current_path()
-        # Add the node to the current path
-        current_path.append(node)
-        # Set the current path
-        self.set_current_path(current_path)
-        # Set the current node
-        self.set_current_node(node)
-        # Get the current time
-        current_time = self.get_running_time()
-        # Get the pipe length
-        pipe_length = self.network.get_pipe_length(self.current_node, node)
-        # Calculate the time to move to the node
-        time_to_move = pipe_length / self.speed
-        # Update the running time
-        self.set_running_time(current_time + time_to_move)
-    """
-
     def move_to_node(self, node=None):
         # check if the target node is in the possible moves
         if node not in self.get_possible_moves(self.current_node):
