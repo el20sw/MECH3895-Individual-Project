@@ -42,8 +42,12 @@ class Network:
             self.adjacency_list[node2_id][node1_id] = (pipe,)
 
     # Method to get the nodes in the network
-    def get_nodes(self):
+    def get_node(self):
         return self.nodes
+
+    # Method to get the node ids in the network
+    def get_node_ids(self):
+        return {node.get_id() for node in self.nodes}
 
     # Method to get the adjacency list of the network
     def get_adjacency_list(self):
@@ -52,6 +56,11 @@ class Network:
     # Method to get local adjacency list given a node
     def get_local_adjacency_list(self, node_id):
         return self.adjacency_list[node_id]
+
+    # Method to get the possible moves given a current location
+    def get_possible_moves(self, current_location):
+        possible_moves = list(self.get_local_adjacency_list(current_location).keys())
+        return possible_moves
 
     # Method to get the length of a pipe from the adjacency list given a start and end node
     def get_pipe_length(self, node1_id, node2_id):
