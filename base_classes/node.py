@@ -6,10 +6,10 @@ class Node:
 
     # Method to get the id of the node
     def get_id(self):
-        return self.id
+        return str(self.id)
 
     # Method to set the id of the node
-    def set_name(self, id):
+    def set_id(self, id):
         self.id = id
 
     # String representation of the node
