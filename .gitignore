@@ -2,3 +2,7 @@
 env/
 # Ignore __pychache__
 **/__pycache__
+# Ignore .vscode
+.vscode
+# Ignore .pytest_cache
+.pytest_cache
