@@ -1,4 +1,7 @@
-# Simple Agent Class
+### Import modules
+import numpy as np
+
+### Simple Agent Class ###
 class SimpleAgent:
     # Constructor for the simple agent class
     def __init__(self, environment, agent_id, position, communication_range=100):
@@ -19,7 +22,7 @@ class SimpleAgent:
         if self.position not in environment.get_node_names():
             raise ValueError(f'Position {self.position} is not in the network environment')
 
-    def move(self, action, environment):
+    def move(self, environment, action):
         """
         Method to move the agent in the environment
         :param action: Action to take - the new position of the agent
@@ -28,8 +31,6 @@ class SimpleAgent:
         """
         # Update the agent's position
         self.position = action
-        # Add the new position to the list of visited nodes
-        self.visited_nodes.append(action)
 
     def communicate(self, environment):
         """
@@ -39,15 +40,37 @@ class SimpleAgent:
         """
         pass
 
-    def get_observation(self, environment, other_agents):
+    def get_observation(self, environment, other_agents=None):
         """
-        Method to get the observation of the agent
+        Method to get the observation of the agent - update the observation space
         :param environment: Environment in which the agent is observing - the pipe network
         :param other_agents: Other agents in the environment
+        :update: Update the visited nodes
         :return: Observation of the agent
         """
         observation = {
             'position': self.position,
             'visited_nodes': self.visited_nodes,
-            'pipe_network_state': environment.get_state(self.position)
+            'pipe_network_state': environment.get_state(self.position),
+            'other_agents': other_agents
         }
+        self.visited_nodes.append(self.position)
+
+        return observation
+
+    def get_action(self, observation):
+        """
+        Method to get the action of the agent - update the action space
+        :param observation: Observation of the agent
+        :return: Action of the agent
+        """
+        # Get the adjacent nodes
+        adjacent_nodes = observation['pipe_network_state']
+
+        # Get the unvisited adjacent nodes
+        unvisited_adjacent_nodes = [node for node in adjacent_nodes if node not in observation['visited_nodes']]
+
+        # Get the action
+        action = np.random.choice(unvisited_adjacent_nodes)
+
+        return action

@@ -2,13 +2,13 @@
 import wntr
 import matplotlib.pyplot as plt
 
-# Create pipe network class
+### Pipe Network Class ###
 class PipeNetwork:
     # Constructor
     def __init__(self, path_to_file):
         self.wn = wntr.network.WaterNetworkModel(path_to_file)
-        self.lengths = self.wn.query_link_attribute('length')
-        self.names = self.wn.query_link_attribute('name')
+        self.link_lengths = self.wn.query_link_attribute('length')
+        self.link_names = self.wn.query_link_attribute('name')
         self.wn_dict = wntr.network.to_dict(self.wn)
         self.wn_links = self.wn_dict['links']
         self.wn_nodes = self.wn_dict['nodes']
@@ -52,7 +52,7 @@ class PipeNetwork:
     def get_links(self):
         return self.wn_links
 
-    # Method to get link names
+    # Method to get link link_names
     def get_link_names(self):
         return self.wn.link_name_list
 
@@ -60,7 +60,7 @@ class PipeNetwork:
     def get_nodes(self):
         return self.wn_nodes
 
-    # Method to get node names
+    # Method to get node link_names
     def get_node_names(self):
         return self.wn.node_name_list
 
@@ -80,13 +80,13 @@ class PipeNetwork:
     def get_undirected_graph(self):
         return self.undirected_graph
 
-    # Method to get list of pipe names
-    def get_pipe_names(self):
-        return self.names
+    # Method to get list of pipe link_names
+    def get_pipe_link_names(self):
+        return self.link_names
 
-    # Method to get list of pipe lengths
-    def get_pipe_lengths(self):
-        return self.lengths
+    # Method to get list of pipe link_lengths
+    def get_pipe_link_lengths(self):
+        return self.link_lengths
 
     # Method to get neighbor nodes given a current node
     def get_neighbours(self, current_node):
@@ -122,9 +122,8 @@ class PipeNetwork:
     # Method to get the state of the network at a given node
     def get_state(self, node_name):
         """
-        Method to get the state of the network at junction level
-        :param node_name: name of the junction
+        Method to get the state of the network at node level
         :return: state of the junction
         """
-        connected_pipes = self.get_neighbours(node_name)
-        return connected_pipes
+        return self.get_neighbours(node_name)
+        
