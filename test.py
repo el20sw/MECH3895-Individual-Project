@@ -1,5 +1,5 @@
 from src.pipe_network import PipeNetwork
-from simple_agent import SimpleAgent
+from src.simple_agent import SimpleAgent
 
 import numpy as np
 
@@ -12,16 +12,19 @@ env = PipeNetwork(path_to_file)
 adj_list = env.get_adj_list()
 junctions = list(adj_list.keys())
 
+# Get the possible starting nodes
+nodes = env.get_node_names()
+
 # Get state
-state = env.get_state(junctions[3])
+state = env.get_state(nodes[3])
 print(state)
 
-# Get nodes
-nodes = env.get_node_names()
-print(nodes)
-
 # Create agent
-agent = SimpleAgent(env, 0, junctions[3])
+agent = SimpleAgent(env, 0, nodes[3])
+
+# Get observation
+observation = agent.get_observation(environment=env)
+print(observation)
 
 # Render the network
 env.render_network(node_labels=True, link_labels=True)
