@@ -1,6 +1,6 @@
 from src.simulation import Simulation
 from src.pipe_network import PipeNetwork
-from src.simple_agent import SimpleAgent
+from random_agent import RandomAgent
 
 # Create PipeNetwork environment
 env = PipeNetwork('networks/Net1.inp')
@@ -13,7 +13,7 @@ nodes = env.get_node_names()
 sim = Simulation(env)
 
 # Create agent
-agent = SimpleAgent(env, 0, '10')
+agent = RandomAgent(env, 0, '10')
 
 # Add agent to simulation
 sim.add_agent(agent)

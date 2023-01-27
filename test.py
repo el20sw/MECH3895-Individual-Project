@@ -1,5 +1,5 @@
 from src.pipe_network import PipeNetwork
-from src.simple_agent import SimpleAgent
+from random_agent import RandomAgent
 
 import numpy as np
 

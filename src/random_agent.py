@@ -2,8 +2,8 @@
 import numpy as np
 from base_classes.agent import Agent
 
-### Simple Agent Class ###
-class SimpleAgent(Agent):
+### Random Agent Class ###
+class RandomAgent(Agent):
     # Constructor for the simple agent class
     def __init__(self, environment, agent_id, position, communication_range=100):
         """
