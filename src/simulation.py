@@ -12,7 +12,8 @@ class Simulation:
         self.agents = []
         # Variables
         self.turns = 0
-        self.pct_explored = []
+        self.pct_explored = 0
+        self.visited_nodes = []
 
     def add_agent(self, agent):
         """
@@ -29,9 +30,9 @@ class Simulation:
         :return: None
         """
         # Run the simulation for a maximum number of turns
-        while self.turns < max_turns or self.pct_explored < 100:
+        while self.turns < max_turns and self.pct_explored < 100:
             self.step()
-            self.get_results()
+            self.turns += 1
 
     def step(self):
         """
@@ -48,18 +49,19 @@ class Simulation:
             agent.move(self.environment, action)
             # Communicate with other agents
             agent.communicate(self.environment)
-        # Increment the turn
-        self.turns += 1
 
     def get_results(self):
         """
         Method to get the results of the simulation
         :return: Results of the simulation
         """
+
+        self.visited_nodes = (agent.visited_nodes for agent in self.agents)
+
         results = {
             'num_agents': len(self.agents),
             'turns': self.turns,
-            'pct_explored': self.pct_explored.append(len(set(self.agents.visited_nodes)) / len(self.environment.get_node_names()))
+            'pct_explored': self.visited_nodes
         }
 
         return results
@@ -75,4 +77,4 @@ class Simulation:
         # Write the results to a file
         with open(file_path, 'w') as f:
             for key, value in results.items():
-                f.write(f'{key}: {value}')
+                f.write(f'{key}: {value}\n')

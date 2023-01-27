@@ -13,13 +13,15 @@ nodes = env.get_node_names()
 sim = Simulation(env)
 
 # Create agent
-agent = SimpleAgent(env, 0, nodes[1])
+agent = SimpleAgent(env, 0, '10')
 
 # Add agent to simulation
 sim.add_agent(agent)
 
+print(sim.agents)
+
 # Run simulation
-sim.run()
+sim.run(max_turns=10)
 
 # Get results
 results = sim.get_results()
