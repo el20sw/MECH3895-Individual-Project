@@ -22,6 +22,10 @@ class SimpleAgent:
         if self.position not in environment.get_node_names():
             raise ValueError(f'Position {self.position} is not in the network environment')
 
+        # Check if the position is in the adjacency list
+        if self.position not in environment.get_adj_list().keys():
+            raise KeyError(f'Position {self.position} is not in adjacency list')
+
     def move(self, environment, action):
         """
         Method to move the agent in the environment
@@ -29,6 +33,10 @@ class SimpleAgent:
         :param environment: Environment in which the agent is moving - the pipe network
         :return: None
         """
+
+        # FIXME: Debug Print Statement
+        print(f"Agent {self.agent_id} is moving")
+
         # Update the agent's position
         self.position = action
 
@@ -48,6 +56,10 @@ class SimpleAgent:
         :update: Update the visited nodes
         :return: Observation of the agent
         """
+
+        # FIXME: Debug Print Statement
+        print(f"Agent {self.agent_id} is observing")
+
         observation = {
             'position': self.position,
             'visited_nodes': self.visited_nodes,
@@ -64,6 +76,10 @@ class SimpleAgent:
         :param observation: Observation of the agent
         :return: Action of the agent
         """
+
+        # FIXME: Debug Print Statement
+        print(f"Agent {self.agent_id} is getting an action")
+
         # Get the adjacent nodes
         adjacent_nodes = observation['pipe_network_state']
 
@@ -71,6 +87,12 @@ class SimpleAgent:
         unvisited_adjacent_nodes = [node for node in adjacent_nodes if node not in observation['visited_nodes']]
 
         # Get the action
-        action = np.random.choice(unvisited_adjacent_nodes)
+        try:
+            action = np.random.choice(unvisited_adjacent_nodes)
+        except ValueError:
+            action = np.random.choice(adjacent_nodes)
 
         return action
+
+    def get_visited_nodes(self):
+        return self.visited_nodes()

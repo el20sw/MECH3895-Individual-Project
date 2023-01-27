@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 ### Pipe Network Class ###
 class PipeNetwork:
-    # Constructor
+    ### Constructor
     def __init__(self, path_to_file):
         self.wn = wntr.network.WaterNetworkModel(path_to_file)
         self.link_lengths = self.wn.query_link_attribute('length')
@@ -47,7 +47,7 @@ class PipeNetwork:
             }
         return self.adj_list
 
-    ### Getters
+    ### Getter methods ###
     # Method to get links and associated attributes
     def get_links(self):
         return self.wn_links
@@ -63,6 +63,10 @@ class PipeNetwork:
     # Method to get node link_names
     def get_node_names(self):
         return self.wn.node_name_list
+
+    # Method to get number of nodes
+    def get_number_of_nodes(self):
+        return len(self.get_node_names())
 
     # Method to get list of pipes - subtype of links
     def get_pipes(self):
@@ -104,6 +108,8 @@ class PipeNetwork:
     def get_pipe_length(self, start_node, end_node):
         return self.adj_list[start_node][end_node]['link_length']
     
+    ### End of Getter methods ###
+    
     # Method to write adjacency list to file
     def write_adj_list(self, filename='adj_list.txt'):
         with open(filename, 'w') as f:
@@ -120,10 +126,10 @@ class PipeNetwork:
         plt.show()
 
     # Method to get the state of the network at a given node
-    def get_state(self, node_name):
+    def get_state(self, current_node):
         """
         Method to get the state of the network at node level
         :return: state of the junction
         """
-        return self.get_neighbours(node_name)
+        return list(self.adj_list[current_node].keys())
         
