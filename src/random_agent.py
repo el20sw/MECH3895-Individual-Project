@@ -1,6 +1,6 @@
 ### Import modules
 import numpy as np
-from base_classes.agent import Agent
+from agent import Agent
 
 ### Random Agent Class ###
 class RandomAgent(Agent):

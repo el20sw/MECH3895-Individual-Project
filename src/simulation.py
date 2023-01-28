@@ -61,7 +61,7 @@ class Simulation:
         results = {
             'num_agents': len(self.agents),
             'turns': self.turns,
-            'pct_explored': self.visited_nodes
+            'pct_explored': len(set(self.visited_nodes)) / len(self.environment.get_node_names() * 100)
         }
 
         return results
