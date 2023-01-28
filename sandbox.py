@@ -1,78 +1,48 @@
-### Import modules
-import wntr
-import matplotlib.pyplot as plt
-import networkx as nx
+from src.overwatch import OverWatch
+from src.pipe_network import PipeNetwork
+from src.random_agent import RandomAgent
 
-# Create pipe network
-path_to_file = 'networks/Net1.inp'
-wn = wntr.network.WaterNetworkModel(path_to_file)
+# Initialise an environment
+env = PipeNetwork('networks/Net1.inp')
+# Initialise an agent
+agent = RandomAgent(env, 0, '11')
+# Initialise an agent
+agent2 = RandomAgent(env, 1, '22')
 
-lengths = wn.query_link_attribute('length')
-names = wn.query_link_attribute('name')
+# Initialise the overwatch
+ow = OverWatch(env, [agent, agent2])
 
-print(names)
-print(lengths)
+# Get the agent positions
+print(ow.get_agent_positions())
 
-# Get the network as a dictionary
-wn_dict = wntr.network.to_dict(wn)
-# Write wn to json file using wntr function
-wntr.network.write_json(wn, 'Net1.json')
+# Get the visited nodes
+print(ow.get_visited_junctions())
 
-# Get links
-wn_links = wn_dict['links']
-# Get nodes
-wn_nodes = wn_dict['nodes']
-# Get junctions
-wn_junctions = [node for node in wn_nodes if node['node_type'] == 'Junction']
+# Move the agents to new positions
+def move_agent(agent):
+    obv = agent.get_observation(env)
+    act = agent.get_action(obv)
+    agent.move(env, act)
 
-# Create adjacency list
-adj_list = {}
+# Move the agents
+move_agent(agent)
+move_agent(agent2)
 
-# Iterate through links and add start_node to adjacency list and end_node to adjacency list
-for link in wn_links:
-    # Check if link is a pipe
-    if link['link_type'] != 'Pipe':
-        # If link is not a pipe, skip it
-        continue
-    # Get start and end nodes
-    start_node = link['start_node_name']
-    end_node = link['end_node_name']
-    # Get link name
-    link_name = link['name']
-    # Add start and end nodes to adjacency list
-    if start_node not in adj_list:
-        adj_list[start_node] = {}
-    if end_node not in adj_list:
-        adj_list[end_node] = {}
-    # Add link to adjacency list
-    adj_list[start_node][end_node] = {
-        'link_name': link_name,
-        'link_length': link['length']
-        }
-    adj_list[end_node][start_node] = {
-        'link_name': link_name,
-        'link_length': link['length']
-    }
+# Get the agent positions
+print(ow.get_agent_positions())
 
-# Create as undirected NetworkX graph
-G = wntr.network.to_graph(wn)
-uG = G.to_undirected()
+# Get the visited nodes
+print(ow.get_visited_junctions())
 
-# Get the connected nodes given the current node
-def get_neighbours(current_node):
-    return list(adj_list[current_node].keys())
+# Move the agents to new positions
+move_agent(agent)
+move_agent(agent2)
 
-# Get neighbours of a node using NetworkX
-def get_neighbours_nx(current_node):
-    return list(uG.neighbors(current_node))
+# Get the agent positions
+print(ow.get_agent_positions())
 
-# Write adjacency list to file
-with open('adj_list.txt', 'w') as f:
-    # New line for each node
-    foo = str(adj_list).replace('}},', '}},\n')
-    f.write(foo)
-    f.close()
+# Get the visited nodes
+print(ow.get_visited_junctions())
 
-# Render the network
-wntr.graphics.plot_network(wn, title=path_to_file, node_labels=True, link_labels=True)
-plt.show()
+# Print all the nodes
+print(ow.all_junctions)
