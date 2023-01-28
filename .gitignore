@@ -2,6 +2,9 @@
 env/
 # Ignore all __pycache__ directories in the project
 __pycache__/
+
 # Ignore logs
 logs/
+# Ignore results
+results/
 
