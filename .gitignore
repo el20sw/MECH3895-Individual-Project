@@ -1,3 +1,7 @@
 # Ignore the virtualenv directory
 env/
-base_classes/__pycache__
+# Ignore all __pycache__ directories in the project
+__pycache__/
+# Ignore logs
+logs/
+
