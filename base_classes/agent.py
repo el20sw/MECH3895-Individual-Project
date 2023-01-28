@@ -86,11 +86,11 @@ class SimpleAgent:
         # Get the unvisited adjacent nodes
         unvisited_adjacent_nodes = [node for node in adjacent_nodes if node not in observation['visited_nodes']]
 
-        # Get the action
-        try:
-            action = np.random.choice(unvisited_adjacent_nodes)
-        except ValueError:
-            action = np.random.choice(adjacent_nodes)
+        # Get the action space
+        action = {
+            'adjacent_nodes': adjacent_nodes,
+            'unvisited_adjacent_nodes': unvisited_adjacent_nodes
+        }
 
         return action
 
