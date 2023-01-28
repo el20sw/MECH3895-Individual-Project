@@ -7,25 +7,35 @@ class PipeNetwork:
     ### Constructor
     def __init__(self, path_to_file):
         self.wn = wntr.network.WaterNetworkModel(path_to_file)
-        self.link_lengths = self.wn.query_link_attribute('length')
-        self.link_names = self.wn.query_link_attribute('name')
         self.wn_dict = wntr.network.to_dict(self.wn)
-        self.wn_links = self.wn_dict['links']
-        self.wn_nodes = self.wn_dict['nodes']
-        self.wn_pipes = [link for link in self.wn_links if link['link_type'] == 'Pipe']
-        self.wn_junctions = [node for node in self.wn_nodes if node['node_type'] == 'Junction']
         self.graph = wntr.network.to_graph(self.wn)
         self.undirected_graph = self.graph.to_undirected()
+
+        self.wn_links = self.wn_dict['links']
+        self.link_lengths = self.wn.query_link_attribute('length')
+        self.link_names = self.wn.link_name_list
+        self.wn_pipes = [link for link in self.wn_links if link['link_type'] == 'Pipe']
+        
+        self.wn_nodes = self.wn_dict['nodes']
+        self.node_names = self.wn.node_name_list
+        self.wn_junctions = [node for node in self.wn_nodes if node['node_type'] == 'Junction']
+        
+        
         self.adj_list = {}
 
     # Get adjacency list
     def get_adj_list(self):
+        """
+        Method to get adjacency list - filters out non-pipe links
+        :return: Adjacency list
+        """
         # Iterate through links and add start_node to adjacency list and end_node to adjacency list
-        for link in self.wn_links:
+        for link in self.wn_pipes:
             # Check if link is a pipe
-            if link['link_type'] != 'Pipe':
-                # If link is not a pipe, skip it
-                continue
+            # TODO: Reinstate this check?
+            # if link['link_type'] != 'Pipe':
+            #     # If link is not a pipe, skip it
+            #     continue
             # Get start and end nodes
             start_node = link['start_node_name']
             end_node = link['end_node_name']
