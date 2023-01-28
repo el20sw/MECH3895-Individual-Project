@@ -1,6 +1,3 @@
-### Import modules
-import numpy as np
-
 ### Simple Agent Class ###
 class Agent:
     # Constructor for the simple agent class
@@ -34,9 +31,6 @@ class Agent:
         :return: None
         """
 
-        # FIXME: Debug Print Statement
-        print(f"Agent {self.agent_id} is moving")
-
         # Update the agent's position
         self.position = action
 
@@ -57,9 +51,6 @@ class Agent:
         :return: Observation of the agent
         """
 
-        # FIXME: Debug Print Statement
-        print(f"Agent {self.agent_id} is observing")
-
         observation = {
             'position': self.position,
             'visited_nodes': self.visited_nodes,
@@ -76,9 +67,6 @@ class Agent:
         :param observation: Observation of the agent
         :return: Action of the agent
         """
-
-        # FIXME: Debug Print Statement
-        print(f"Agent {self.agent_id} is getting an action")
 
         # Get the adjacent nodes
         adjacent_nodes = observation['pipe_network_state']
