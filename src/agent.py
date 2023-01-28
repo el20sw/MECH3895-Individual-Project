@@ -1,4 +1,4 @@
-### Simple Agent Class ###
+### Base Agent Class ###
 class Agent:
     # Constructor for the simple agent class
     def __init__(self, environment, agent_id, position, communication_range=100):
@@ -15,8 +15,8 @@ class Agent:
         self.communication_range = communication_range
         self.visited_nodes = []
 
-        # Check if the position is in the network environment
-        if self.position not in environment.get_node_names():
+        # Check if the position is in the network environment and a junction
+        if self.position not in environment.junction_names:
             raise ValueError(f'Position {self.position} is not in the network environment')
 
         # Check if the position is in the adjacency list
@@ -83,4 +83,4 @@ class Agent:
         return action
 
     def get_visited_nodes(self):
-        return self.visited_nodes()
+        return self.visited_nodes

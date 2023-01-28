@@ -23,10 +23,10 @@ class RandomAgent(Agent):
         self.agent_id = agent_id
         self.position = position
         self.communication_range = communication_range
-        self.visited_nodes = []
+        self.visited_junctions = []
 
-        # Check if the position is in the network environment
-        if self.position not in environment.get_node_names():
+        # Check if the position is in the network environment and a junction
+        if self.position not in environment.junction_names:
             raise ValueError(f'Position {self.position} is not in the network environment')
 
         # Check if the position is in the adjacency list
@@ -65,13 +65,14 @@ class RandomAgent(Agent):
 
         observation = {
             'position': self.position,
-            'visited_nodes': self.visited_nodes,
+            'visited_junctions': self.visited_junctions,
             'pipe_network_state': environment.get_state(self.position),
             'other_agents': other_agents
         }
-        self.visited_nodes.append(self.position)
+        self.visited_junctions.append(self.position)
 
-        # Log the agent's observation
+        # Log the agent's observation (position and pipe network state)
+        self.log.info(f"Agent {self.agent_id} is at {observation['position']}")
         self.log.info(f"Agent {self.agent_id} is observing {observation['pipe_network_state']}")
 
         return observation
@@ -87,7 +88,7 @@ class RandomAgent(Agent):
         adjacent_nodes = observation['pipe_network_state']
 
         # Get the unvisited adjacent nodes
-        unvisited_adjacent_nodes = [node for node in adjacent_nodes if node not in observation['visited_nodes']]
+        unvisited_adjacent_nodes = [node for node in adjacent_nodes if node not in observation['visited_junctions']]
 
         # Get the action space
         action_space = {
@@ -102,12 +103,12 @@ class RandomAgent(Agent):
 
         return action
 
-    def get_visited_nodes(self):
+    def get_visited_junctions(self):
         """
         Method to get the visited nodes
         :return: Visited nodes
         """
-        return self.visited_nodes()
+        return self.visited_junctions
 
     def random_action(self, action_space):
         """

@@ -25,7 +25,7 @@ class Simulation:
         # Initialise the overwatch
         self.ow = OverWatch(self.environment, self.agents)
         self.ow_agent_positions = {}
-        self.ow_visited_nodes = []
+        self.ow_visited_junctions = []
 
     def add_agent(self, agent):
         """
@@ -58,8 +58,6 @@ class Simulation:
             self.step()
             # Update the results
             self.update_results()
-            # Update the overwatch
-            self.ow.update()
             # Increment the turn (local turn count)
             self.turns += 1
             # Log the turn
@@ -77,12 +75,19 @@ class Simulation:
         for agent in self.agents:
             # Get the observation of the agent
             observation = agent.get_observation(self.environment)
+            # TODO: Communicate with other agents
+            # agent.communicate(self.environment)
+            # TODO: Update the belief state of the agent
+            # agent.update_belief_state(self.environment)
             # Get the action of the agent
             action = agent.get_action(observation)
             # Move the agent
             agent.move(self.environment, action)
             # Communicate with other agents
             agent.communicate(self.environment)
+
+        # Update the overwatch
+        self.ow.update()
 
     def update_results(self):
         """
@@ -92,9 +97,9 @@ class Simulation:
         # Get the agent positions
         self.ow_agent_positions = self.ow.get_agent_positions()
         # Get the nodes that have been visited by all agents
-        self.ow_visited_nodes = self.ow.get_visited_nodes()
+        self.ow_visited_junctions = self.ow.get_visited_junctions()
         # Log the number of nodes explored
-        self.log.info(f"{len(self.ow_visited_nodes)} nodes explored")
+        self.log.info(f"{len(self.ow_visited_junctions)} nodes explored")
 
         # Get the percentage of nodes explored (from the overwatch)
         self.pct_explored = self.ow.get_pct_explored()
@@ -111,6 +116,7 @@ class Simulation:
         results = {
             'num_agents': len(self.agents),
             'turns': self.turns,
+            'visited_junctions': self.ow_visited_junctions,
             'pct_explored': self.pct_explored
         }
 
