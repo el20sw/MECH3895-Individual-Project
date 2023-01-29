@@ -2,7 +2,7 @@ import os
 import logging
 APP_LOGGER_NAME = 'turn_based_simulator'
 
-def setup_logger(logger_name=APP_LOGGER_NAME, file_name=None, level=logging.DEBUG):
+def setup_logger(logger_name=APP_LOGGER_NAME, file_name=None, level='DEBUG'):
     # Gets or creates a logger
     logger = logging.getLogger(logger_name)
 
