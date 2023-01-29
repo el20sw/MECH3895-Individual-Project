@@ -139,7 +139,11 @@ class Network:
 
         return state
 
-
-
-
-
+    # Method to plot the network using wntr graphics api
+    def plot_network(self, *args, **kwargs) -> None:
+        """
+        Method to plot the network
+        :return: None
+        """
+        # Plot the network
+        wntr.graphics.plot_network(self._wn, *args, **kwargs)
