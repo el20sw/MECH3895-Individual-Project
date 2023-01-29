@@ -7,4 +7,6 @@ __pycache__/
 logs/
 # Ignore results
 results/
+# Ignore data
+data/
 
