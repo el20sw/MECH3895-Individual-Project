@@ -64,7 +64,7 @@ class Observation:
 
     # Class method to make observation
     @classmethod
-    def observe(cls, position, environment, tx):
+    def observe(cls, position, environment, tx=None):
         """
         Class method to make observation
         :param position: Position of the agent in the environment
