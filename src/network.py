@@ -72,9 +72,13 @@ class Network:
     @property
     def junction_names(self) -> list:
         return self._junction_names
+
+    @property
+    def adj_list(self) -> dict:
+        return self._adj_list
     
     # Get adjacency list
-    def adj_list(self) -> dict:
+    def _get_adj_list(self) -> dict:
         """
         Method to get adjacency list - if there is a node and a link, the robots can traverse them
         If no link length is specified, i.e. in the case of a pump, the link length is set to 10
@@ -111,7 +115,7 @@ class Network:
         :return: None
         """
         # Get adjacency list
-        self.adj_list()
+        self._get_adj_list()
 
         # Check if the directory exists
         if not os.path.exists(os.path.dirname(path_to_file)):
