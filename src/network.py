@@ -75,6 +75,8 @@ class Network:
 
     @property
     def adj_list(self) -> dict:
+        # Construct adjacency list
+        self._adj_list = self._get_adj_list()
         return self._adj_list
     
     # Get adjacency list
@@ -142,6 +144,22 @@ class Network:
         }
 
         return state
+
+    # Method to get links from a node
+    def get_links(self, node) -> list:
+        """
+        Method to get links from a node
+        :param node: Node
+        :return: List of links
+        """
+        # Get adjacency list
+        self._get_adj_list()
+
+        # Get links
+        links = []
+        for dest_node in self._adj_list[node]:
+            links.append((node, dest_node, self._adj_list[node][dest_node]['link_length']))
+        return links
 
     # Method to plot the network using wntr graphics api
     def plot_network(self, *args, **kwargs) -> None:
