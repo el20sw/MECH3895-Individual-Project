@@ -17,7 +17,7 @@ net1 = Network('networks/Net1.inp')
 logger.info(f"Network: {net1}")
 
 # Initialise belief state
-belief1 = Belief(net1)
+belief1 = Belief(net1, 'agent', '22')
 
 # Check attributes of belief state object can be accessed
 logger.info(f"Belief state: {belief1}")
@@ -29,6 +29,3 @@ logger.info(f"Links: {belief1.links}")
 # Check nodes in belief state are the same as nodes in network
 logger.info(f"Nodes in belief state: {list(belief1.nodes.keys())}")
 logger.info(f"Nodes in network: {net1.node_names}")
-
-# Update belief state
-belief1.update(net1, 'move', 'J1')

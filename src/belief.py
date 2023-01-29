@@ -10,6 +10,8 @@ class Belief:
     decisions
 
     :param environment: Environment in which the agent is operating - the pipe network
+    :param agent_id: ID of the agent
+    :param position: Position of the agent in the environment (likely to be the starting position)
     
     note: this is used to initialise the belief state nodes creating a dictionary with
     node names as keys and node status as values
@@ -25,15 +27,19 @@ class Belief:
         the known environment
     """
 
-    def __init__(self, environment, agent_id=None) -> None:
+    def __init__(self, environment, agent_id=None, position=None) -> None:
         # Initialise the logger
         self.log = logger.setup_logger(__name__, 'logs/belief.log')
 
         # Initialise the belief state
         self._agent_id = agent_id
-        self._position = None
+        self._position = position
         self._nodes = {node: 1 for node in environment.adj_list.keys()}    # all nodes are unvisited by default
+        # update node status of the starting node to visited
+        self._nodes[self._position] = 0
         self._links = []
+
+        self._environment = environment
     
     @property
     def agent_id(self):
@@ -88,3 +94,24 @@ class Belief:
         self._links.extend(environment.get_links(self._position))
         # Remove duplicate links
         self._links = list(set(self._links))
+
+        """
+        if there is transmittables in the observation, create local copies of all the transmittables
+        compare with the agents current belief state
+        update the belief state with the new information
+        """
+
+    # Class method to create a belief state from a dictionary
+    @classmethod
+    def from_dict(cls, belief_dict):
+        """
+        Create a belief state from a dictionary
+        :param belief_dict: Dictionary containing the belief state
+        :return: Belief state object
+        """
+        belief = cls(belief_dict['_environment'])
+        belief._agent_id = belief_dict['_agent_id']
+        belief._position = belief_dict['_position']
+        belief._nodes = belief_dict['_nodes']
+        belief._links = belief_dict['_links']
+        return belief
