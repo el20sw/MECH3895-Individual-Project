@@ -32,6 +32,27 @@ logger.info(f"Network: {net3}")
 # Write adjacency list to file
 net3.write_adj_list_to_file('data/Net3_adj_list.json')
 
+# Check @property links
+logger.info(f"Links: {net1.links}")
+# Check @property link_names
+logger.info(f"Link names: {net1.link_names}")
+# Check @property pipes
+logger.info(f"Pipes: {net1.pipes}")
+# Check @property pipe_names
+logger.info(f"Pipe names: {net1.pipe_names}")
+
+# Check @property nodes
+logger.info(f"Nodes: {net1.nodes}")
+# Check @property node_names
+logger.info(f"Node names: {net1.node_names}")
+# Check @property junctions
+logger.info(f"Junctions: {net1.junctions}")
+# Check @property junction_names
+logger.info(f"Junction names: {net1.junction_names}")
+
+# Check @property adj_list
+logger.info(f"Adjacency list: {net1.adj_list}")
+
 # Create figure to contain plots of networks
 fig, axs = plt.subplots(1, 3, figsize=(15, 5))
 # Set figure title
