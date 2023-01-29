@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import os
 import json
 
+from src.keys import FrozenNodes, FrozenLinks
+
 ### Pipe Network Class ###
 class Network:
     """
@@ -36,10 +38,15 @@ class Network:
         self._node_names = self._wn.node_name_list
         self._junctions = [node for node in self._nodes if node['node_type'] == 'Junction']
         self._junction_names = self._wn.junction_name_list
-        
+
+        # Create frozen nodes and links
+        self._frozen_nodes = FrozenNodes(self._node_names)
+        self._frozen_links = FrozenLinks(self._link_names)
 
         # Initialise adjacency list
         self._adj_list = {}
+        # Build adjacency list
+        self._adj_list = self._get_adj_list()
 
     @property
     def links(self) -> list:
@@ -74,9 +81,15 @@ class Network:
         return self._junction_names
 
     @property
+    def frozen_nodes(self) -> FrozenNodes:
+        return self._frozen_nodes
+
+    @property
+    def frozen_links(self) -> FrozenLinks:
+        return self._frozen_links
+
+    @property
     def adj_list(self) -> dict:
-        # Construct adjacency list
-        self._adj_list = self._get_adj_list()
         return self._adj_list
     
     # Get adjacency list
@@ -136,11 +149,14 @@ class Network:
     def get_state(self, node) -> dict:
         """
         Method for an agent to request the state of the network at a node level
+        - Currently this gives the keys (node names) of the nodes that are connected to the node
         :return: State of the network at a node
         """
+        if node not in self._frozen_nodes.frozen_node_keys:
+            raise ValueError(f"Node {node} is not valid")
         state = {
             'node': node,
-            'links': self._adj_list[node].keys(),
+            'links': list(self._adj_list[node].keys()),
         }
 
         return state
@@ -165,6 +181,8 @@ class Network:
     def plot_network(self, *args, **kwargs) -> None:
         """
         Method to plot the network
+        :param args: Arguments to pass to the wntr.graphics.plot_network method
+        :param kwargs: Keyword arguments to pass to the wntr.graphics.plot_network method
         :return: None
         """
         # Plot the network
