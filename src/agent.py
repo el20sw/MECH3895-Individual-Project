@@ -69,7 +69,7 @@ class Agent(ABC):
         pass
 
     @abstractmethod
-    def act(self, observation) -> str:
+    def action(self, observation) -> str:
         """
         Method to get the action of the agent - update the action space
         :param observation: Observation of the agent
