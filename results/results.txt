@@ -1,3 +1,4 @@
 num_agents: 1
-turns: 10
-pct_explored: <generator object Simulation.get_results.<locals>.<genexpr> at 0x7fc9444f0350>
+turns: 100
+visited_junctions: []
+pct_explored: 0.0
