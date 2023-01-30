@@ -30,6 +30,7 @@ class Agent(ABC):
         self._id = id
         self._position = position
         self._communication_range = communication_range
+        self._visited_nodes = []
 
         # Check if the position is in the network environment and a node
         if self._position not in environment.node_names():
@@ -112,4 +113,20 @@ class Agent(ABC):
         :return: Communication range of the agent
         """
         return self._communication_range
+
+    @property
+    def belief(self) -> Belief:
+        """
+        Method to get the belief of the agent
+        :return: Belief of the agent
+        """
+        return self._belief
+
+    @property
+    def visited_nodes(self) -> list:
+        """
+        Method to get the visited nodes of the agent
+        :return: Visited nodes of the agent
+        """
+        return self._visited_nodes
 
