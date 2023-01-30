@@ -43,6 +43,14 @@ class Agent(ABC):
         self._belief = Belief(environment, self._id, self._position)
 
     @abstractmethod
+    def step(self) -> None:
+        """
+        This is a turn
+        :return: None
+        """
+        pass
+
+    @abstractmethod
     def move(self, environment, action) -> None:
         """
         Method to move the agent in the environment
