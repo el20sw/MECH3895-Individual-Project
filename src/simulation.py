@@ -3,6 +3,7 @@ import src.debug.logger as logger
 
 from typing import List
 import json
+import os
 
 from src.agent import Agent
 from src.network import Network
@@ -30,6 +31,7 @@ class Simulation:
         # Variables
         self._turns = 0
         self._pct_explored = 0
+        self._results = {}
 
         # Initialise the overwatch
         self._ow = Overwatch(self._environment, self._agents)
@@ -54,6 +56,11 @@ class Simulation:
     @property
     def pct_explored(self) -> float:
         return self._pct_explored
+
+    @property
+    def results(self) -> dict:
+        self.update_results()
+        return self._results
 
     ### Methods ###
     def add_agent(self, *agent : Agent):
@@ -123,9 +130,6 @@ class Simulation:
 
         :return: None
         """
-        # Run one step for each agent
-        for agent in self._agents:
-            agent.step()
 
         # Update the overwatch
         self._ow.update()
@@ -143,7 +147,7 @@ class Simulation:
         # Update the number of agents
         self._num_agents = len(self._agents)
 
-    def get_results(self):
+    def update_results(self):
         """
         Method to get the results of the simulation
         :return: Dictionary of results
@@ -152,14 +156,14 @@ class Simulation:
         # Update the simulation
         self._update()
 
-        results = {
+        self._results = {
             'num_agents': self._num_agents,
             'turns': self._turns,
             'visited_nodes': self._ow.visited_nodes,
             'pct_explored': self._pct_explored
         }
 
-        return results
+        return self._results
 
     def write_results(self, filename: str):
         """
@@ -169,8 +173,17 @@ class Simulation:
         """
 
         # Get the results
-        results = self.get_results()
+        results = self.update_results()
 
-        # Write the results to a JSON file
-        with open(filename, 'w') as f:
-            json.dump(results, f)
+        # Check if the directory exists
+        if not os.path.exists(os.path.dirname(filename)):
+            # If it doesn't, create it
+            os.makedirs(os.path.dirname(filename))
+        
+        # Try to write the adjacency list to a file
+        try:
+            with open(filename, 'w') as f:
+                json.dump(results, f)
+        # If there is an error, log it
+        except Exception as e:
+            self._log.error(f"Error writing adjacency list to file: {e}")
