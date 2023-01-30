@@ -30,8 +30,6 @@ class Agent(ABC):
         self._position = position
         self._communication_range = communication_range
 
-        self._visited_nodes = []
-
         # Check if the position is in the network environment and a node
         if self._position not in environment.node_names():
             raise ValueError(f'Position {self._position} is not in the network environment')
@@ -65,7 +63,7 @@ class Agent(ABC):
         pass
 
     @abstractmethod
-    def communicate(self, environment):
+    def communicate(self, overwatch):
         """
         Method to communicate with other agents in the environment - send and receive transmissions
         :param environment: Environment in which the agent is communicating - the pipe network
@@ -74,7 +72,7 @@ class Agent(ABC):
         pass
 
     @abstractmethod
-    def action(self, observation) -> str:
+    def action(self) -> str:
         """
         Method to get the action of the agent - update the action space
         :param observation: Observation of the agent
