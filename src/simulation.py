@@ -2,12 +2,19 @@
 import src.debug.logger as logger
 
 from typing import List
+import json
 
 from src.agent import Agent
 from src.network import Network
+from src.overwatch import Overwatch
 
 ### Simulation Class ###
 class Simulation:
+    """
+    Simulation Class
+    ----------
+    Class to simulate the pipe network environment
+    """
 
     def __init__(self, environment: Network):
         # Initialise the logger
@@ -17,7 +24,7 @@ class Simulation:
         self._log.info(f'Environment: {self._environment}')
 
         # Initialise the agents
-        self._agents : List[Agent] = []
+        self._agents: List[Agent] = []
         self._num_agents = 0
 
         # Variables
@@ -25,6 +32,7 @@ class Simulation:
         self._pct_explored = 0
 
         # Initialise the overwatch
+        self._ow = Overwatch(self._environment, self._agents)
 
     ### Attributes ###
     @property
@@ -54,19 +62,21 @@ class Simulation:
         :param agent: Agent/s to add
         :return: None
         """
-
-        # check if multiple agents are passed
-        if len(agent) > 1:
-            for a in agent:
-                self._agents.append(a)
-                self._log.info(f"Agent {a.id} added to simulation")
-        # if a single agent is passed
-        else:
-            self._agents.append(agent[0])
-            self._log.info(f"Agent {agent[0].id} added to simulation")
+        
+        # check if agent is aleady in the simulation
+        for a in agent:
+            if a in self._agents:
+                self._log.warning(f"Agent {a.id} already in simulation")
+                return
+            # Add the agent
+            self._agents.append(a)
+            self._log.info(f"Agent {a.id} added to simulation")
 
         # Update the number of agents
         self._num_agents = len(self._agents)
+
+        # Update the overwatch
+        self._ow.agents = self._agents
 
     def remove_agent(self, agent : Agent):
         """
@@ -89,8 +99,6 @@ class Simulation:
         while self._turns < max_turns and self._pct_explored < 100:
             # Run one step of the simulation
             self.step()
-            # Update the results
-            self.update_results()
             # Increment the turn
             self._turns += 1
             # Log the turn
@@ -119,9 +127,50 @@ class Simulation:
         for agent in self._agents:
             agent.step()
 
-    def update_results(self):
+        # Update the overwatch
+        self._ow.update()
+
+    def _update(self):
         """
-        Method to update the results of the simulation
+        Method to update the simulation
         :return: None
         """
-        pass
+        # Update the overwatch
+        self._ow.update()
+
+        # Update the percentage of the environment explored
+        self._pct_explored = self._ow.pct_explored
+        # Update the number of agents
+        self._num_agents = len(self._agents)
+
+    def get_results(self):
+        """
+        Method to get the results of the simulation
+        :return: Dictionary of results
+        """
+
+        # Update the simulation
+        self._update()
+
+        results = {
+            'num_agents': self._num_agents,
+            'turns': self._turns,
+            'visited_nodes': self._ow.visited_nodes,
+            'pct_explored': self._pct_explored
+        }
+
+        return results
+
+    def write_results(self, filename: str):
+        """
+        Method to write the results of the simulation to a JSON file
+        :param filename: Name of the file to write to
+        :return: None
+        """
+
+        # Get the results
+        results = self.get_results()
+
+        # Write the results to a JSON file
+        with open(filename, 'w') as f:
+            json.dump(results, f)
