@@ -1,5 +1,5 @@
 # Import modules
-import debug.logger as logger
+import src.debug.logger as logger
 
 ### Transmittable Class ###
 class Transmittable:

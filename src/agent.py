@@ -1,5 +1,5 @@
 ### Import modules
-import debug.logger as logger
+import src.debug.logger as logger
 from abc import ABC, abstractmethod
 
 ### Base Agent Class ###
