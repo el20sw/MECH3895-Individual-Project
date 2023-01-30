@@ -55,5 +55,16 @@ class TestSimulation(unittest.TestCase):
         self.assertIsInstance(self.sim1._turns, int)
         self.assertEqual(self.sim1._turns, 10)
 
+    def test_simulation_results(self):
+        self.sim1.add_agent(self.agent1)
+        self.sim1.run(10)
+        self.assertIsInstance(self.sim1.results, dict)
+
+    def test_simulation_write_results(self):
+        self.sim1.add_agent(self.agent1)
+        self.sim1.run(10)
+        self.sim1.write_results('test/results/test_results.json')
+        self.assertIsInstance(self.sim1.results, dict)
+
 if __name__ == '__main__':
     unittest.main()
