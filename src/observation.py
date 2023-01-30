@@ -15,11 +15,11 @@ class Observation:
             - the `state` includes the nodes adjacent to the agent's current position
     """
 
-    def __init__(self, position, environment):
+    def __init__(self, environment, position):
         """
         Constructor for the agent observation class
-        :param position: Position of the agent in the environment
         :param environment: Environment in which the agent is operating - the pipe network
+        :param position: Position of the agent in the environment
         """
         # Initialise the logger
         self.log = logger.get_logger(__name__)
