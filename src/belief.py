@@ -1,5 +1,8 @@
 # Import modules
-import debug.logger as logger
+import src.debug.logger as logger
+
+from src.observation import Observation
+from src.transmittable import Transmittable
 
 ### Agent Belief States ###
 class Belief:
@@ -73,45 +76,100 @@ class Belief:
         """
         return self._links
 
-    def update(self, environment, action, observation) -> None:
+    # Method to update the belief state - takes in the observation (Observation type) and communication (may be none, a single or multiple Transmittable objects)
+    def update(self, observation : Observation, *communication : Transmittable):
         """
         Update the belief state of the agent
-        :param environment: Environment in which the agent is operating - the pipe network
-        :param action: Action taken by the agent
-        :param position: Position of the agent in the environment
+        :param observation: Observation of the agent
+        :param communication: Communication received from other agents - may be multiple transmittable objects
+        :return: None
         """
 
-        # Update the agent _position
-        self._position = action
+        # Order of precedence for updating the node status:
+        # 1. Occupied (-10)
+        # 2. Visited (0)
+        # 3. Unvisited (1)
 
-        # Update the node status of the new node to visited
-        self._nodes[self._position] = 0
+        # Make a reference to the previous position
+        prev_position = self._position
+        # Update the agent's position
+        self._position = observation.position
 
-        # Update the nodes in the observation
-        # TODO: Update the node status based on the observation
+        # If the previous position is not the same as the current position, create a link tuple
+        if prev_position != self._position:
+            link = self._create_link(self._position, prev_position)
+            # Add the link to the list of links if it is not already present
+            if link not in self._links:
+                self._links.append(link)
 
-        # Update the links
-        self._links.extend(environment.get_links(self._position))
-        # Remove duplicate links
-        self._links = list(set(self._links))
+        # Extract the node and neighbour information from the observation
+        node = observation.state['node']
+        neighbours = observation.state['neighbours']
 
+        # Node should be the same as the agent's position
+        if node != self._position:
+            raise ValueError(f"Node {node} is not the same as the agent's position {self._position}")
+
+        # Update the node status to visited
+        self._nodes[node] = 0
+
+        # Check if there is any communication
+        if communication is not None:
+            # For each communication object, unpack the contained objects
+            for transmittable in communication:
+                objects = transmittable.objects
+                # Find the object of type Belief
+                for obj in objects:
+                    if isinstance(obj, Belief):
+                        # Update the belief state with the received belief state
+                        self._update_belief_state(obj)
+                    else:
+                        # Log the error
+                        self.log.error(f"Object {obj} is not of type Belief")
+
+        # Update the belief state with the local observation
+        for neighbour in neighbours:
+            # If the neightbour has not been visited or there is no information about the neighbour, set the status to unvisited
+            if self._nodes[neighbour] == 1 or self._nodes[neighbour] is None:
+                self._nodes[neighbour] = 1
+
+    # Method to create link tuple from node and previous node
+    def _create_link(self, node, prev_node):
         """
-        if there is transmittables in the observation, create local copies of all the transmittables
-        compare with the agents current belief state
-        update the belief state with the new information
+        Create a link tuple from node and previous node
+        :param node: Node
+        :param prev_node: Previous node
+        :return: Link tuple
+        """
+        return (node, prev_node, self._environment.adj_list[node][prev_node])
+
+
+    # Method to update the belief state with the received belief state
+    def _update_belief_state(self, belief_state):
+        """
+        Update the belief state with the received belief state
+        :param belief_state: Received belief state
+        :return: None
         """
 
-    # Class method to create a belief state from a dictionary
-    @classmethod
-    def from_dict(cls, belief_dict):
-        """
-        Create a belief state from a dictionary
-        :param belief_dict: Dictionary containing the belief state
-        :return: Belief state object
-        """
-        belief = cls(belief_dict['_environment'])
-        belief._agent_id = belief_dict['_agent_id']
-        belief._position = belief_dict['_position']
-        belief._nodes = belief_dict['_nodes']
-        belief._links = belief_dict['_links']
-        return belief
+        # Get the position of the agent from the received belief state
+        position = belief_state.position
+        # Set the node status of the position to occupied
+        self._nodes[position] = -10
+
+        # Get the nodes and links from the received belief state
+        nodes = belief_state.nodes
+        links = belief_state.links
+
+        # Update the nodes in the belief state - visited nodes override unvisited nodes and occupied nodes override both
+        for node, status in nodes.items():
+            if status == -10:
+                self._nodes[node] = -10
+            elif status == 0:
+                if self._nodes[node] != -10:
+                    self._nodes[node] = 0
+
+        # Update the links in the belief state - a tuple of form (node1, node2, length)
+        for link in links:
+            if link not in self._links:
+                self._links.append(link)
