@@ -51,7 +51,7 @@ class Agent(ABC):
     @abstractmethod
     def communicate(self, environment) -> None:
         """
-        Method to communicate with other agents in the environment
+        Method to communicate with other agents in the environment - send and receive transmissions
         :param environment: Environment in which the agent is communicating - the pipe network
         :return: None
         """
