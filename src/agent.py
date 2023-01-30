@@ -42,9 +42,20 @@ class Agent(ABC):
     def move(self, environment, action) -> None:
         """
         Method to move the agent in the environment
-        :param action: Action to take - the new position of the agent
         :param environment: Environment in which the agent is moving - the pipe network
+        :param action: Action to take - the new position of the agent
         :return: None
+        """
+        pass
+
+    @abstractmethod
+    def observe(self, environment) -> dict:
+        """
+        Method to get the observation of the agent - update the observation space
+        :param environment: Environment in which the agent is observing - the pipe network
+        :param other_agents: Other agents in the environment
+        :update: Update the visited nodes
+        :return: Observation of the agent
         """
         pass
 
@@ -54,17 +65,6 @@ class Agent(ABC):
         Method to communicate with other agents in the environment - send and receive transmissions
         :param environment: Environment in which the agent is communicating - the pipe network
         :return: None
-        """
-        pass
-
-    @abstractmethod
-    def observe(self, environment, other_agents=None) -> dict:
-        """
-        Method to get the observation of the agent - update the observation space
-        :param environment: Environment in which the agent is observing - the pipe network
-        :param other_agents: Other agents in the environment
-        :update: Update the visited nodes
-        :return: Observation of the agent
         """
         pass
 
