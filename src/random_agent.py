@@ -31,6 +31,7 @@ class RandomAgent(Agent):
         self._id = id
         self._position = position
         self._communication_range = communication_range
+        self._visited_nodes = []
 
         # check if the position is in the network environment
         if self._position not in environment.node_names:
@@ -42,6 +43,38 @@ class RandomAgent(Agent):
 
         # Create the agent's belief - takes the environment, the agent's id and the agent's position
         self._belief = Belief(environment, self._id, self._position)
+
+    @property
+    def id(self):
+        """
+        Getter for the agent's id
+        :return: Agent's id
+        """
+        return self._id
+
+    @property
+    def position(self):
+        """
+        Getter for the agent's position
+        :return: Agent's position
+        """
+        return self._position
+
+    @property
+    def communication_range(self):
+        """
+        Getter for the agent's communication range
+        :return: Agent's communication range
+        """
+        return self._communication_range
+
+    @property
+    def belief(self):
+        """
+        Getter for the agent's belief
+        :return: Agent's belief
+        """
+        return self._belief
 
     def step(self, environment, overwatch):
         """
@@ -91,6 +124,8 @@ class RandomAgent(Agent):
         self.log.info(f"Agent {self._id} is observing {observation}")
         # update the belief of the agent with the observation
         self._belief.update(observation)
+        # update the visited nodes
+        self._visited_nodes.append(self._position)
 
         return observation
 
