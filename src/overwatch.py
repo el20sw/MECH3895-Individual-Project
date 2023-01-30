@@ -1,6 +1,8 @@
 # Import logger
 import src.debug.logger as logger
 
+from typing import List
+
 from src.network import Network
 from src.agent import Agent
 
@@ -16,65 +18,103 @@ class Overwatch:
         
     """
 
-    def __init__(self, environment: Network, *agents: Agent):
+    def __init__(self, environment: Network, agents: List[Agent]):
         # Initialise the logger
-        self.log = logger.get_logger(__name__)
+        self._log = logger.get_logger(__name__)
         # Initialise the overwatch
-        self.environment = environment
-        self.agents = agents
-        self.num_agents = len(agents)
-        self.agent_positions = {}
-        self.visited_nodes = []
-        self.all_nodes = self.environment.node_names
-        self.turns = 0
-        self.pct_explored = 0
+        self._environment = environment
+        self._agents = agents
+        self._num_agents = len(agents)
+        self._agent_positions = {}
+        self._visited_nodes = []
+        self._all_nodes = self._environment.node_names
+        self._turns = 0
+        self._pct_explored = 0
 
+    ### Attributes ###
+    @property
+    def environment(self) -> Network:
+        return self._environment
+
+    @property
+    def agents(self) -> List[Agent]:
+        return self._agents
+
+    @agents.setter
+    def agents(self, agents: List[Agent]):
+        self._agents = agents
+
+    @property
+    def num_agents(self) -> int:
+        return self._num_agents
+
+    @property
+    def agent_positions(self) -> dict:
+        return self._agent_positions
+
+    @property
+    def visited_nodes(self) -> list:
+        return self._visited_nodes
+
+    @property
+    def all_nodes(self) -> list:
+        return self._all_nodes
+
+    @property
+    def turns(self) -> int:
+        return self._turns
+
+    @property
+    def pct_explored(self) -> float:
+        return self._pct_explored
+
+    ### Methods ###
     def update(self):
         """
         Method to update the overwatch
         :return: None
         """
         # Update the number of turns
-        self.turns += 1
-        self.log.info(f"Turn {self.turns}")
+        self._turns += 1
+        self._log.info(f"Turn {self._turns}")
         # Update the percentage of nodes explored
-        self.pct_explored = self.get_pct_explored()
-        self.log.info(f"Percentage of nodes explored: {self.pct_explored}")
+        self._pct_explored = self.update_pct_explored()
+        self._log.info(f"Percentage of nodes explored: {self._pct_explored}")
         # Update the agent positions
-        self.agent_positions = self.get_agent_positions()
-        self.log.info(f"Agent positions: {self.agent_positions}")
+        self._agent_positions = self.update_agent_positions()
+        self._log.info(f"Agent positions: {self._agent_positions}")
         # Update the visited nodes
-        self.visited_junctions = self.get_visited_nodes()
-        self.log.info(f"Visited nodes: {self.visited_junctions}")
+        self._visited_nodes = self.update_visited_nodes()
+        self._log.info(f"Visited nodes: {self._visited_nodes}")
 
-    def get_agent_positions(self):
+    def update_agent_positions(self):
         """
         Method to get the positions of the agents
         :return: Dictionary of agent positions
         """
         # Get the positions of the agents
-        for agent in self.agents:
-            self.agent_positions[agent.id] = agent.position
+        for agent in self._agents:
+            self._agent_positions[agent.id] = agent.position
         # Return the dictionary
-        return self.agent_positions
+        return self._agent_positions
 
-    def get_visited_nodes(self):
+    def update_visited_nodes(self):
         """
         Method to get the unique visited nodes of the agents
         :return: Dictionary of unique visited nodes
         """
         # Get the unique visited nodes of the agents
-        for agent in self.agents:
-            self.visited_nodes.extend(agent.visited_nodes)
+        for agent in self._agents:
+            self._visited_nodes.extend(agent.visited_nodes)
         # Return the dictionary
-        return self.visited_nodes
+        return self._visited_nodes
 
-    def get_pct_explored(self):
+    def update_pct_explored(self):
         """
         Method to get the percentage of nodes explored
         :return: Percentage of nodes explored
         """
         # Get the percentage of nodes explored
-        pct_explored = len(set(self.visited_nodes)) / len(self.all_nodes) * 100
+        pct_explored = len(set(self._visited_nodes)) / len(self._all_nodes) * 100
         # Return the percentage
         return pct_explored
