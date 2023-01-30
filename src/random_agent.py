@@ -2,7 +2,7 @@
 import random
 import src.debug.logger as logger
 
-from src.agent import Agent
+from src.agent import Agent, coroutine
 from src.belief import Belief
 from src.observation import Observation
 from src.transmittable import Transmittable
@@ -44,6 +44,9 @@ class RandomAgent(Agent):
         # Create the agent's belief - takes the environment, the agent's id and the agent's position
         self._belief = Belief(environment, self._id, self._position)
 
+        # initialise if the agent is stepping
+        self._stepping = False
+
     @property
     def id(self):
         """
@@ -75,10 +78,11 @@ class RandomAgent(Agent):
         :return: Agent's belief
         """
         return self._belief
-
+    
+    @coroutine
     def step(self, environment, overwatch):
         """
-        This is a turn
+        This is a turn - a step in the simulation for a single agent
 
         The order of operations is as follows:
         1. Observe
@@ -88,15 +92,23 @@ class RandomAgent(Agent):
 
         :return: None
         """
+        
+        # Step 1: Observe
+        while self._stepping == True:
+            observation = self.observe(environment)
+            yield
 
-        # observe the environment
-        observation = self.observe(environment)
-        # communicate with other agents
+        # Step 2: Communicate
         self.communicate(overwatch)
-        # decide on an action
+        yield None
+
+        # Step 3: Decide
         action = self.action(observation)
-        # move to the new position
+        yield None
+
+        # Step 4: Move
         self.move(environment, action)
+        yield None
 
     def move(self, environment, action):
         """
