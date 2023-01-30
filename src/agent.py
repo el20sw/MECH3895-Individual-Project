@@ -130,3 +130,15 @@ class Agent(ABC):
         """
         return self._visited_nodes
 
+# Coroutine decorator
+def coroutine(func):
+    """
+    Coroutine decorator
+    ----------
+    Decorator to start a coroutine
+    """
+    def start(*args,**kwargs):
+        cr = func(*args,**kwargs)
+        cr.__next__()
+        return cr
+    return start
