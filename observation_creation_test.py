@@ -22,7 +22,6 @@ obs1 = Observation('11', net1)
 logger.info(f"Observation: {obs1}")
 logger.info(f"Position: {obs1.position}")
 logger.info(f"State: {obs1.state}")
-logger.info(f"Agents Tx: {obs1.agents}")
 
 # Create observation using classmethod - 'agent' is at node '22', the environment is net1, no transmission
 obs2 = Observation.observe('22', net1)
@@ -31,7 +30,6 @@ obs2 = Observation.observe('22', net1)
 logger.info(f"Observation: {obs2}")
 logger.info(f"Position: {obs2.position}")
 logger.info(f"State: {obs2.state}")
-logger.info(f"Agents Tx: {obs2.agents}")
 
 # Plot the network
 net1.plot_network(node_labels=True, link_labels=True)
