@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 import os
 import json
+import math
 
 from src.keys import FrozenNodes, FrozenLinks
 
@@ -96,7 +97,7 @@ class Network:
     def _get_adj_list(self) -> dict:
         """
         Method to get adjacency list - if there is a node and a link, the robots can traverse them
-        If no link length is specified, i.e. in the case of a pump, the link length is set to 10
+        If no link length is specified, i.e. in the case of a pump, the link length is calculated using the coordinates of the start and end nodes
         :return: Adjacency list
         """
         # Iterate through links and add start_node and end_node to adjacency list
@@ -114,13 +115,34 @@ class Network:
             # Add link to adjacency list
             self._adj_list[start_node][end_node] = {
                 'link_name': link_name,
-                'link_length': link['length'] if 'length' in link else 10
+                'link_length': link['length'] if 'length' in link else self.calculate_link_length(start_node, end_node)
                 }
             self._adj_list[end_node][start_node] = {
                 'link_name': link_name,
-                'link_length': link['length'] if 'length' in link else 10
+                'link_length': link['length'] if 'length' in link else self.calculate_link_length(start_node, end_node)
                 }
         return self._adj_list
+
+    # Method to calculate the length of a link using the coordinates of the start and end nodes
+    def calculate_link_length(self, start_node, end_node) -> float:
+        """
+        Method to calculate the length of a link using the coordinates of the start and end nodes
+        :param start_node: Start node
+        :param end_node: End node
+        :return: Length of the link
+        """
+        # Get coordinates of start and end nodes
+        start_node = self._wn.get_node(start_node)
+        end_node = self._wn.get_node(end_node)
+        # try to get the coordinates
+        start_node_coords = getattr(start_node, 'coordinates', None)
+        end_node_coords = getattr(end_node, 'coordinates', None)
+        # If the coordinates are not None, calculate the length of the link
+        if start_node_coords is not None and end_node_coords is not None:
+            return math.sqrt((start_node_coords[0] - end_node_coords[0])**2 + (start_node_coords[1] - end_node_coords[1])**2)
+        # If the coordinates are None, return 10
+        else:
+            return 10
 
     # Method to write the adjacency list to a file
     def write_adj_list_to_file(self, path_to_file) -> None:
@@ -150,13 +172,13 @@ class Network:
         """
         Method for an agent to request the state of the network at a node level
         - Currently this gives the keys (node names) of the nodes that are connected to the node
-        :return: State of the network at a node
+        :return: State of the network at a node - currently this is the keys (node names) of the nodes that are connected to the node
         """
         if node not in self._frozen_nodes.frozen_node_keys:
             raise ValueError(f"Node {node} is not valid")
         state = {
             'node': node,
-            'links': list(self._adj_list[node].keys()),
+            'neighbours': list(self._adj_list[node].keys()),
         }
 
         return state
