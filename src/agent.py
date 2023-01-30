@@ -2,6 +2,8 @@
 import src.debug.logger as logger
 from abc import ABC, abstractmethod
 
+from src.belief import Belief
+
 ### Base Agent Class ###
 class Agent(ABC):
     """
@@ -38,6 +40,9 @@ class Agent(ABC):
         if self._position not in environment.get_adj_list().keys():
             raise KeyError(f'Position {self._position} is not in adjacency list')
 
+        # Create the agent's belief - takes the environment, the agent's id and the agent's position
+        self._belief = Belief(environment, self._id, self._position)
+
     @abstractmethod
     def move(self, environment, action) -> None:
         """
@@ -49,7 +54,7 @@ class Agent(ABC):
         pass
 
     @abstractmethod
-    def observe(self, environment) -> dict:
+    def observe(self, environment):
         """
         Method to get the observation of the agent - update the observation space
         :param environment: Environment in which the agent is observing - the pipe network
@@ -60,7 +65,7 @@ class Agent(ABC):
         pass
 
     @abstractmethod
-    def communicate(self, environment) -> None:
+    def communicate(self, environment):
         """
         Method to communicate with other agents in the environment - send and receive transmissions
         :param environment: Environment in which the agent is communicating - the pipe network
