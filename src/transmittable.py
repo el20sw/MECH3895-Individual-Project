@@ -1,36 +1,38 @@
 # Import modules
 import debug.logger as logger
-from src.belief import Belief
 
 ### Transmittable Class ###
 class Transmittable:
     """
     Transmittable Class
     ----------
-    Class to create a transmittable object.
-    This class is used to create the transmittable objects that are sent between agents in the environment.
+    Class to create a transmittable object that are sent between agents in the environment.
 
-    The transmittable objects are used to update the belief states of the agents in the environment and 
-    are formed of the belief states of the other agents in communication range.
-
-    :param belief: Belief state of the agent
+    The class takes any number of objects as arguments and stores them in a list.
+    :param *args: Objects to be transmitted
     """
 
-    def __init__(self, belief : Belief) -> None:
-        self.belief = belief
+    def __init__(self, *args):
+        # Initialise the logger
+        self.log = logger.get_logger(__name__)
+        # Initialise the list of objects
+        self.objects = []
+        # Add objects to the list
+        for obj in args:
+            self.objects.append(obj)
+        # Log the transmittable
+        self.log.debug(f'Transmittable: {self}')
 
-    def to_transmittable(self) -> dict:
+    def __str__(self):
         """
-        Convert the transmittable object to a dictionary
-        :return: Dictionary representation of the transmittable object
+        String representation of the transmittable
+        :return: String representation of the transmittable
         """
-        return self.belief.__dict__
+        return f'{self.objects}'
 
-    @classmethod
-    def from_transmittable(cls, transmittable_data):
+    def __repr__(self):
         """
-        Convert the transmittable data back into a belief state object
-        :param transmittable_data: Dictionary representation of the transmittable object
-        :return: Belief state object
+        Representation of the transmittable
+        :return: Representation of the transmittable
         """
-        return cls(Belief.from_dict(transmittable_data))
+        return f'{self.objects}'

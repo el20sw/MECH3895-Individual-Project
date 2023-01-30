@@ -18,25 +18,30 @@ net1 = Network('networks/Net1.inp')
 
 # Create belief - 'agent' is at node '22', the environment is net1
 belief1 = Belief(net1, 'agent', '22')
+# Create belief - 'agent' is at node '11', the environment is net1
+belief2 = Belief(net1, 'agent', '11')
 
 # Create transmittable object
-transmittable1 = Transmittable(belief1)
+transmittable1 = Transmittable(belief1, belief2)
 
 # Log transmittable object
 logger.info(f"Transmittable object: {transmittable1}")
 
-# Convert transmittable object to transmittable data
-transmittable_data = transmittable1.to_transmittable()
+# Unpack transmittable object
+_ = transmittable1.objects
 
-# Log transmittable data
-logger.info(f"Transmittable data: {transmittable_data}")
+# Log unpacked transmittable object
+logger.info(f"Unpacked transmittable object: {_}")
 
-# Convert back to belief2
-belief2 = Transmittable.from_transmittable(transmittable_data)
+# Get the first belief
+a = transmittable1.objects[0]
+# Get the second belief
+b = transmittable1.objects[1]
 
-# Log belief2
-logger.info(f"Belief: {belief2}")
-
-# Check if belief2 is the same as belief1
-logger.info(f"Belief 1: {belief1}")
-logger.info(f"Belief 2: {belief2}")
+# Log the first belief
+logger.info(f"First belief: {a}")
+logger.info(f"First position: {a.position}")
+logger.info(f"First nodes: {a.nodes}")
+# Log the second belief
+logger.info(f"Second belief: {b}")
+logger.info(f"Second nodes: {b.nodes}")
