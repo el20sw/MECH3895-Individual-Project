@@ -27,7 +27,7 @@ log.debug('Adding agents to simulation')
 sim.add_agent(agent)
 
 # Log the agents
-log.info(f'Agents: {sim.agents}')
+log.info(f'Agents: {sim._agents}')
 
 # Run simulation
 log.debug('Running simulation')

@@ -8,8 +8,10 @@ import tracemalloc
 import src.debug.logger as logger
 from src.network import Network
 
-
 class TestNetwork(unittest.TestCase):
+    """
+    Testing Network Class
+    """
     def setUp(self):
         tracemalloc.start()
         self.logger = logger.get_logger(__name__)

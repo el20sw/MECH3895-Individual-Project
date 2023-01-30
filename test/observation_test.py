@@ -10,6 +10,9 @@ from src.network import Network
 from src.observation import Observation
 
 class TestObservation(unittest.TestCase):
+    """
+    Testing Observation Class
+    """
     def setUp(self):
         self.log = logger.get_logger(__name__)
         tracemalloc.start()

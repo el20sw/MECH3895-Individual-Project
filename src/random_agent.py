@@ -6,11 +6,12 @@ from src.agent import Agent
 from src.belief import Belief
 from src.observation import Observation
 from src.transmittable import Transmittable
+from src.network import Network
 
 ### Random Agent Class ###
 class RandomAgent(Agent):
     # constructor for the random agent class
-    def __init__(self, environment, id, position, communication_range=-1):
+    def __init__(self, environment : Network, id, position, communication_range : int =-1):
         """
         Constructor for the random agent class
         :param environment: Environment in which the agent is operating - the pipe network
@@ -20,7 +21,7 @@ class RandomAgent(Agent):
         """
 
         # create logger
-        self.log = logger.setup_logger(file_name='logs/random_agent.log')
+        self.log = logger.get_logger(__name__)
 
         # set the random seed
         random.seed(0)
@@ -31,16 +32,38 @@ class RandomAgent(Agent):
         self._position = position
         self._communication_range = communication_range
 
-        # Check if the position is in the network environment and a node
-        if self._position not in environment.node_names():
+        # check if the position is in the network environment
+        if self._position not in environment.node_names:
             raise ValueError(f'Position {self._position} is not in the network environment')
 
         # Check if the position is in the adjacency list
-        if self._position not in environment.get_adj_list().keys():
+        if self._position not in environment.adj_list.keys():
             raise KeyError(f'Position {self._position} is not in adjacency list')
 
         # Create the agent's belief - takes the environment, the agent's id and the agent's position
         self._belief = Belief(environment, self._id, self._position)
+
+    def step(self, environment, overwatch):
+        """
+        This is a turn
+
+        The order of operations is as follows:
+        1. Observe
+        2. Communicate
+        3. Decide
+        4. Move
+
+        :return: None
+        """
+
+        # observe the environment
+        observation = self.observe(environment)
+        # communicate with other agents
+        self.communicate(overwatch)
+        # decide on an action
+        action = self.action(observation)
+        # move to the new position
+        self.move(environment, action)
 
     def move(self, environment, action):
         """
@@ -91,6 +114,12 @@ class RandomAgent(Agent):
             self.log.info(f"Agent {self._id} is transmitting {transmittable}")
             # send the transmittable to the agents in range - this is handled by the overwatch
             overwatch.send_transmittable(self._id, transmittable, agents_in_range)
+            # request the transmittables from the agents in range - this is handled by the overwatch
+            transmittables = overwatch.request_transmittables(self._id)
+            # log the transmittables
+            self.log.info(f"Agent {self._id} is receiving {transmittables}")
+            # update the agent's belief with the transmittables
+            self._belief.update(transmittables)
 
     def action(self, observation):
         """
