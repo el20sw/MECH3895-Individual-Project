@@ -118,3 +118,15 @@ class Overwatch:
         pct_explored = len(set(self._visited_nodes)) / len(self._all_nodes) * 100
         # Return the percentage
         return pct_explored
+
+    def facilitate_communication(self):
+        """
+        Method to facilitate communication between agents
+        """
+        pass
+
+    def send(self, rx_agents):
+        pass
+
+    def receive(self, tx_agent):
+        pass
