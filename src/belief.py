@@ -1,6 +1,8 @@
 # Import modules
 import src.debug.logger as logger
 
+from typing import Optional, Union
+
 from src.observation import Observation
 from src.transmittable import Transmittable
 
@@ -31,6 +33,21 @@ class Belief:
     """
 
     def __init__(self, environment, agent_id=None, position=None) -> None:
+        """
+        Constructor for the agent belief state class
+        :param environment: Environment in which the agent is operating - the pipe network
+        :param agent_id: ID of the agent
+        :param position: Position of the agent in the environment (likely to be the starting position)
+
+        On initialisation, the agent's belief state contains the following information:
+        - Agent ID: ID of the agent
+        - Position: Position of the agent in the environment
+        - Nodes: List of nodes in the environment and their status - all nodes are unvisited by default except the starting node which is visited
+        - Links: List of links in the environment known to the agent - empty by default
+
+        :return: None
+
+        """
         # Initialise the logger
         self.log = logger.setup_logger(__name__, 'logs/belief.log')
 
@@ -76,8 +93,7 @@ class Belief:
         """
         return self._links
 
-    # Method to update the belief state - takes in the observation (Observation type) and communication (may be none, a single or multiple Transmittable objects)
-    def update(self, observation : Observation, *communication : Transmittable):
+    def update(self, *information : Union[Observation, Transmittable]):
         """
         Update the belief state of the agent
         :param observation: Observation of the agent
@@ -90,6 +106,32 @@ class Belief:
         # 2. Visited (0)
         # 3. Unvisited (1)
 
+        # Extract the observation and communication from the information
+        observation = None
+        communication = []
+
+        for info in information:
+            if isinstance(info, Observation):
+                observation = info
+            elif isinstance(info, Transmittable):
+                communication.append(info)
+
+        # Update the belief state from the observation
+        if observation is not None:
+            self._update_from_observation(observation)
+
+        # Update the belief state from the communication
+        if communication:
+            self._update_from_communication(*communication)        
+
+    # Method to update from the observation
+    def _update_from_observation(self, observation : Observation):
+        """
+        Method to update the belief state from the observation
+        :param observation: Observation of the agent
+        :return: None
+        """
+        
         # Make a reference to the previous position
         prev_position = self._position
         # Update the agent's position
@@ -113,25 +155,30 @@ class Belief:
         # Update the node status to visited
         self._nodes[node] = 0
 
-        # Check if there is any communication
-        if communication is not None:
-            # For each communication object, unpack the contained objects
-            for transmittable in communication:
-                objects = transmittable.objects
-                # Find the object of type Belief
-                for obj in objects:
-                    if isinstance(obj, Belief):
-                        # Update the belief state with the received belief state
-                        self._update_belief_state(obj)
-                    else:
-                        # Log the error
-                        self.log.error(f"Object {obj} is not of type Belief")
-
         # Update the belief state with the local observation
         for neighbour in neighbours:
             # If the neightbour has not been visited or there is no information about the neighbour, set the status to unvisited
             if self._nodes[neighbour] == 1 or self._nodes[neighbour] is None:
                 self._nodes[neighbour] = 1
+
+    # Method to update from the communication
+    def _update_from_communication(self, *communication : Transmittable):
+        """
+        Method to update the belief state from communication
+        :param communication: Communication received from other agents - may be multiple transmittable objects
+        :return: None
+        """
+        # For each communication object, unpack the contained objects
+        for transmittable in communication:
+            objects = transmittable.objects
+            # Find the object of type Belief
+            for obj in objects:
+                if isinstance(obj, Belief):
+                    # Update the belief state with the received belief state
+                    self._update_belief_state(obj)
+                else:
+                    # Log the error
+                    self.log.error(f"Object {obj} is not of type Belief")
 
     # Method to create link tuple from node and previous node
     def _create_link(self, node, prev_node):

@@ -59,7 +59,9 @@ logger.info(f"Belief state of B: {belief2.nodes}")
 logger.info(f"Belief state of C: {belief3.nodes}")
 
 # Update the belief state of A
-belief1.update(observationA, transmittableB_A, transmittableC_A)
+# belief1.update(observationA, transmittableB_A, transmittableC_A)
+belief1.update(observationA)
+belief1.update(transmittableB_A, transmittableC_A)
 
 # Log the belief state of A and B
 logger.info(f"Belief state of A: {belief1.nodes}")
