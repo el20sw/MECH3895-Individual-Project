@@ -3,6 +3,7 @@ import src.debug.logger as logger
 from abc import ABC, abstractmethod
 
 from src.belief import Belief
+from src.observation import Observation
 
 ### Base Agent Class ###
 class Agent(ABC):
@@ -52,7 +53,7 @@ class Agent(ABC):
         pass
 
     @abstractmethod
-    def observe(self, environment):
+    def observe(self, environment) -> Observation:
         """
         Method to get the observation of the agent - update the observation space
         :param environment: Environment in which the agent is observing - the pipe network
@@ -72,7 +73,7 @@ class Agent(ABC):
         pass
 
     @abstractmethod
-    def action(self) -> str:
+    def action(self, observation):
         """
         Method to get the action of the agent - update the action space
         :param observation: Observation of the agent
@@ -103,12 +104,4 @@ class Agent(ABC):
         :return: Communication range of the agent
         """
         return self._communication_range
-
-    @property
-    def visited_nodes(self) -> list:
-        """
-        Method to get the visited nodes of the agent
-        :return: Visited nodes of the agent
-        """
-        return self._visited_nodes
 
