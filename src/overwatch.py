@@ -1,10 +1,11 @@
 # Import logger
 import src.debug.logger as logger
 
-from typing import List
+from typing import Any, List, Tuple
 
 from src.network import Network
 from src.agent import Agent
+from src.transmittable import Transmittable
 
 ### Overwatch Class ###
 class Overwatch:
@@ -34,7 +35,7 @@ class Overwatch:
         # Communication variables
         self._transmittables = []
         # create dictionary of agents (keys) and empty values in preparation for communication - each turn the dictionary will be updated with the transmittables to be sent to each agent
-        self._communication = {agent.id: [] for agent in self._agents}
+        self._communication_buffer: dict = {agent.id: [] for agent in self._agents}
 
     ### Attributes ###
     @property
@@ -72,6 +73,10 @@ class Overwatch:
     @property
     def pct_explored(self) -> float:
         return self._pct_explored
+
+    @property
+    def communication_buffer(self) -> dict:
+        return self._communication_buffer
 
     ### Methods ###
     def update(self):
@@ -130,16 +135,30 @@ class Overwatch:
         """
         pass
 
-    def send(self, rx_agents, transmittable):
+    def download(self, rx_agent):
         """
         Method to send transmittable to recieving agents
-        :param rx_agents: IDs of the agents to receive the transmittable
-        :param transmittable: Transmittable to be sent
-        :return: None
+        :param rx_agent: ID of the agent to receive the transmittable
+        :return: transmittable to be sent
         """
-        pass
 
-    def receive(self, agent_id, transmittable, agents_in_range):
+        # If rx_agent is Agent, get the ID
+        if isinstance(rx_agent, Agent):
+            rx_agent_id = rx_agent.id
+        # Otherwise, assume rx_agent is an ID
+        else:
+            rx_agent_id = rx_agent
+
+        # Get the transmittable from the communication buffer
+        transmittable = self._communication_buffer.get(rx_agent_id)
+        # log the transmittable
+        self._log.info(f"Transmittable to be sent to agent {rx_agent_id}: {transmittable}")
+        # Clear the communication buffer for the agent
+        self._communication_buffer[rx_agent_id] = []
+        # Return the transmittable
+        return transmittable
+
+    def upload(self, agent_id, transmittable: Transmittable, agents_in_range):
         """
         Method to get transmittable from sending agent
         :param agent_id: ID of the agent
@@ -147,23 +166,39 @@ class Overwatch:
         :param agents_in_range: IDs of the agents in range
         """
         
-        # Get the agent from the ID
-        tx_agent = self._agents[agent_id]
+        # Extract the agent from the agents list using the agent ID
+        agent = [agent for agent in self._agents if agent.id == agent_id][0]
         # Get the transmittable from the agent
         tx_transmittable = transmittable
+        
         # Get the agents in range
         rx_agents = agents_in_range
-         
-        
 
-    def get_agents_in_range(self, position, communication_range):
+        for agent in rx_agents:
+            # if the transmittable is a list, for each transmittable in the list, add it to the communication buffer
+            if isinstance(tx_transmittable, list):
+                for transmittable in tx_transmittable:
+                    self._communication_buffer[agent.id].append(transmittable)
+            else:
+                # add transmittable to the communication dictionary
+                self._communication_buffer[agent.id].append(tx_transmittable)
+
+    def _clear_comms_buffer(self):
+        """
+        Method to clear the communication buffer
+        :return: None
+        """
+        # Clear the communication buffer
+        self._communication_buffer = {agent.id: [] for agent in self._agents}
+         
+    def get_agents_in_range(self, position, communication_range=-1):
         """
         Method to get the agents in range of an agents position
         :param position: The position of the agent
-        :param communication_range: The communication range of the agent
+        :param communication_range: The communication range of the agent - number of nodes away; -1 for infinite range
         :return: IDs of the agents in range
         """
-        if communication_range == 0:
-            return []
-        elif communication_range == -1:
+        if communication_range == -1:
             return self._agents
+        elif communication_range == 0:
+            return []
