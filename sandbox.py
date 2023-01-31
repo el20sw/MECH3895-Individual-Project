@@ -73,15 +73,17 @@ transmittablesA = agentA.receive_communication(overwatch)
 transmittablesB = agentB.receive_communication(overwatch)
 transmittablesC = agentC.receive_communication(overwatch)
 # log the types of the transmittables
-log.debug(f'Transmittables A: {[type(t) for t in transmittablesA]}')
-log.debug(f'Transmittables B: {[type(t) for t in transmittablesB]}')
-log.debug(f'Transmittables C: {[type(t) for t in transmittablesC]}')
+log.debug(f'Transmittables A: {type(transmittablesA)}')
+log.debug(f'Transmittables B: {type(transmittablesA)}')
+log.debug(f'Transmittables C: {type(transmittablesA)}')
 
 log.debug(f'Overwatch comms buffer: {overwatch.communication_buffer}')
+
 agentA.update_belief(*transmittablesA)
 agentB.update_belief(*transmittablesB)
+agentC.update_belief(*transmittablesC)
 
 # log beliefs
-
 log.debug(f'Agent A Node Beliefs: {beliefA.nodes}')
 log.debug(f'Agent B Node Beliefs: {beliefB.nodes}')
+log.debug(f'Agent C Node Beliefs: {beliefC.nodes}')
