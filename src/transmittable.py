@@ -16,23 +16,31 @@ class Transmittable:
         # Initialise the logger
         self.log = logger.get_logger(__name__)
         # Initialise the list of objects
-        self.objects = []
+        self._objects = []
         # Add objects to the list
         for obj in args:
-            self.objects.append(obj)
+            self._objects.append(obj)
         # Log the transmittable
         self.log.debug(f'Transmittable: {self}')
 
-    def __str__(self):
+    @property
+    def objects(self):
         """
-        String representation of the transmittable
-        :return: String representation of the transmittable
+        Getter for the objects
+        :return: List of objects
         """
-        return f'{self.objects}'
+        return self._objects
 
-    def __repr__(self):
-        """
-        Representation of the transmittable
-        :return: Representation of the transmittable
-        """
-        return f'{self.objects}'
+    # def __str__(self):
+    #     """
+    #     String representation of the transmittable
+    #     :return: String representation of the transmittable
+    #     """
+    #     return f'{self._objects}'
+
+    # def __repr__(self):
+    #     """
+    #     Representation of the transmittable
+    #     :return: Representation of the transmittable
+    #     """
+    #     return f'{self._objects}'
