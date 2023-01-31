@@ -96,6 +96,7 @@ class Belief:
     def update(self, *information : Union[Observation, Transmittable]):
         """
         Update the belief state of the agent
+        :param information: Information received by the agent - may be multiple communications and/or the observation
         :param observation: Observation of the agent
         :param communication: Communication received from other agents - may be multiple transmittable objects
         :return: None
@@ -111,10 +112,17 @@ class Belief:
         communication = []
 
         for info in information:
+            # If the information is an observation, extract the observation
             if isinstance(info, Observation):
                 observation = info
+            # If the information is a transmittable object, extract the communication and add to comms list
             elif isinstance(info, Transmittable):
                 communication.append(info)
+            # If the information is neither an observation nor a transmittable object, raise an error
+            else:
+                e = ValueError(f"Information {info} is type {type(info)} and not an observation or a transmittable object")
+                self.log.error(e)
+                raise e
 
         # Update the belief state from the observation
         if observation is not None:
