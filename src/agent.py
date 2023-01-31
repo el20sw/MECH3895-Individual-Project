@@ -52,11 +52,9 @@ class Agent(ABC):
         pass
 
     @abstractmethod
-    def move(self, environment, action) -> None:
+    def move(self) -> None:
         """
-        Method to move the agent in the environment
-        :param environment: Environment in which the agent is moving - the pipe network
-        :param action: Action to take - the new position of the agent
+        Method to move the agent to the new position in the environment
         :return: None
         """
         pass
@@ -66,7 +64,6 @@ class Agent(ABC):
         """
         Method to get the observation of the agent - update the observation space
         :param environment: Environment in which the agent is observing - the pipe network
-        :param other_agents: Other agents in the environment
         :update: Update the visited nodes
         :return: Observation of the agent
         """
@@ -82,10 +79,9 @@ class Agent(ABC):
         pass
 
     @abstractmethod
-    def action(self, observation):
+    def action(self):
         """
         Method to get the action of the agent - update the action space
-        :param observation: Observation of the agent
         :return: Action of the agent
         """
         pass
