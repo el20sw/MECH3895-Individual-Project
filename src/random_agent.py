@@ -1,5 +1,4 @@
 # Import modules
-import random
 import src.debug.logger as logger
 
 from src.agent import Agent, coroutine
@@ -7,6 +6,10 @@ from src.belief import Belief
 from src.observation import Observation
 from src.transmittable import Transmittable
 from src.network import Network
+from src.overwatch import Overwatch
+
+import random
+import asyncio
 
 ### Random Agent Class ###
 class RandomAgent(Agent):
@@ -44,9 +47,6 @@ class RandomAgent(Agent):
         # Create the agent's belief - takes the environment, the agent's id and the agent's position
         self._belief = Belief(environment, self._id, self._position)
 
-        # initialise if the agent is stepping
-        self._stepping = False
-
     @property
     def id(self):
         """
@@ -78,9 +78,16 @@ class RandomAgent(Agent):
         :return: Agent's belief
         """
         return self._belief
+
+    @property
+    def observation(self):
+        """
+        Getter for the agent's observation
+        :return: Agent's observation
+        """
+        return self._observation
     
-    @coroutine
-    def step(self, environment, overwatch):
+    async def step(self, environment, overwatch):
         """
         This is a turn - a step in the simulation for a single agent
 
@@ -147,6 +154,8 @@ class RandomAgent(Agent):
         
         # query the overwatch for the agents in the agent's communication range
         agents_in_range = overwatch.get_agents_in_range(self._position, self._communication_range)
+        # remove the agent's own id from the list of agents in range
+        agents_in_range = [agent for agent in agents_in_range if agent.id != self._id]
         # log the agents in range
         self.log.info(f"Agent {self._id} is communicating with {agents_in_range}")
 
@@ -163,9 +172,56 @@ class RandomAgent(Agent):
             # log the transmittables
             self.log.info(f"Agent {self._id} is receiving {transmittables}")
             # update the agent's belief with the transmittables
-            self._belief.update(transmittables)
+            self._belief.update()
 
-    def _tx(self, id, transmittable, agents_in_range, overwatch):
+    def send_communication(self, overwatch):
+        """
+        Method to send communication to the overwatch
+        :param overwatch: Overwatcher
+        :return: None
+        """
+
+        # query the overwatch for the agents in the agent's communication range
+        self._agents_in_range = overwatch.get_agents_in_range(self._position, self._communication_range)
+        # remove the agent's own id from the list of agents in range
+        self._agents_in_range = [agent for agent in self._agents_in_range if agent.id != self._id]
+        # log the agents in range
+        self.log.info(f"Agent {self._id} is communicating with {self._agents_in_range}")
+
+        # if there are agents in range
+        if self._agents_in_range:
+            # create transmittable object with the agent's belief
+            self._transmittable = Transmittable(self._belief)
+            # log the transmittable
+            self.log.info(f"Agent {self._id} is transmitting {self._transmittable}")
+            # send the transmittable to the agents in range - this is handled by the overwatch
+            self._tx(self._id, self._transmittable, self._agents_in_range, overwatch)
+
+    def receive_communication(self, overwatch):
+        """
+        Method to receive communication from the overwatch
+        :param overwatch: Overwatcher
+        :return: Transmittables received
+        """
+
+        # request the transmittables from the agents in range - this is handled by the overwatch
+        self._transmittables = self._rx(self._id, overwatch)
+        # log the transmittables
+        self.log.info(f"Agent {self._id} is receiving {self._transmittables}")
+
+        return self._transmittables
+
+    def update_belief(self, *transmittables: Transmittable):
+        """
+        Method to update the agent's belief with the transmittables
+        :param transmittables: Transmittables to update the belief with
+        :return: None
+        """
+
+        # update the agent's belief with the transmittables
+        self._belief.update(*transmittables)
+
+    def _tx(self, id, transmittable, agents_in_range, overwatch: Overwatch):
         """
         Method to transmit a transmittable to the agents in range
         :param id: Id of the agent
@@ -176,9 +232,9 @@ class RandomAgent(Agent):
         """
 
         # call the overwatch receive method
-        overwatch.receive(id, transmittable, agents_in_range)
+        overwatch.upload(id, transmittable, agents_in_range)
 
-    def _rx(self, id, overwatch):
+    def _rx(self, id, overwatch: Overwatch):
         """
         Method to receive transmittables from the overwatch
         :param id: Id of the agent
@@ -187,7 +243,7 @@ class RandomAgent(Agent):
         """
             
         # call the overwatch send method
-        return overwatch.send(id)
+        return overwatch.download(id)
 
     def action(self):
         """
