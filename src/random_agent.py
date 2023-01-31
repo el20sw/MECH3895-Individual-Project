@@ -93,37 +93,34 @@ class RandomAgent(Agent):
         :return: None
         """
         
-        # Step 1: Observe
-        while self._stepping == True:
-            observation = self.observe(environment)
-            yield
+        while True:
+            stage = yield
+            # Step 1: Observe
+            if stage == 'observe':
+                self.observe(environment)
+            # Step 2: Communicate
+            elif stage == 'communicate':
+                self.communicate(overwatch)
+            # Step 3: Decide
+            elif stage == 'decide':
+                self.action()
+            # Step 4: Move
+            elif stage == 'move':
+                self.move()
 
-        # Step 2: Communicate
-        self.communicate(overwatch)
-        yield None
-
-        # Step 3: Decide
-        action = self.action(observation)
-        yield None
-
-        # Step 4: Move
-        self.move(environment, action)
-        yield None
-
-    def move(self, environment, action):
+    def move(self):
         """
         Method to move the agent in the environment
-        :param environment: Environment in which the agent is moving - the pipe network
         :param action: Action to take - the new position of the agent
         :return: None
         """
         
         # update the agent's position
-        self._position = action
+        self._position = self._action
         # log the agent's position
         self.log.info(f"Agent {self._id} is moving to {self._position}")
 
-    def observe(self, environment) -> Observation:
+    def observe(self, environment):
         """
         Method to observe the environment
         :param environment: Environment in which the agent is observing - the pipe network
@@ -139,7 +136,7 @@ class RandomAgent(Agent):
         # update the visited nodes
         self._visited_nodes.append(self._position)
 
-        return observation
+        self._observation =  observation
 
     def communicate(self, overwatch):
         """
@@ -168,14 +165,14 @@ class RandomAgent(Agent):
             # update the agent's belief with the transmittables
             self._belief.update(transmittables)
 
-    def action(self, observation):
+    def action(self):
         """
         Method to get the action of the agent - update the action space
         :return: None
         """
 
         # Get the action space - this is the list of possible actions (i.e. the nodes adjacent to the agent's current position)
-        action_space = observation.state['neighbours']
+        action_space = self._observation.state['neighbours']
         # log the action space
         self.log.info(f"Agent {self._id} action space: {action_space}")
 
@@ -184,7 +181,7 @@ class RandomAgent(Agent):
         # log the action
         self.log.info(f"Agent {self._id} is taking action {action}")
 
-        return action
+        self._action = action
 
     def _random_action(self, action_space):
         """
