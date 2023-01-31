@@ -34,7 +34,7 @@ class Simulation:
         self._results = {}
 
         # Initialise the overwatch
-        self._ow = Overwatch(self._environment, self._agents)
+        self._overwatch = Overwatch(self._environment, self._agents)
 
     ### Attributes ###
     @property
@@ -83,7 +83,7 @@ class Simulation:
         self._num_agents = len(self._agents)
 
         # Update the overwatch
-        self._ow.agents = self._agents
+        self._overwatch.agents = self._agents
 
     def remove_agent(self, agent : Agent):
         """
@@ -131,8 +131,24 @@ class Simulation:
         :return: None
         """
 
+        # iterate through agents and call observe method for each agent
+        for agent in self._agents:
+            agent.observe(self._environment)
+
+        # iterate through agents and call communicate method for each agent
+        for agent in self._agents:
+            agent.communicate(self._overwatch)
+
+        # iterate through agents and call action method 
+        for agent in self._agents:
+            agent.action()
+
+        # iterate through agents and call move method
+        for agent in self._agents:
+            agent.move()
+
         # Update the overwatch
-        self._ow.update()
+        self._overwatch.update()
 
     def _update(self):
         """
@@ -140,10 +156,10 @@ class Simulation:
         :return: None
         """
         # Update the overwatch
-        self._ow.update()
+        self._overwatch.update()
 
         # Update the percentage of the environment explored
-        self._pct_explored = self._ow.pct_explored
+        self._pct_explored = self._overwatch.pct_explored
         # Update the number of agents
         self._num_agents = len(self._agents)
 
@@ -159,7 +175,7 @@ class Simulation:
         self._results = {
             'num_agents': self._num_agents,
             'turns': self._turns,
-            'visited_nodes': self._ow.visited_nodes,
+            'visited_nodes': self._overwatch.visited_nodes,
             'pct_explored': self._pct_explored
         }
 
@@ -187,3 +203,4 @@ class Simulation:
         # If there is an error, log it
         except Exception as e:
             self._log.error(f"Error writing adjacency list to file: {e}")
+
