@@ -126,7 +126,20 @@ class Overwatch:
         pass
 
     def send(self, rx_agents):
+        """
+        Method to send transmittable to recieving agents
+        """
         pass
 
     def receive(self, tx_agent):
+        """
+        Method to get transmittable from sending agent"""
         pass
+
+    def get_agents_in_range(self, position, communication_range):
+        """
+        Method to get the agents in range of an agents position
+        :param position: The position of the agent
+        :param communication_range: The communication range of the agent
+        :return: IDs of the agents in range
+        """
