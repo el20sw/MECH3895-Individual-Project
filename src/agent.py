@@ -79,6 +79,28 @@ class Agent(ABC):
         pass
 
     @abstractmethod
+    def _tx(self, id, transmittable, agents_in_range, overwatch):
+        """
+        Method to transmit a transmittable to the agents in range
+        :param id: Id of the agent
+        :param transmittable: Transmittable to transmit
+        :param agents_in_range: Agents in range to transmit to
+        :param overwatch: Overwatcher
+        :return: None
+        """
+        pass
+
+    @abstractmethod
+    def _rx(self, id, overwatch):
+        """
+        Method to receive transmittables from the agents in range
+        :param id: Id of the agent
+        :param overwatch: Overwatcher
+        :return: Transmittables received
+        """
+        pass
+
+    @abstractmethod
     def action(self):
         """
         Method to get the action of the agent - update the action space
