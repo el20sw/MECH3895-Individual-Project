@@ -1,4 +1,5 @@
 # Import modules
+from typing import List
 import src.debug.logger as logger
 
 from src.agent import Agent, coroutine
@@ -197,7 +198,7 @@ class RandomAgent(Agent):
             # send the transmittable to the agents in range - this is handled by the overwatch
             self._tx(self._id, self._transmittable, self._agents_in_range, overwatch)
 
-    def receive_communication(self, overwatch):
+    def receive_communication(self, overwatch) -> List[Transmittable]:
         """
         Method to receive communication from the overwatch
         :param overwatch: Overwatcher
@@ -234,7 +235,7 @@ class RandomAgent(Agent):
         # call the overwatch receive method
         overwatch.upload(id, transmittable, agents_in_range)
 
-    def _rx(self, id, overwatch: Overwatch):
+    def _rx(self, id, overwatch: Overwatch) -> List[Transmittable]:
         """
         Method to receive transmittables from the overwatch
         :param id: Id of the agent

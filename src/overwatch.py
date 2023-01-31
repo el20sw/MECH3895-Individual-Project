@@ -135,7 +135,7 @@ class Overwatch:
         """
         pass
 
-    def download(self, rx_agent):
+    def download(self, rx_agent) -> List[Transmittable]:
         """
         Method to send transmittable to recieving agents
         :param rx_agent: ID of the agent to receive the transmittable
@@ -150,7 +150,7 @@ class Overwatch:
             rx_agent_id = rx_agent
 
         # Get the transmittable from the communication buffer
-        transmittable = self._communication_buffer.get(rx_agent_id)
+        transmittable = self._communication_buffer[rx_agent_id]
         # log the transmittable
         self._log.info(f"Transmittable to be sent to agent {rx_agent_id}: {transmittable}")
         # Clear the communication buffer for the agent
