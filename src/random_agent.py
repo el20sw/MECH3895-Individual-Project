@@ -157,13 +157,37 @@ class RandomAgent(Agent):
             # log the transmittable
             self.log.info(f"Agent {self._id} is transmitting {transmittable}")
             # send the transmittable to the agents in range - this is handled by the overwatch
-            overwatch.send_transmittable(self._id, transmittable, agents_in_range)
+            self._tx(self._id, transmittable, agents_in_range, overwatch)
             # request the transmittables from the agents in range - this is handled by the overwatch
-            transmittables = overwatch.request_transmittables(self._id)
+            transmittables = self._rx(self._id, overwatch)
             # log the transmittables
             self.log.info(f"Agent {self._id} is receiving {transmittables}")
             # update the agent's belief with the transmittables
             self._belief.update(transmittables)
+
+    def _tx(self, id, transmittable, agents_in_range, overwatch):
+        """
+        Method to transmit a transmittable to the agents in range
+        :param id: Id of the agent
+        :param transmittable: Transmittable to transmit
+        :param agents_in_range: Agents in range to transmit to
+        :param overwatch: Overwatcher
+        :return: None
+        """
+
+        # call the overwatch receive method
+        overwatch.receive(id, transmittable, agents_in_range)
+
+    def _rx(self, id, overwatch):
+        """
+        Method to receive transmittables from the overwatch
+        :param id: Id of the agent
+        :param overwatch: Overwatcher
+        :return: Transmittables received
+        """
+            
+        # call the overwatch send method
+        return overwatch.send(id)
 
     def action(self):
         """
