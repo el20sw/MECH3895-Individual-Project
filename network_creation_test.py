@@ -2,7 +2,7 @@
 This script tests the creation of a network object from an EPANET input file.
 """
 # Import logger
-import debug.logger as logger
+import src.debug.logger as logger
 # Import network
 from src.network import Network
 # Import matplotlib.pyplot
