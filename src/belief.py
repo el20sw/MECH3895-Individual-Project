@@ -216,13 +216,17 @@ class Belief:
         nodes = belief_state.nodes
         links = belief_state.links
 
-        # Update the nodes in the belief state - visited nodes override unvisited nodes and occupied nodes override both
+        # Update the nodes in the belief state - visited nodes override unvisited nodes and occupied nodes override both unless occupied node is the current position
         for node, status in nodes.items():
-            if status == -10:
+            if node == self._position:
+                self._nodes[node] = 0
+            elif status == -10:
                 self._nodes[node] = -10
             elif status == 0:
-                if self._nodes[node] != -10:
-                    self._nodes[node] = 0
+                self._nodes[node] = 0
+            elif status == 1:
+                if self._nodes[node] == 1 or self._nodes[node] is None:
+                    self._nodes[node] = 1
 
         # Update the links in the belief state - a tuple of form (node1, node2, length)
         for link in links:
