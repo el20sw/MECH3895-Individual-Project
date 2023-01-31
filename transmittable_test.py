@@ -2,7 +2,7 @@
 This script tests the creation of a transmittable object
 """
 # Import modules
-import debug.logger as logger
+import src.debug.logger as logger
 # Import network
 from src.network import Network
 # Import belief
@@ -45,3 +45,14 @@ logger.info(f"First nodes: {a.nodes}")
 # Log the second belief
 logger.info(f"Second belief: {b}")
 logger.info(f"Second nodes: {b.nodes}")
+
+
+logger.info(f"Iteration test:\n")
+# Iterate through the objects in the transmittable object
+for obj in transmittable1.objects:
+    # Log the object
+    logger.info(f"Object: {obj}")
+    # Log the object's nodes
+    logger.info(f"Object nodes: {obj.nodes}")
+    # Log the object's position
+    logger.info(f"Object position: {obj.position}")
