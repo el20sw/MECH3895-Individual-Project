@@ -31,6 +31,11 @@ class Overwatch:
         self._turns = 0
         self._pct_explored = 0
 
+        # Communication variables
+        self._transmittables = []
+        # create dictionary of agents (keys) and empty values in preparation for communication - each turn the dictionary will be updated with the transmittables to be sent to each agent
+        self._communication = {agent.id: [] for agent in self._agents}
+
     ### Attributes ###
     @property
     def environment(self) -> Network:
@@ -125,16 +130,31 @@ class Overwatch:
         """
         pass
 
-    def send(self, rx_agents):
+    def send(self, rx_agents, transmittable):
         """
         Method to send transmittable to recieving agents
+        :param rx_agents: IDs of the agents to receive the transmittable
+        :param transmittable: Transmittable to be sent
+        :return: None
         """
         pass
 
-    def receive(self, tx_agent):
+    def receive(self, agent_id, transmittable, agents_in_range):
         """
-        Method to get transmittable from sending agent"""
-        pass
+        Method to get transmittable from sending agent
+        :param agent_id: ID of the agent
+        :param transmittable: Transmittable to be received
+        :param agents_in_range: IDs of the agents in range
+        """
+        
+        # Get the agent from the ID
+        tx_agent = self._agents[agent_id]
+        # Get the transmittable from the agent
+        tx_transmittable = transmittable
+        # Get the agents in range
+        rx_agents = agents_in_range
+         
+        
 
     def get_agents_in_range(self, position, communication_range):
         """
@@ -143,3 +163,7 @@ class Overwatch:
         :param communication_range: The communication range of the agent
         :return: IDs of the agents in range
         """
+        if communication_range == 0:
+            return []
+        elif communication_range == -1:
+            return self._agents
