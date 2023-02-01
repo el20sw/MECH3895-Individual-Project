@@ -1,89 +1,49 @@
-# Description: Sandbox for testing and debugging
-
 # import logger
 import src.debug.logger as logger
-# create logger
-log = logger.setup_logger(__name__, 'logs/sandbox.log', 'DEBUG')
-log.getChild('src.overwatch').setLevel('DEBUG')
 
-# import network
+from src.simulation import Simulation
 from src.network import Network
-# import random agent
 from src.random_agent import RandomAgent
-# import overwatch
-from src.overwatch import Overwatch
 
-# Initialise network using networks/Net1.inp
-net1 = Network('networks/Net1.inp')
-log.info(f'Network: {net1}')
-# Initialise random agent - agentA at node 22 in network net1 with infinite communication range
-agentA = RandomAgent(net1, 'agentA', '22')
-log.info(f'Agent A: {agentA}')
-# Initialise another random agent - agentB at node 11 in network net1 with infinite communication range
-agentB = RandomAgent(net1, 'agentB', '11')
-log.info(f'Agent B: {agentB}')
-# Initialise another random agent - agentC at node 33 in network net1 with infinite communication range
-agentC = RandomAgent(net1, 'agentC', '31')
-log.info(f'Agent C: {agentC}')
-# Initialise overwatch
-overwatch = Overwatch(net1, [agentA, agentB, agentC])
-log.info(f'Overwatch: {overwatch}')
+### Main Function ###
+def main():
+    ### Initialise the logger
+    log = logger.setup_logger(file_name='logs/sandbox.log')
+    # Initialise the simulation
+    log.info('Initialising the simulation')
+    # Create the environment layer
+    env = Network('networks/Net1.inp')
+    log.debug(f'Environment: {env}')
+    # Create the agent layer
+    agentA = RandomAgent(env, 'A', '11', communication_range=-1)
+    agentB = RandomAgent(env, 'B', '22', communication_range=-1)
+    log.debug(f'{agentA} @ {agentA.position}')
+    log.debug(f'{agentB} @ {agentB.position}')
+    # Create the simulation layer
+    agent_list = [agentA, agentB]
+    simulation = Simulation(env)
+    log.debug(f'Simulation: {simulation}')
+    # Add agents to the simulation
+    log.debug(f'Simulation Agents: {simulation.agents}')
+    log.debug(f'Overwatch Agents: {simulation.overwatch.agents}')
+    log.debug(f'Overwatch Agent Numbers: {simulation.overwatch.num_agents}')
+    log.debug(f'Overwatch Agent Positions: {simulation.overwatch.agent_positions}')
+    log.debug(f'Overwatch Comms Buffer: {simulation.overwatch.communication_buffer}')
+    simulation.add_agent(agentA)
+    simulation.add_agent(agentB)
+    log.debug(f'Simulation Agents: {simulation.agents}')
+    log.debug(f'Overwatch Agents: {simulation.overwatch.agents}')
+    log.debug(f'Overwatch Agent Numbers: {simulation.overwatch.num_agents}')
+    log.debug(f'Overwatch Agent Positions: {simulation.overwatch.agent_positions}')
+    log.debug(f'Overwatch Comms Buffer: {simulation.overwatch.communication_buffer}')
 
-# make agents observe
-agentA.observe(net1)
-agentB.observe(net1)
-agentC.observe(net1)
-log.debug(f'Agent A Observation: {agentA.observation}')
-log.debug(f'Agent B Observation: {agentB.observation}')
-log.debug(f'Agent C Observation: {agentC.observation}')
-# check agent beliefs
-log.debug(f'Agent A Belief: {agentA.belief}')
-log.debug(f'Agent B Belief: {agentB.belief}')
-log.debug(f'Agent C Belief: {agentC.belief}')
-# check agent positions
-log.debug(f'Agent A Actual Position: {agentA.position}')
-log.debug(f'Agent A Observed Position: {agentA.observation.position}')
-log.debug(f'Agent A Belief Position: {agentA.belief.position}')
-log.debug(f'Agent B Actual Position: {agentB.position}')
-log.debug(f'Agent B Observed Position: {agentB.observation.position}')
-log.debug(f'Agent B Belief Position: {agentB.belief.position}')
-log.debug(f'Agent C Actual Position: {agentC.position}')
-log.debug(f'Agent C Observed Position: {agentC.observation.position}')
-log.debug(f'Agent C Belief Position: {agentC.belief.position}')
+    # Run the simulation
+    log.info('Running the simulation')
+    simulation.run(max_turns=100)
 
-# get beliefs
-beliefA = agentA.belief
-beliefB = agentB.belief
-beliefC = agentC.belief
+    # Render the network
+    env.plot_network(show=True, node_labels=True, link_labels=True)
 
-# log beliefs
-log.debug(f'Agent A Node Beliefs: {beliefA.nodes}')
-log.debug(f'Agent B Node Beliefs: {beliefB.nodes}')
-log.debug(f'Agent C Node Beliefs: {beliefC.nodes}')
-
-# make agents communicate
-# agentA.communicate(overwatch)
-# agentB.communicate(overwatch)
-log.debug(f'Overwatch comms buffer: {overwatch.communication_buffer}')
-agentA.send_communication(overwatch)
-agentB.send_communication(overwatch)
-agentC.send_communication(overwatch)
-log.debug(f'Overwatch comms buffer: {overwatch.communication_buffer}')
-transmittablesA = agentA.receive_communication(overwatch)
-transmittablesB = agentB.receive_communication(overwatch)
-transmittablesC = agentC.receive_communication(overwatch)
-# log the types of the transmittables
-log.debug(f'Transmittables A: {type(transmittablesA)}')
-log.debug(f'Transmittables B: {type(transmittablesA)}')
-log.debug(f'Transmittables C: {type(transmittablesA)}')
-
-log.debug(f'Overwatch comms buffer: {overwatch.communication_buffer}')
-
-agentA.update_belief(*transmittablesA)
-agentB.update_belief(*transmittablesB)
-agentC.update_belief(*transmittablesC)
-
-# log beliefs
-log.debug(f'Agent A Node Beliefs: {beliefA.nodes}')
-log.debug(f'Agent B Node Beliefs: {beliefB.nodes}')
-log.debug(f'Agent C Node Beliefs: {beliefC.nodes}')
+# call main function
+if __name__ == '__main__':
+    main()
