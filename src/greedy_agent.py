@@ -233,23 +233,27 @@ class GreedyAgent(Agent):
 
         self._action = action
 
-    # def _greedy_action(self, action_space):
-    #     """
-    #     Method to get a greedy action from the action space
-    #     :param action_space: Action space
-    #     :return: Greedy action
-    #     """
+    def _greedy_action(self, action_space):
+        """
+        Method to get a greedy action from the action space
+        :param action_space: Action space
+        :return: Greedy action
+        """
 
-    #     # get the nearest unvisited node from the belief
-    #     nearest_unvisited_node = self._belief.get_nearest_unvisited_node(self._position)
-    #     # log the nearest unvisited node
-    #     self.log.info(f"Agent {self._id} nearest unvisited node: {nearest_unvisited_node}")
-    #     # take the action that gets the agent closer to the nearest unvisited node
-    #     action = self._get_action_closer_to_node(action_space, nearest_unvisited_node)
-    #     # log the action
-    #     self.log.info(f"Agent {self._id} greedy action: {action}")
+        # build the adjacency list for the agent
+        adjacency_list = self._build_agent_adjacency_list()
+        # Get the degrees of seperation from the agent's current position to the nodes in the adjacency list
+        degrees_of_seperation, previous = self._dijkstra(self._position, adjacency_list)
+        # get the nearest unvisited node from the belief
+        nearest_unvisited_node = self._get_nearest_unvisited_node(adjacency_list, degrees_of_seperation)
+        # log the nearest unvisited node
+        self.log.info(f"Agent {self._id} nearest unvisited node: {nearest_unvisited_node}")
+        # take the action that gets the agent closer to the nearest unvisited node
+        action = self._get_action_closer_to_node(action_space, nearest_unvisited_node, previous)
+        # log the action
+        self.log.info(f"Agent {self._id} greedy action: {action}")
 
-    #     return action
+        return action
 
     # NOTE: This does not include link lengths in the returned adjacency list
     def _build_agent_adjacency_list(self):
@@ -288,10 +292,11 @@ class GreedyAgent(Agent):
 
         return adjacency_list
 
-    def _get_nearest_unvisited_node(self, adjacency_list):
+    def _get_nearest_unvisited_node(self, adjacency_list, degrees_of_seperation):
         """
         Method to get the nearest unvisited node
-        :param adjacency_list: Adjacency list built by the agent
+        :param adjacency_list: Adjacency list of the agent
+        :param degrees_of_seperation: Degrees of seperation from the agent's current position to the nodes in the adjacency list
         :return: Nearest unvisited node
         """
 
@@ -312,24 +317,49 @@ class GreedyAgent(Agent):
         # Get the occupied nodes in the adjacency list
         occupied_nodes_in_adjacency_list = [i for i in adjacency_list_nodes if i in occupied_nodes]
 
-        # Get the degrees of seperation from the agent's current position to the nodes in the adjacency list
-        degrees_of_seperation, previous = self.dijkstra(self._position, adjacency_list)
+        # Check if there are unvisited nodes in the adjacency list
+        if len(unvisited_nodes_in_adjacency_list) > 0:
+            # If so, iterate through the degrees of seperation and find the nearest unvisited node
+            for node in degrees_of_seperation:
+                # check if the node is in the unvisited nodes in the adjacency list
+                if node in unvisited_nodes_in_adjacency_list:
+                    # if so, set the nearest unvisited node to this node
+                    return node
+        else:
+            return None
 
-        # Iterate through the degrees of seperation and find the nearest unvisited node
-        for node in degrees_of_seperation:
-            # check if the node is in the unvisited nodes in the adjacency list
-            if node in unvisited_nodes_in_adjacency_list:
-                # if so, set the nearest unvisited node to this node
-                nearest_unvisited_node = node
-                # break the loop
-                break
-            else:
-                # if not, can't find a nearest unvisited node
-                nearest_unvisited_node = None
-    
-        return
+    def _get_action_closer_to_node(self, action_space, dest_node, previous):
+        """
+        Method to get the action that gets the agent closer to a node
+        :param action_space: Action space
+        :param dest_node: Destination node
+        :return: Action that gets the agent closer to the destination node
+        """
 
-    def dijkstra(self, position, adjacency_list):
+        # get the agent's current position
+        current_position = self._position
+        # check if the destination node is None
+        if dest_node is None:
+            # if so, return the agent's current position
+            return current_position
+
+        # check if the destination node is the agent's current position
+        if dest_node == current_position:
+            # if so, return agent's current position
+            return current_position
+
+        # get the previous node in the shortest path to the destination node
+        while previous[dest_node] != current_position:
+            dest_node = previous[dest_node]
+        # check if action is in the action space
+        if dest_node in action_space:
+            # if so, return the action
+            return dest_node
+        else:
+            # if not, return agent's current position
+            return current_position
+
+    def _dijkstra(self, position, adjacency_list):
         """
         Method to get the shortest path to all nodes from a given position
 
