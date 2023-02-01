@@ -1,6 +1,8 @@
 # Import modules
-from typing import List
 import src.debug.logger as logger
+
+from typing import List
+import random
 
 # Import classes
 from src.agent import Agent
@@ -23,7 +25,7 @@ class GreedyAgent(Agent):
         """
     
         # Initialise the logger
-        self.log = logger.setup_logger(file_name='logs/greedy_agent.log')
+        self.log = logger.get_logger(__name__)
 
         # Initialise the agent
         self._id = id
@@ -242,6 +244,10 @@ class GreedyAgent(Agent):
 
         # build the adjacency list for the agent
         adjacency_list = self._build_agent_adjacency_list()
+        # check if there is an adjacency list
+        if not adjacency_list:
+            # if there is no adjacency list then return a random action
+            return self._random_action(action_space)
         # Get the degrees of seperation from the agent's current position to the nodes in the adjacency list
         degrees_of_seperation, previous = self._dijkstra(self._position, adjacency_list)
         # get the nearest unvisited node from the belief
@@ -411,4 +417,16 @@ class GreedyAgent(Agent):
 
         return distances, previous
 
+    def _random_action(self, action_space):
+        """
+        Method to get a random action from the action space
+        :param action_space: Action space - list of possible actions
+        :return: Random action
+        """
+          
+        # get a random action from the action space
+        action = random.choice(action_space)
+        # log the action
+        self.log.info(f"Agent {self._id} is taking action {action}")
 
+        return action
