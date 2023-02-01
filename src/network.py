@@ -200,7 +200,7 @@ class Network:
         return links
 
     # Method to plot the network using wntr graphics api
-    def plot_network(self, *args, **kwargs) -> None:
+    def plot_network(self, show=False, *args, **kwargs) -> None:
         """
         Method to plot the network
         :param args: Arguments to pass to the wntr.graphics.plot_network method
@@ -209,3 +209,6 @@ class Network:
         """
         # Plot the network
         wntr.graphics.plot_network(self._wn, *args, **kwargs)
+        # if show, show the network
+        if show:
+            plt.show()
