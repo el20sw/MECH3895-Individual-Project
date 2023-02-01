@@ -242,12 +242,18 @@ class GreedyAgent(Agent):
         :return: Greedy action
         """
 
+        # get the agent's current position
+        current_position = self._position
+
+        # check if any of the nodes in the action space are unvisited
+        unvisited_nodes = [node for node in action_space if node not in self._visited_nodes]
+        # if there are unvisited nodes in the action space
+        if unvisited_nodes:
+            return unvisited_nodes[0]
+
+
         # build the adjacency list for the agent
         adjacency_list = self._build_agent_adjacency_list()
-        # check if there is an adjacency list
-        if not adjacency_list:
-            # if there is no adjacency list then return a random action
-            return self._random_action(action_space)
         # Get the degrees of seperation from the agent's current position to the nodes in the adjacency list
         degrees_of_seperation, previous = self._dijkstra(self._position, adjacency_list)
         # get the nearest unvisited node from the belief
@@ -314,7 +320,6 @@ class GreedyAgent(Agent):
         unvisited_nodes = [i for i in nodes if nodes.get(i) == 1]
         # Get the occupied nodes known by the agent
         occupied_nodes = [i for i in nodes if nodes.get(i) == -10]
-
 
         # Get the nodes in the adjacency list
         adjacency_list_nodes = list(adjacency_list.keys())
