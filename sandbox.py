@@ -1,78 +1,52 @@
-### Import modules
-import wntr
-import matplotlib.pyplot as plt
-import networkx as nx
+# import logger
+import src.debug.logger as logger
 
-# Create pipe network
-path_to_file = 'networks/Net1.inp'
-wn = wntr.network.WaterNetworkModel(path_to_file)
+from src.simulation import Simulation
+from src.network import Network
+from src.random_agent import RandomAgent
 
-lengths = wn.query_link_attribute('length')
-names = wn.query_link_attribute('name')
+### Main Function ###
+def main():
+    ### Initialise the logger
+    log = logger.setup_logger(file_name='logs/sandbox.log')
+    # Initialise the simulation
+    log.info('Initialising the simulation')
+    # Create the environment layer
+    env = Network('networks/Net1.inp')
+    log.debug(f'Environment: {env}')
+    # Create the agent layer
+    agentA = RandomAgent(env, 'A', '11', communication_range=-1)
+    agentB = RandomAgent(env, 'B', '22', communication_range=-1)
+    log.debug(f'{agentA} @ {agentA.position}')
+    log.debug(f'{agentB} @ {agentB.position}')
+    # Create the simulation layer
+    agent_list = [agentA, agentB]
+    simulation = Simulation(env)
+    log.debug(f'Simulation: {simulation}')
+    # Add agents to the simulation
+    log.debug(f'Simulation Agents: {simulation.agents}')
+    log.debug(f'Overwatch Agents: {simulation.overwatch.agents}')
+    log.debug(f'Overwatch Agent Numbers: {simulation.overwatch.num_agents}')
+    log.debug(f'Overwatch Agent Positions: {simulation.overwatch.agent_positions}')
+    log.debug(f'Overwatch Comms Buffer: {simulation.overwatch.communication_buffer}')
+    simulation.add_agent(agentA)
+    simulation.add_agent(agentB)
+    log.debug(f'Simulation Agents: {simulation.agents}')
+    log.debug(f'Overwatch Agents: {simulation.overwatch.agents}')
+    log.debug(f'Overwatch Agent Numbers: {simulation.overwatch.num_agents}')
+    log.debug(f'Overwatch Agent Positions: {simulation.overwatch.agent_positions}')
+    log.debug(f'Overwatch Comms Buffer: {simulation.overwatch.communication_buffer}')
 
-print(names)
-print(lengths)
+    # Run the simulation
+    log.info('Running the simulation')
+    simulation.run(max_turns=100)
 
-# Get the network as a dictionary
-wn_dict = wntr.network.to_dict(wn)
-# Write wn to json file using wntr function
-wntr.network.write_json(wn, 'Net1.json')
+    # Get the results
+    simulation.write_results('results/sandbox.json')
 
-# Get links
-wn_links = wn_dict['links']
-# Get nodes
-wn_nodes = wn_dict['nodes']
-# Get junctions
-wn_junctions = [node for node in wn_nodes if node['node_type'] == 'Junction']
+    # Render the network
+    env.plot_network(show=True, node_labels=True, link_labels=True)
 
-# Create adjacency list
-adj_list = {}
-
-# Iterate through links and add start_node to adjacency list and end_node to adjacency list
-for link in wn_links:
-    # Check if link is a pipe
-    if link['link_type'] != 'Pipe':
-        # If link is not a pipe, skip it
-        continue
-    # Get start and end nodes
-    start_node = link['start_node_name']
-    end_node = link['end_node_name']
-    # Get link name
-    link_name = link['name']
-    # Add start and end nodes to adjacency list
-    if start_node not in adj_list:
-        adj_list[start_node] = {}
-    if end_node not in adj_list:
-        adj_list[end_node] = {}
-    # Add link to adjacency list
-    adj_list[start_node][end_node] = {
-        'link_name': link_name,
-        'link_length': link['length']
-        }
-    adj_list[end_node][start_node] = {
-        'link_name': link_name,
-        'link_length': link['length']
-    }
-
-# Create as undirected NetworkX graph
-G = wntr.network.to_graph(wn)
-uG = G.to_undirected()
-
-# Get the connected nodes given the current node
-def get_neighbours(current_node):
-    return list(adj_list[current_node].keys())
-
-# Get neighbours of a node using NetworkX
-def get_neighbours_nx(current_node):
-    return list(uG.neighbors(current_node))
-
-# Write adjacency list to file
-with open('adj_list.txt', 'w') as f:
-    # New line for each node
-    foo = str(adj_list).replace('}},', '}},\n')
-    f.write(foo)
-    f.close()
-
-# Render the network
-wntr.graphics.plot_network(wn, title=path_to_file, node_labels=True, link_labels=True)
-plt.show()
+# call main function
+if __name__ == '__main__':
+    main()

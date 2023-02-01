@@ -1,9 +1,13 @@
-### Import modules
-import numpy as np
+# Import logger
+import debug.logger as logger
 
-### Simple Agent Class ###
-class SimpleAgent:
-    # Constructor for the simple agent class
+### Import modules
+import numpy.random as random
+from src.agent import Agent
+
+### Random Agent Class ###
+class RandomAgent(Agent):
+    # Constructor for the random agent class
     def __init__(self, environment, agent_id, position, communication_range=100):
         """
         Constructor for the simple agent class
@@ -13,13 +17,16 @@ class SimpleAgent:
         :param communication_range: Communication range of the agent
         """
 
+        # Create logger
+        self.log = logger.setup_logger(file_name='logs/random_agent.log')
+
         self.agent_id = agent_id
         self.position = position
         self.communication_range = communication_range
-        self.visited_nodes = []
+        self.visited_junctions = []
 
-        # Check if the position is in the network environment
-        if self.position not in environment.get_node_names():
+        # Check if the position is in the network environment and a junction
+        if self.position not in environment.junction_names:
             raise ValueError(f'Position {self.position} is not in the network environment')
 
         # Check if the position is in the adjacency list
@@ -34,11 +41,10 @@ class SimpleAgent:
         :return: None
         """
 
-        # FIXME: Debug Print Statement
-        print(f"Agent {self.agent_id} is moving")
-
         # Update the agent's position
         self.position = action
+        # Log the agent's position
+        self.log.info(f"Agent {self.agent_id} is moving to {self.position}")
 
     def communicate(self, environment):
         """
@@ -57,16 +63,17 @@ class SimpleAgent:
         :return: Observation of the agent
         """
 
-        # FIXME: Debug Print Statement
-        print(f"Agent {self.agent_id} is observing")
-
         observation = {
             'position': self.position,
-            'visited_nodes': self.visited_nodes,
+            'visited_junctions': self.visited_junctions,
             'pipe_network_state': environment.get_state(self.position),
             'other_agents': other_agents
         }
-        self.visited_nodes.append(self.position)
+        self.visited_junctions.append(self.position)
+
+        # Log the agent's observation (position and pipe network state)
+        self.log.info(f"Agent {self.agent_id} is at {observation['position']}")
+        self.log.info(f"Agent {self.agent_id} is observing {observation['pipe_network_state']}")
 
         return observation
 
@@ -77,22 +84,43 @@ class SimpleAgent:
         :return: Action of the agent
         """
 
-        # FIXME: Debug Print Statement
-        print(f"Agent {self.agent_id} is getting an action")
-
         # Get the adjacent nodes
         adjacent_nodes = observation['pipe_network_state']
 
         # Get the unvisited adjacent nodes
-        unvisited_adjacent_nodes = [node for node in adjacent_nodes if node not in observation['visited_nodes']]
+        unvisited_adjacent_nodes = [node for node in adjacent_nodes if node not in observation['visited_junctions']]
 
         # Get the action space
-        action = {
+        action_space = {
             'adjacent_nodes': adjacent_nodes,
             'unvisited_adjacent_nodes': unvisited_adjacent_nodes
         }
 
+        action = self.random_action(action_space)
+
+        # Log the agent's action
+        self.log.info(f"Agent {self.agent_id} is taking action {action}")
+
         return action
 
-    def get_visited_nodes(self):
-        return self.visited_nodes()
+    def get_visited_junctions(self):
+        """
+        Method to get the visited nodes
+        :return: Visited nodes
+        """
+        return self.visited_junctions
+
+    def random_action(self, action_space):
+        """
+        Method to get a random action from the action space
+        :param action_space: Action space of the agent
+        :return: Random action from the action space
+        """
+        if len(action_space['unvisited_adjacent_nodes']) > 0:
+            # Logging message
+            self.log.info(f"Agent {self.agent_id} is taking a random action from the unvisited adjacent nodes")
+            return random.choice(action_space['unvisited_adjacent_nodes'])
+        else:
+            # Logging message
+            self.log.info(f"Agent {self.agent_id} is taking a random action from the adjacent nodes")
+            return random.choice(action_space['adjacent_nodes'])    

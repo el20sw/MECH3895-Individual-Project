@@ -1,27 +1,106 @@
-import wntr
+# Import logger
+import src.debug.logger as logger
 
-### Pipe Network Simulation ###
+from typing import List
+import json
+import os
+
+from src.agent import Agent
+from src.network import Network
+from src.overwatch import Overwatch
+
+### Simulation Class ###
 class Simulation:
-    def __init__(self, environment):
-        """
-        Class to simulate the pipe network environment
-        :param environment: Environment to simulate
-        """
-        self.environment = environment
-        # Initialise the agents
-        self.agents = []
-        # Variables
-        self.turns = 0
-        self.pct_explored = 0
-        self.visited_nodes = []
+    """
+    Simulation Class
+    ----------
+    Class to simulate the pipe network environment
+    """
 
-    def add_agent(self, agent):
+    def __init__(self, environment: Network):
+        # Initialise the logger
+        self._log = logger.get_logger(__name__)
+        # Initialise the simulation
+        self._environment = environment
+        self._log.info(f'Environment: {self._environment}')
+
+        # Initialise the agents
+        self._agents: List[Agent] = []
+        self._num_agents = 0
+
+        # Variables
+        self._turns = 0
+        self._pct_explored = 0
+        self._results = {}
+
+        # Initialise the overwatch
+        self._overwatch = Overwatch(self._environment, self._agents)
+
+    ### Attributes ###
+    @property
+    def environment(self) -> Network:
+        return self._environment
+
+    @property
+    def agents(self) -> List[Agent]:
+        return self._agents
+
+    @property
+    def num_agents(self) -> int:
+        return self._num_agents
+
+    @property
+    def turns(self) -> int:
+        return self._turns
+
+    @property
+    def pct_explored(self) -> float:
+        return self._pct_explored
+
+    @property
+    def results(self):
+        self._results_from_overwatch()
+        return self._results
+
+    @property
+    def overwatch(self) -> Overwatch:
+        return self._overwatch
+
+    ### Methods ###
+    def add_agent(self, *agent : Agent):
         """
-        Method to add an agent to the simulation
-        :param agent: Agent to add
+        Method to add an agent to the simulation - can be used to add multiple agents
+        :param agent: Agent/s to add
         :return: None
         """
-        self.agents.append(agent)
+        
+        # check if agent is aleady in the simulation
+        for a in agent:
+            if a in self._agents:
+                self._log.warning(f"Agent {a.id} already in simulation")
+                return
+            if a in self._overwatch.agents:
+                self._log.warning(f"Agent {a.id} already in simulation")
+                return
+            # Add the agent to the simulation agent list
+            self._agents.append(a)
+            # Add the agent to the overwatch
+            self._overwatch.add_agent(a)
+            self._log.info(f"Agent {a.id} added to simulation")
+
+        # Update the number of agents
+        self._num_agents = len(self._agents)
+
+    def remove_agent(self, agent : Agent):
+        """
+        Method to remove an agent from the simulation
+        :param agent: Agent to remove
+        :return: None
+        """
+        # Remove the agent
+        self._agents.remove(agent)
+        # Update the number of agents
+        self._num_agents = len(self._agents)
 
     def run(self, max_turns=100):
         """
@@ -30,51 +109,97 @@ class Simulation:
         :return: None
         """
         # Run the simulation for a maximum number of turns
-        while self.turns < max_turns and self.pct_explored < 100:
+        while self._turns < max_turns and self._pct_explored < 100:
+            # Run one step of the simulation
             self.step()
-            self.turns += 1
+            # Update the percentage of the environment explored
+            self._pct_explored = self._overwatch.pct_explored
+            # Get results from the overwatch
+            self._results = self._results_from_overwatch()
+            # Increment the turn
+            self._turns += 1
+            # Print the turn
+            print(f"Turn {self._turns} complete")
+            # Log the turn
+            self._log.info(f"Turn {self._turns} complete")
+            # Log the percentage of the environment explored
+            self._log.info(f"Percentage of environment explored: {self._pct_explored}%")
+            # Log the agents positions
+            for agent in self._agents:
+                self._log.info(f"Agent {agent.id} is at {agent.position}")
 
     def step(self):
         """
-        Method to run one step of the simulation
+        Method to run one step of the simulation - this is a turn
+
+        Turns are run in the following order:
+        1. Agents observe the environment
+            1.1. Agents update their knowledge of the environment (based on local observations)
+        2. Agents communicate with each other (if they are in range)
+            2.1. Agents update their knowledge of the environment (based on communication)
+        3. Agents determine what action they will take next
+        4. Agents move to their new position
+
         :return: None
         """
-        # Loop through the agents
-        for agent in self.agents:
-            # Get the observation of the agent
-            observation = agent.get_observation(self.environment)
-            # Get the action of the agent
-            action = agent.get_action(observation)
-            # Move the agent
-            agent.move(self.environment, action)
-            # Communicate with other agents
-            agent.communicate(self.environment)
 
-    def get_results(self):
+        # iterate through agents and call observe method for each agent
+        for agent in self._agents:
+            agent.observe(self._environment)
+
+        # iterate through agents and call communicate method for each agent
+        for agent in self._agents:
+            agent.communicate(self._overwatch)
+
+        # iterate through agents and call action method 
+        for agent in self._agents:
+            agent.action()
+
+        # iterate through agents and call move method
+        for agent in self._agents:
+            agent.move()
+
+        # Update the overwatch
+        self._overwatch.update()
+
+    def _results_from_overwatch(self):
         """
-        Method to get the results of the simulation
-        :return: Results of the simulation
+        Method to get the results from the overwatch
+        :return: None
         """
-
-        self.visited_nodes = (agent.visited_nodes for agent in self.agents)
-
-        results = {
-            'num_agents': len(self.agents),
-            'turns': self.turns,
-            'pct_explored': self.visited_nodes
+        # Get the results from the overwatch
+        pct_explored = self._overwatch.pct_explored
+        turns = self._overwatch.turns
+        # Check that turns is equal to the number of turns logged by the simulation
+        if turns != self._turns:
+            self._log.warning(f"Number of turns in overwatch ({turns}) does not match number of turns in simulation ({self._turns})")
+        
+        self._results = {
+            "pct_explored": pct_explored,
+            "turns": turns,
+            "num_agents": self._num_agents,
         }
 
-        return results
-
-    def write_results_to_file(self, file_path='Results/results.txt'):
+    def write_results(self, filename: str):
         """
-        Method to write the results of the simulation to a file
-        :param file_path: Path to the file
+        Method to write the results of the simulation to a JSON file
+        :param filename: Name of the file to write to
         :return: None
         """
+
         # Get the results
-        results = self.get_results()
-        # Write the results to a file
-        with open(file_path, 'w') as f:
-            for key, value in results.items():
-                f.write(f'{key}: {value}\n')
+        self._results_from_overwatch()
+
+        # Check if the directory exists
+        if not os.path.exists(os.path.dirname(filename)):
+            # If it doesn't, create it
+            os.makedirs(os.path.dirname(filename))
+        
+        # Try to write the adjacency list to a file
+        try:
+            with open(filename, 'w') as f:
+                json.dump(self._results, f)
+        # If there is an error, log it
+        except Exception as e:
+            self._log.error(f"Error writing adjacency list to file: {e}")
+
