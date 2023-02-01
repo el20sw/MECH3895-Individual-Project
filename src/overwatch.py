@@ -79,6 +79,25 @@ class Overwatch:
         return self._communication_buffer
 
     ### Methods ###
+    def add_agent(self, agent: Agent):
+        """
+        Method for the overwatch to accept an agent
+        :param agent: Agent to be added
+        :return: None
+        """
+
+        # Check if the agent is already in the list of agents
+        if agent not in self._agents:
+            # Add the agent to the list of agents
+            self._agents.append(agent)
+            
+        # Update the number of agents
+        self._num_agents = len(self._agents)
+        # Update the agent positions
+        self._agent_positions[agent.id] = agent.position
+        # Update the communication buffer
+        self._communication_buffer[agent.id] = []
+
     def update(self):
         """
         Method to update the overwatch
@@ -155,6 +174,8 @@ class Overwatch:
         self._log.info(f"Transmittable to be sent to agent {rx_agent_id}: {transmittable}")
         # Clear the communication buffer for the agent
         self._communication_buffer[rx_agent_id] = []
+        # log the communication buffer
+        self._log.info(f"Communication buffer: {self._communication_buffer}")
         # Return the transmittable
         return transmittable
 
@@ -182,6 +203,9 @@ class Overwatch:
             else:
                 # add transmittable to the communication dictionary
                 self._communication_buffer[agent.id].append(tx_transmittable)
+
+        # log the communication buffer
+        self._log.info(f"Communication buffer: {self._communication_buffer}")
 
     def _clear_comms_buffer(self):
         """

@@ -62,6 +62,10 @@ class Simulation:
         self.update_results()
         return self._results
 
+    @property
+    def overwatch(self) -> Overwatch:
+        return self._overwatch
+
     ### Methods ###
     def add_agent(self, *agent : Agent):
         """
@@ -75,15 +79,17 @@ class Simulation:
             if a in self._agents:
                 self._log.warning(f"Agent {a.id} already in simulation")
                 return
-            # Add the agent
+            if a in self._overwatch.agents:
+                self._log.warning(f"Agent {a.id} already in simulation")
+                return
+            # Add the agent to the simulation agent list
             self._agents.append(a)
+            # Add the agent to the overwatch
+            self._overwatch.add_agent(a)
             self._log.info(f"Agent {a.id} added to simulation")
 
         # Update the number of agents
         self._num_agents = len(self._agents)
-
-        # Update the overwatch
-        self._overwatch.agents = self._agents
 
     def remove_agent(self, agent : Agent):
         """
@@ -108,6 +114,8 @@ class Simulation:
             self.step()
             # Increment the turn
             self._turns += 1
+            # Print the turn
+            print(f"Turn {self._turns} complete")
             # Log the turn
             self._log.info(f"Turn {self._turns} complete")
             # Log the percentage of the environment explored
