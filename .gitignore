@@ -2,6 +2,8 @@
 env/
 # Ignore all __pycache__ directories in the project
 __pycache__/
+# Ignore .vscode directory
+.vscode/
 
 # Ignore logs
 logs/
