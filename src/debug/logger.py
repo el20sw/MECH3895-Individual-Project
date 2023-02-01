@@ -1,8 +1,8 @@
 import os
 import logging
-APP_LOGGER_NAME = 'turn_based_simulator'
+APP_LOGGER_NAME = 'PipeSwarmSim'
 
-def setup_logger(logger_name=APP_LOGGER_NAME, file_name=None, level='DEBUG'):
+def setup_logger(logger_name=APP_LOGGER_NAME, file_name='%(name)s.log', level='DEBUG'):
     # Gets or creates a logger
     logger = logging.getLogger(logger_name)
 
