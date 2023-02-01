@@ -1,4 +1,0 @@
-num_agents: 1
-turns: 100
-visited_junctions: []
-pct_explored: 0.0
