@@ -41,6 +41,9 @@ def main():
     log.info('Running the simulation')
     simulation.run(max_turns=100)
 
+    # Get the results
+    simulation.write_results('results/sandbox.json')
+
     # Render the network
     env.plot_network(show=True, node_labels=True, link_labels=True)
 
