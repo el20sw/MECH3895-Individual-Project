@@ -148,6 +148,12 @@ class Agent(ABC):
         """
         return self._visited_nodes
 
+    def __str__(self) -> str:
+        return f'Agent {self._id}'
+
+    def __repr__(self) -> str:
+        return f'Agent {self._id}'
+
 # Coroutine decorator
 def coroutine(func):
     """
