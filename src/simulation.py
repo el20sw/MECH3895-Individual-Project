@@ -1,13 +1,13 @@
 # Import logger
-import src.debug.logger as logger
+import debug.logger as logger
 
 from typing import List
 import json
 import os
 
-from src.agent import Agent
-from src.network import Network
-from src.overwatch import Overwatch
+from agent import Agent
+from network import Network
+from overwatch import Overwatch
 
 ### Simulation Class ###
 class Simulation:
