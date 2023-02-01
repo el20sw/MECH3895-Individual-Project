@@ -15,7 +15,7 @@ import asyncio
 ### Random Agent Class ###
 class RandomAgent(Agent):
     # constructor for the random agent class
-    def __init__(self, environment : Network, id, position, communication_range : int =-1):
+    def __init__(self, environment : Network, id, position, communication_range : int =-1, random_seed : int = 0):
         """
         Constructor for the random agent class
         :param environment: Environment in which the agent is operating - the pipe network
@@ -28,7 +28,7 @@ class RandomAgent(Agent):
         self.log = logger.get_logger(__name__)
 
         # set the random seed
-        random.seed(0)
+        random.seed(random_seed)
         self.log.info(f"Agent {id} is using random seed 0")
         
         # set the agent's id, position and communication range
