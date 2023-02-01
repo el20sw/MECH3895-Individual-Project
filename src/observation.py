@@ -1,6 +1,8 @@
 # Import modules
 import src.debug.logger as logger
 
+from src.network import Network
+
 ### Agent Observation Class ###
 class Observation:
     """
@@ -15,7 +17,7 @@ class Observation:
             - the `state` includes the nodes adjacent to the agent's current position
     """
 
-    def __init__(self, environment, position):
+    def __init__(self, environment: Network, position):
         """
         Constructor for the agent observation class
         :param environment: Environment in which the agent is operating - the pipe network
