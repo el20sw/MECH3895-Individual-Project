@@ -1,154 +1,53 @@
+# import logger
+import src.debug.logger as logger
+
+from src.simulation import Simulation
 from src.network import Network
-from src.observation import Observation
+from src.random_agent import RandomAgent
 from src.greedy_agent import GreedyAgent
 
-from copy import deepcopy
+### Main Function ###
+def main():
+    ### Initialise the logger
+    log = logger.setup_logger(file_name='logs/sandbox.log')
+    # Initialise the simulation
+    log.info('Initialising the simulation')
+    # Create the environment layer
+    env = Network('networks/Net1.inp')
+    log.debug(f'Environment: {env}')
+    # Create the agent layer
+    agentA = GreedyAgent(env, 'A', '11', communication_range=-1)
+    agentB = GreedyAgent(env, 'B', '22', communication_range=-1)
+    log.debug(f'{agentA} @ {agentA.position}')
+    log.debug(f'{agentB} @ {agentB.position}')
+    # Create the simulation layer
+    agent_list = [agentA, agentB]
+    simulation = Simulation(env)
+    log.debug(f'Simulation: {simulation}')
+    # Add agents to the simulation
+    log.debug(f'Simulation Agents: {simulation.agents}')
+    log.debug(f'Overwatch Agents: {simulation.overwatch.agents}')
+    log.debug(f'Overwatch Agent Numbers: {simulation.overwatch.num_agents}')
+    log.debug(f'Overwatch Agent Positions: {simulation.overwatch.agent_positions}')
+    log.debug(f'Overwatch Comms Buffer: {simulation.overwatch.communication_buffer}')
+    simulation.add_agent(agentA)
+    simulation.add_agent(agentB)
+    log.debug(f'Simulation Agents: {simulation.agents}')
+    log.debug(f'Overwatch Agents: {simulation.overwatch.agents}')
+    log.debug(f'Overwatch Agent Numbers: {simulation.overwatch.num_agents}')
+    log.debug(f'Overwatch Agent Positions: {simulation.overwatch.agent_positions}')
+    log.debug(f'Overwatch Comms Buffer: {simulation.overwatch.communication_buffer}')
 
-# create a network
-network = Network('networks/Net1.inp')
-# create an agent
-agent = GreedyAgent(network, 'A', '11')
-# get the agent's belief of the links
-a = deepcopy(agent._belief.links)
-# create an observation
-agent.observe(network)
-# get the agent's belief of the links
-b = deepcopy(agent._belief.links)
-# move agent to a new position
-agent._position = '12'
-# update the observation
-agent.observe(network)
-# get the agent's belief of the links
-c = deepcopy(agent._belief.links)
-# move agent to a new position
-agent._position = '13'
-# update the observation
-agent.observe(network)
-# get the agent's belief of the links
-d = deepcopy(agent._belief.links)
-# move agent to a new position
-agent._position = '23'
-# update the observation
-agent.observe(network)
-# get the agent's belief of the links
-e = deepcopy(agent._belief.links)
-# move agent to a new position
-agent._position = '22'
-# update the observation
-agent.observe(network)
-# get the agent's belief of the links
-f = deepcopy(agent._belief.links)
-# move agent to a new position
-agent._position = '12'
-# update the observation
-agent.observe(network)
-# move agent to a new position
-agent._position = '11'
-# update the observation
-agent.observe(network)
-# move agent to a new position
-agent._position = '21'
-# update the observation
-agent.observe(network)
-# move agent to a new position
-agent._position = '31'
-# update the observation
-agent.observe(network)
-# move agent to a new position
-agent._position = '32'
-# update the observation
-agent.observe(network)
-# move agent to a new position
-agent._position = '22'
-# update the observation
-agent.observe(network)
-# move agent to a new position
-agent._position = '32'
-# update the observation
-agent.observe(network)
+    # Run the simulation
+    log.info('Running the simulation')
+    simulation.run(max_turns=100)
 
-print(agent.belief.links)
+    # Get the results
+    simulation.write_results('results/sandbox.json')
 
-# generate a link between node 10 and 11 with a length of 10
-agent._belief._links.append(('10', '11', {'link_name': 'xyz', 'link_length': 10}))
+    # Render the network
+    env.plot_network(show=True, node_labels=True, link_labels=True)
 
-print(agent.belief.links)
-
-# build adjacency list of agent's belief of the links
-adj_list = agent._build_agent_adjacency_list()
-
-print(adj_list)
-
-# test djikstra's algorithm
-deg_sep, previous = agent._dijkstra(agent.position, adj_list)
-
-print(deg_sep)
-print(previous)
-
-nearest_unvisited_node = agent._get_nearest_unvisited_node(adj_list, deg_sep)
-
-print(nearest_unvisited_node)
-
-actionA = agent._get_action_closer_to_node(
-    agent._observation.state['neighbours'], 
-    nearest_unvisited_node,
-    previous
-    )
-
-# move the agent
-agent._position = actionA
-# update the observation
-agent.observe(network)
-
-actionB = agent._get_action_closer_to_node(
-    agent._observation.state['neighbours'],
-    nearest_unvisited_node,
-    previous
-    )
-
-# move the agent
-agent._position = actionB
-# update the observation
-agent.observe(network)
-
-actionC = agent._get_action_closer_to_node(
-    agent._observation.state['neighbours'],
-    nearest_unvisited_node,
-    previous
-    )
-
-# move the agent
-agent._position = actionC
-# update the observation
-agent.observe(network)
-
-actionD = agent._get_action_closer_to_node(
-    agent._observation.state['neighbours'],
-    nearest_unvisited_node,
-    previous
-    )
-
-# move the agent
-agent._position = actionD
-# update the observation
-agent.observe(network)
-
-actionE = agent._get_action_closer_to_node(
-    agent._observation.state['neighbours'],
-    nearest_unvisited_node,
-    previous
-    )
-
-# move the agent
-agent._position = actionE
-# update the observation
-agent.observe(network)
-
-print(actionA)
-print(actionB)
-print(actionC)
-print(actionD)
-print(actionE)
-
-# plot the network
-network.plot_network(show=True, node_labels=True, link_labels=True)
+# call main function
+if __name__ == '__main__':
+    main()
