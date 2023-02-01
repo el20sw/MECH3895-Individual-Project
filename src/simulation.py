@@ -58,8 +58,8 @@ class Simulation:
         return self._pct_explored
 
     @property
-    def results(self) -> dict:
-        self.update_results()
+    def results(self):
+        self._results_from_overwatch()
         return self._results
 
     @property
@@ -112,6 +112,10 @@ class Simulation:
         while self._turns < max_turns and self._pct_explored < 100:
             # Run one step of the simulation
             self.step()
+            # Update the percentage of the environment explored
+            self._pct_explored = self._overwatch.pct_explored
+            # Get results from the overwatch
+            self._results = self._results_from_overwatch()
             # Increment the turn
             self._turns += 1
             # Print the turn
@@ -158,36 +162,23 @@ class Simulation:
         # Update the overwatch
         self._overwatch.update()
 
-    def _update(self):
+    def _results_from_overwatch(self):
         """
-        Method to update the simulation
+        Method to get the results from the overwatch
         :return: None
         """
-        # Update the overwatch
-        self._overwatch.update()
-
-        # Update the percentage of the environment explored
-        self._pct_explored = self._overwatch.pct_explored
-        # Update the number of agents
-        self._num_agents = len(self._agents)
-
-    def update_results(self):
-        """
-        Method to get the results of the simulation
-        :return: Dictionary of results
-        """
-
-        # Update the simulation
-        self._update()
-
+        # Get the results from the overwatch
+        pct_explored = self._overwatch.pct_explored
+        turns = self._overwatch.turns
+        # Check that turns is equal to the number of turns logged by the simulation
+        if turns != self._turns:
+            self._log.warning(f"Number of turns in overwatch ({turns}) does not match number of turns in simulation ({self._turns})")
+        
         self._results = {
-            'num_agents': self._num_agents,
-            'turns': self._turns,
-            'visited_nodes': self._overwatch.visited_nodes,
-            'pct_explored': self._pct_explored
+            "pct_explored": pct_explored,
+            "turns": turns,
+            "num_agents": self._num_agents,
         }
-
-        return self._results
 
     def write_results(self, filename: str):
         """
@@ -197,7 +188,7 @@ class Simulation:
         """
 
         # Get the results
-        results = self.update_results()
+        self._results_from_overwatch()
 
         # Check if the directory exists
         if not os.path.exists(os.path.dirname(filename)):
@@ -207,7 +198,7 @@ class Simulation:
         # Try to write the adjacency list to a file
         try:
             with open(filename, 'w') as f:
-                json.dump(results, f)
+                json.dump(self._results, f)
         # If there is an error, log it
         except Exception as e:
             self._log.error(f"Error writing adjacency list to file: {e}")
