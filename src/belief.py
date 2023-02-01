@@ -1,7 +1,7 @@
 # Import modules
 import src.debug.logger as logger
 
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 from src.observation import Observation
 from src.transmittable import Transmittable
@@ -109,7 +109,7 @@ class Belief:
 
         # Extract the observation and communication from the information
         observation = None
-        communication = []
+        communication: List[Transmittable] = []
 
         for info in information:
             # If the information is an observation, extract the observation
@@ -208,27 +208,55 @@ class Belief:
         """
 
         # Get the position of the agent from the received belief state
-        position = belief_state.position
+        other_agent_position = belief_state.position
         # Set the node status of the position to occupied
-        self._nodes[position] = -10
+        # self._nodes[other_agent_position] = -10
 
         # Get the nodes and links from the received belief state
-        nodes = belief_state.nodes
-        links = belief_state.links
+        other_agent_nodes = belief_state.nodes
+        other_agent_links = belief_state.links
 
-        # Update the nodes in the belief state - visited nodes override unvisited nodes and occupied nodes override both unless occupied node is the current position
-        for node, status in nodes.items():
-            if node == self._position:
-                self._nodes[node] = 0
-            elif status == -10:
-                self._nodes[node] = -10
+        for node, status in other_agent_nodes.items():
+            # Case: the node is listed as occupied
+            if status == -10:
+                # Case: the node is the same position as this agent's position
+                if node == self._position:
+                    # Node is visited - false positive
+                    self._nodes[node] = 0
+                # Case: the node is not the same position as this agent's position
+                else:
+                    # Node is occupied
+                    self._nodes[node] = -10
+            # Case: the node is listed as visited
             elif status == 0:
-                self._nodes[node] = 0
+                # Case: the position of the other agent
+                if node == other_agent_position:
+                    # Node is occupied
+                    self._nodes[node] = -10
+                # Case: this agent knows the node is occupied
+                elif self._nodes[node] == -10:
+                    # Node is occupied
+                    self._nodes[node] = -10
+                # Case: node not the position of the other agent
+                else:
+                    # Node is visited
+                    self._nodes[node] = 0
+            # Case: the node is listed as unvisited
             elif status == 1:
-                if self._nodes[node] == 1 or self._nodes[node] is None:
+                # Case: This agent has already visited the node
+                if self._nodes[node] == 0:
+                    # Node is visited
+                    self._nodes[node] = 0
+                # Case: This agent knows the node is occupied
+                elif self._nodes[node] == -10:
+                    # Node is occupied
+                    self._nodes[node] = -10
+                # Case: This agent has not visited the node
+                else:
+                    # Node is unvisited
                     self._nodes[node] = 1
 
         # Update the links in the belief state - a tuple of form (node1, node2, length)
-        for link in links:
+        for link in other_agent_links:
             if link not in self._links:
                 self._links.append(link)
