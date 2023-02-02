@@ -1,10 +1,15 @@
 # Import modules
 import src.debug.logger as logger
 
+from copy import deepcopy
 from typing import Optional, Union, List
 
 from src.observation import Observation
 from src.transmittable import Transmittable
+
+OCCUPIED = -10
+VISITED = 0
+UNVISITED = 1
 
 ### Agent Belief States ###
 class Belief:
@@ -44,6 +49,7 @@ class Belief:
         - Position: Position of the agent in the environment
         - Nodes: List of nodes in the environment and their status - all nodes are unvisited by default except the starting node which is visited
         - Links: List of links in the environment known to the agent - empty by default
+        - Other agents: Dictionary of other agents in the enviroment and last known positions - empty by default
 
         :return: None
 
@@ -54,16 +60,19 @@ class Belief:
         # Initialise the belief state
         self._agent_id = agent_id
         self._position = position
-        self._nodes = {node: 1 for node in environment.adj_list.keys()}    # all nodes are unvisited by default
+        self._nodes = {node: UNVISITED for node in environment.adj_list.keys()}    # all nodes are unvisited by default
+        self._other_agents = {}
         
-        # update node status of the starting node to visited
-        self._nodes[self._position] = 0
+        # update node status of the starting node to VISITED
+        self._nodes[self._position] = VISITED
         self._links = []
 
         self._environment = environment
-        self._occupied_nodes = [node for node in self._nodes.keys() if self._nodes[node] == -10]
-        self._visited_nodes = [node for node in self._nodes.keys() if self._nodes[node] == 0]
-        self._unvisited_nodes = [node for node in self._nodes.keys() if self._nodes[node] == 1]
+        self._occupied_nodes = [node for node in self._nodes.keys() if self._nodes[node] == OCCUPIED]
+        self._visited_nodes = [node for node in self._nodes.keys() if self._nodes[node] == VISITED]
+        self._unvisited_nodes = [node for node in self._nodes.keys() if self._nodes[node] == UNVISITED]
+
+        self._other_agent_positions = []
         
     
     @property
@@ -121,6 +130,14 @@ class Belief:
         :return: Links
         """
         return self._links
+
+    @property
+    def other_agents(self):
+        """
+        Other agents getter
+        :return: Other agents
+        """
+        return self._other_agents
 
     def update(self, *information : Union[Observation, Transmittable]):
         """
@@ -193,15 +210,15 @@ class Belief:
         if node != self._position:
             raise ValueError(f"Node {node} is not the same as the agent's position {self._position}")
 
-        # Update the node status to visited
-        self._nodes[node] = 0
+        # Update the node status to VISITED
+        self._nodes[node] = VISITED
         self.log.debug(f"Agent {self._agent_id} updated node {node} to visited")
 
         # Update the belief state with the local observation
         for neighbour in neighbours:
             # If the neightbour has not been visited or there is no information about the neighbour, set the status to unvisited
-            if self._nodes[neighbour] == 1 or self._nodes[neighbour] is None:
-                self._nodes[neighbour] = 1
+            if self._nodes[neighbour] == UNVISITED or self._nodes[neighbour] is None:
+                self._nodes[neighbour] = UNVISITED
                 self.log.debug(f"Agent {self._agent_id} updated node {neighbour} to unvisited")
 
     # Method to update from the communication
@@ -211,33 +228,67 @@ class Belief:
         :param communication: Communication received from other agents - may be multiple transmittable objects
         :return: None
         """
+
+        belief_stack = []
+
         # For each communication object, unpack the contained objects
         for transmittable in communication:
             objects = transmittable.objects
             # Find the object of type Belief
             for obj in objects:
                 if isinstance(obj, Belief):
-                    # Update the belief state with the received belief state
-                    self._update_belief_state(obj)
+                    # Add to the belief stack
+                    # self._update_belief_state(obj)
+                    belief_stack.append(obj)
                 else:
                     # Log the error
                     self.log.error(f"Object {obj} is not of type Belief")
+                    continue
 
-    # Method to create link tuple from node and previous node
-    def _create_link(self, node, prev_node):
+        # make a copy of the other agents dictionary
+        other_agents_new = deepcopy(self._other_agents)
+        # extract the agent positions from the beliefs in the belief stack and update the other agents dictionary
+        self._update_other_agents(belief_stack)
+
+        # make a copy of the belief state
+        nodes_new = deepcopy(self._nodes)
+        
+        # update the belief state from the beliefs in the belief stack
+        for belief in belief_stack:
+            self._update_belief_state(belief, nodes_new, other_agents_new)
+
+        # destroy the copies
+        del other_agents_new
+        del nodes_new
+
+    def _update_other_agents(self, belief_stack):
         """
-        Create a link tuple from node and previous node
-        :param node: Node
-        :param prev_node: Previous node
-        :return: Link tuple
+        Method to update the other agents in the belief state
+        :param belief_stack: Stack of beliefs
+        :return: None
         """
-        return (node, prev_node, self._environment.adj_list[node][prev_node])
+        for belief in belief_stack:
+            # Get the agent ID from the received belief state
+            if belief.agent_id not in self._other_agents.keys():
+                # First contact!
+                self._other_agents[belief.agent_id] = belief.position
+                self.log.debug(f"Agent {self._agent_id} added agent {belief.agent_id} to the list of other agents")
+            else:
+                # Update the position of the agent
+                self._other_agents.update({belief.agent_id: belief.position})
+                self.log.debug(f"Agent {self._agent_id} updated agent {belief.agent_id} position to {belief.position}")
 
     # Method to update the belief state with the received belief state
-    def _update_belief_state(self, belief_state):
+    def _update_belief_state(self, belief_state, nodes_old=None, other_agents_old=None):
         """
         Update the belief state with the received belief state
+
+        - If the node status of the received belief state is unvisited, the node status of the current belief state is unchanged
+        - If the node status of the received belief state is visited, the node status of the current belief state is updated to visited
+
         :param belief_state: Received belief state
+        :param nodes_old: Old belief state
+        :param other_agents_old: Old other agents dictionary
         :return: None
         """
 
@@ -248,51 +299,29 @@ class Belief:
         # Set the node status of the position to occupied
         # self._nodes[other_agent_position] = -10
 
-        # Get the nodes and links from the received belief state
-        other_agent_nodes = belief_state.nodes
-        other_agent_links = belief_state.links
+        # Get the nodes and the links from this agents belief state
+        this_belief_nodes = self._nodes
+        this_belief_links = self._links
 
-        for node, status in other_agent_nodes.items():
-            # Case: the node is listed as occupied
-            if status == -10:
-                # Case: the node is the same position as this agent's position
-                if node == self._position:
-                    # Node is visited - false positive
-                    self._nodes[node] = 0
-                # Case: the node is not the same position as this agent's position
-                else:
-                    # Node is occupied
-                    self._nodes[node] = -10
-            # Case: the node is listed as visited
-            elif status == 0:
-                # Case: the position of the other agent
-                if node == other_agent_position:
-                    # Node is occupied
-                    self._nodes[node] = -10
-                # Case: this agent knows the node is occupied
-                elif self._nodes[node] == -10:
-                    # Node is occupied
-                    self._nodes[node] = -10
-                # Case: node not the position of the other agent
-                else:
-                    # Node is visited
-                    self._nodes[node] = 0
-            # Case: the node is listed as unvisited
-            elif status == 1:
-                # Case: This agent has already visited the node
-                if self._nodes[node] == 0:
-                    # Node is visited
-                    self._nodes[node] = 0
-                # Case: This agent knows the node is occupied
-                elif self._nodes[node] == -10:
-                    # Node is occupied
-                    self._nodes[node] = -10
-                # Case: This agent has not visited the node
-                else:
-                    # Node is unvisited
-                    self._nodes[node] = 1
+        # Get the nodes and links from the received belief state
+        other_belief_nodes = belief_state.nodes
+        other_belief_links = belief_state.links
+
+        # iterate through the nodes in the received belief state
+        for node, status in other_belief_nodes.items():
+            pass
 
         # Update the links in the belief state - a tuple of form (node1, node2, length)
-        for link in other_agent_links:
-            if link not in self._links:
+        for link in other_belief_links:
+            if link not in this_belief_links:
                 self._links.append(link)
+
+    # Method to create link tuple from node and previous node
+    def _create_link(self, node, prev_node):
+        """
+        Create a link tuple from node and previous node
+        :param node: Node
+        :param prev_node: Previous node
+        :return: Link tuple
+        """
+        return (node, prev_node, self._environment.adj_list[node][prev_node])
