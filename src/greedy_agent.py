@@ -185,7 +185,9 @@ class GreedyAgent(Agent):
         # log the transmittables
         self.log.debug(f"Agent {self._id} is receiving {transmittables}")
         # update the agent's belief with the transmittables
-        self._belief.update(*transmittables)
+        self.update_belief(*transmittables)
+        # log the agent's belief
+        self.log.info(f'Agent {self._id} belief: {self._belief.nodes}')
 
     def send_communication(self, overwatch):
         """
@@ -283,17 +285,33 @@ class GreedyAgent(Agent):
 
         # get agent's position
         position = self._position
+
+        # unvisited nodes
+        unvisited_nodes = self._belief.unvisited_nodes
+        # unvisited nodes in action space
+        unvisited_nodes_action_space = []
+        # check if any nodes in the action space are unvisited
+        for neighbour in action_space:
+            if neighbour in unvisited_nodes:
+                unvisited_nodes_action_space.append(neighbour)
+
+        if unvisited_nodes_action_space:
+            action = random.choice(unvisited_nodes_action_space)
+            return action
+
+        # # get the agent's adjacency list
+        # adjacency_list = self._build_agent_adjacency_list()
+        # # check if adjacency list has values
+        # if not adjacency_list:
+        #     # if not, choose first unvisited node
+        #     action = action_space[0]
+        #     # log the action
+        #     self.log.info(f"Agent {self._id} is taking greedy (first) action {action}")
+        #     # return the action
+        #     return action
+
         # get the agent's adjacency list
         adjacency_list = self._build_agent_adjacency_list()
-        # check if adjacency list has values
-        if not adjacency_list:
-            # if not, choose first unvisited node
-            action = action_space[0]
-            # log the action
-            self.log.info(f"Agent {self._id} is taking greedy (first) action {action}")
-            # return the action
-            return action
-        
         # get the agent's node distances and the previous nodes to get there
         distances, previous_nodes = self._dijkstra(position, adjacency_list)
         # get the agent's nearest unvisited node
