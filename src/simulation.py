@@ -110,6 +110,10 @@ class Simulation:
         """
         # Run the simulation for a maximum number of turns
         while self._turns < max_turns and self._pct_explored < 100:
+            if self._turns == 0:
+                # Log the agents positions
+                for agent in self._agents:
+                    self._log.info(f"Agent {agent.id} is at {agent.position}")
             # Run one step of the simulation
             self.step()
             # Update the percentage of the environment explored
