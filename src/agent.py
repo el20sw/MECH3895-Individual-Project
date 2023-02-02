@@ -79,6 +79,24 @@ class Agent(ABC):
         pass
 
     @abstractmethod
+    def commsPart1(self, overwatch):
+        """
+        Method to send a communication to other agents in the environment
+        :param overwatch: overwatcher facilitating communication
+        :return: None
+        """
+        pass
+
+    @abstractmethod
+    def commsPart2(self, overwatch):
+        """
+        Method to recieve communication from other agents in the environment
+        :param overwatch: overwatcher facilitating communication
+        :return: None
+        """
+        pass
+
+    @abstractmethod
     def _tx(self, id, transmittable, agents_in_range, overwatch):
         """
         Method to transmit a transmittable to the agents in range
