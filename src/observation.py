@@ -32,8 +32,8 @@ class Observation:
         
         # Log the observation
         self.log.debug(f'Observation: {self}')
-        self.log.info(f'Position: {self._position}')
-        self.log.info(f'State: {self._state}')
+        self.log.debug(f'Position: {self._position}')
+        self.log.debug(f'State: {self._state}')
 
     @property
     def position(self):

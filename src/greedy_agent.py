@@ -29,7 +29,7 @@ class GreedyAgent(Agent):
 
         # Set the random seed
         random.seed(random_seed)
-        self.log.info(f"Agent {id} is using random seed {random_seed}")
+        self.log.debug(f"Agent {id} is using random seed {random_seed}")
 
         # Initialise the agent
         self._id = id
@@ -113,7 +113,7 @@ class GreedyAgent(Agent):
         # create an observation object
         observation = Observation(environment, self._position)
         # log the observation
-        self.log.info(f"Agent {self._id} is observing {observation}")
+        self.log.debug(f"Agent {self._id} is observing {observation}")
         # update the belief of the agent with the observation
         self._belief.update(observation)
         # update the visited nodes
@@ -133,20 +133,20 @@ class GreedyAgent(Agent):
         # remove the agent's own id from the list of agents in range
         agents_in_range = [agent for agent in agents_in_range if agent.id != self._id]
         # log the agents in range
-        self.log.info(f"Agent {self._id} is communicating with {agents_in_range}")
+        self.log.debug(f"Agent {self._id} is communicating with {agents_in_range}")
 
         # if there are agents in range
         if agents_in_range:
             # create transmittable object with the agent's belief
             transmittable = Transmittable(self._belief)
             # log the transmittable
-            self.log.info(f"Agent {self._id} is transmitting {transmittable}")
+            self.log.debug(f"Agent {self._id} is transmitting {transmittable}")
             # send the transmittable to the agents in range - this is handled by the overwatch
             self._tx(self._id, transmittable, agents_in_range, overwatch)
             # request the transmittables from the agents in range - this is handled by the overwatch
             transmittables = self._rx(self._id, overwatch)
             # log the transmittables
-            self.log.info(f"Agent {self._id} is receiving {transmittables}")
+            self.log.debug(f"Agent {self._id} is receiving {transmittables}")
             # update the agent's belief with the transmittables
             self._belief.update(*transmittables)
 
@@ -162,14 +162,14 @@ class GreedyAgent(Agent):
         # remove the agent's own id from the list of agents in range
         agents_in_range = [agent for agent in agents_in_range if agent.id != self._id]
         # log the agents in range
-        self.log.info(f"Agent {self._id} is communicating with {agents_in_range}")
+        self.log.debug(f"Agent {self._id} is communicating with {agents_in_range}")
 
         # if there are agents in range
         if agents_in_range:
             # create transmittable object with the agent's belief
             transmittable = Transmittable(self._belief)
             # log the transmittable
-            self.log.info(f"Agent {self._id} is transmitting {transmittable}")
+            self.log.debug(f"Agent {self._id} is transmitting {transmittable}")
             # send the transmittable to the agents in range - this is handled by the overwatch
             self._tx(self._id, transmittable, agents_in_range, overwatch)
 
@@ -183,7 +183,7 @@ class GreedyAgent(Agent):
         # request the transmittables from the agents in range - this is handled by the overwatch
         transmittables = self._rx(self._id, overwatch)
         # log the transmittables
-        self.log.info(f"Agent {self._id} is receiving {transmittables}")
+        self.log.debug(f"Agent {self._id} is receiving {transmittables}")
         # update the agent's belief with the transmittables
         self._belief.update(*transmittables)
 
@@ -199,14 +199,14 @@ class GreedyAgent(Agent):
         # remove the agent's own id from the list of agents in range
         self._agents_in_range = [agent for agent in self._agents_in_range if agent.id != self._id]
         # log the agents in range
-        self.log.info(f"Agent {self._id} is communicating with {self._agents_in_range}")
+        self.log.debug(f"Agent {self._id} is communicating with {self._agents_in_range}")
 
         # if there are agents in range
         if self._agents_in_range:
             # create transmittable object with the agent's belief
             self._transmittable = Transmittable(self._belief)
             # log the transmittable
-            self.log.info(f"Agent {self._id} is transmitting {self._transmittable}")
+            self.log.debug(f"Agent {self._id} is transmitting {self._transmittable}")
             # send the transmittable to the agents in range - this is handled by the overwatch
             self._tx(self._id, self._transmittable, self._agents_in_range, overwatch)
 
@@ -220,7 +220,7 @@ class GreedyAgent(Agent):
         # request the transmittables from the agents in range - this is handled by the overwatch
         self._transmittables = self._rx(self._id, overwatch)
         # log the transmittables
-        self.log.info(f"Agent {self._id} is receiving {self._transmittables}")
+        self.log.debug(f"Agent {self._id} is receiving {self._transmittables}")
 
         return self._transmittables
 
@@ -267,7 +267,7 @@ class GreedyAgent(Agent):
         # Get the action space - this is the list of possible actions (i.e. the nodes adjacent to the agent's current position)
         action_space = self._observation.state['neighbours']
         # log the action space
-        self.log.info(f"Agent {self._id} action space: {action_space}")
+        self.log.debug(f"Agent {self._id} @ {self._position} action space: {action_space}")
 
         # get a random action from the action space
         action = self._greedy_action(action_space)
@@ -476,6 +476,6 @@ class GreedyAgent(Agent):
         # get a random action from the action space
         action = random.choice(action_space)
         # log the action
-        self.log.info(f"Agent {self._id} is taking action {action}")
+        self.log.info(f"Agent {self._id} is taking random action {action}")
 
         return action

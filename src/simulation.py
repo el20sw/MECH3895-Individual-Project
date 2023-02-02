@@ -121,7 +121,7 @@ class Simulation:
             # Log the turn
             self._log.info(f"Turn {self._turns} complete")
             # Log the turn (according to the overwatch)
-            self._log.info(f"Overwatch: Turn {self._overwatch.turns} complete")
+            self._log.debug(f"Overwatch: Turn {self._overwatch.turns} complete")
             # Log the percentage of the environment explored
             self._log.info(f"Percentage of environment explored: {self._pct_explored}%")
             # Log the agents positions

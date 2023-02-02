@@ -105,16 +105,16 @@ class Overwatch:
         """
         # Update the number of turns
         self._turns += 1
-        self._log.info(f"Turn {self._turns}")
+        self._log.debug(f"Turn {self._turns}")
         # Update the percentage of nodes explored
         self._pct_explored = self.update_pct_explored()
-        self._log.info(f"Percentage of nodes explored: {self._pct_explored}")
+        self._log.debug(f"Percentage of nodes explored: {self._pct_explored}")
         # Update the agent positions
         self._agent_positions = self.update_agent_positions()
-        self._log.info(f"Agent positions: {self._agent_positions}")
+        self._log.debug(f"Agent positions: {self._agent_positions}")
         # Update the visited nodes
         self._visited_nodes = self.update_visited_nodes()
-        self._log.info(f"Visited nodes: {self._visited_nodes}")
+        self._log.debug(f"Visited nodes: {self._visited_nodes}")
 
     def update_agent_positions(self):
         """
@@ -171,11 +171,11 @@ class Overwatch:
         # Get the transmittable from the communication buffer
         transmittable = self._communication_buffer[rx_agent_id]
         # log the transmittable
-        self._log.info(f"Transmittable to be sent to agent {rx_agent_id}: {transmittable}")
+        self._log.debug(f"Transmittable to be sent to agent {rx_agent_id}: {transmittable}")
         # Clear the communication buffer for the agent
         self._communication_buffer[rx_agent_id] = []
         # log the communication buffer
-        self._log.info(f"Communication buffer: {self._communication_buffer}")
+        self._log.debug(f"Communication buffer: {self._communication_buffer}")
         # Return the transmittable
         return transmittable
 
@@ -207,7 +207,7 @@ class Overwatch:
                 self._log.debug(f"{transmittable} from {agent_id} added to agent {agent.id} communication buffer")
 
         # log the communication buffer
-        self._log.info(f"Communication buffer: {self._communication_buffer}")
+        self._log.debug(f"Communication buffer: {self._communication_buffer}")
 
     def _clear_comms_buffer(self):
         """
