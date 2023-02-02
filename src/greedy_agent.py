@@ -15,7 +15,7 @@ from src.overwatch import Overwatch
 ### Greedy Agent Class ###
 class GreedyAgent(Agent):
     # Initialise the agent
-    def __init__(self, environment: Network, id, position, communication_range: int =-1):
+    def __init__(self, environment: Network, id, position, communication_range: int =-1, random_seed: int = 0):
         """
         Constructor for the GreedyAgent class
         :param environment: Enviroment the agent is operating in (Network)
@@ -26,6 +26,10 @@ class GreedyAgent(Agent):
     
         # Initialise the logger
         self.log = logger.get_logger(__name__)
+
+        # Set the random seed
+        random.seed(random_seed)
+        self.log.info(f"Agent {id} is using random seed {random_seed}")
 
         # Initialise the agent
         self._id = id
@@ -144,7 +148,44 @@ class GreedyAgent(Agent):
             # log the transmittables
             self.log.info(f"Agent {self._id} is receiving {transmittables}")
             # update the agent's belief with the transmittables
-            self._belief.update()
+            self._belief.update(*transmittables)
+
+    def commsPart1(self, overwatch):
+        """
+        Method to send a communication to other agents in the environment
+        :param overwatch: overwatcher facilitating communication
+        :return: None
+        """
+
+        # query the overwatch for the agents in the agent's communication range
+        agents_in_range = overwatch.get_agents_in_range(self._position, self._communication_range)
+        # remove the agent's own id from the list of agents in range
+        agents_in_range = [agent for agent in agents_in_range if agent.id != self._id]
+        # log the agents in range
+        self.log.info(f"Agent {self._id} is communicating with {agents_in_range}")
+
+        # if there are agents in range
+        if agents_in_range:
+            # create transmittable object with the agent's belief
+            transmittable = Transmittable(self._belief)
+            # log the transmittable
+            self.log.info(f"Agent {self._id} is transmitting {transmittable}")
+            # send the transmittable to the agents in range - this is handled by the overwatch
+            self._tx(self._id, transmittable, agents_in_range, overwatch)
+
+    def commsPart2(self, overwatch):
+        """
+        Method to recieve communication from other agents in the environment
+        :param overwatch: overwatcher facilitating communication
+        :return: None
+        """
+
+        # request the transmittables from the agents in range - this is handled by the overwatch
+        transmittables = self._rx(self._id, overwatch)
+        # log the transmittables
+        self.log.info(f"Agent {self._id} is receiving {transmittables}")
+        # update the agent's belief with the transmittables
+        self._belief.update(*transmittables)
 
     def send_communication(self, overwatch):
         """
@@ -230,8 +271,6 @@ class GreedyAgent(Agent):
 
         # get a random action from the action space
         action = self._greedy_action(action_space)
-        # log the action
-        self.log.info(f"Agent {self._id} is taking action {action}")
 
         self._action = action
 
@@ -242,28 +281,33 @@ class GreedyAgent(Agent):
         :return: Greedy action
         """
 
-        # get the agent's current position
-        current_position = self._position
-
-        # check if any of the nodes in the action space are unvisited
-        unvisited_nodes = [node for node in action_space if node not in self._visited_nodes]
-        # if there are unvisited nodes in the action space
-        if unvisited_nodes:
-            return unvisited_nodes[0]
-
-
-        # build the adjacency list for the agent
+        # get agent's position
+        position = self._position
+        # get the agent's adjacency list
         adjacency_list = self._build_agent_adjacency_list()
-        # Get the degrees of seperation from the agent's current position to the nodes in the adjacency list
-        degrees_of_seperation, previous = self._dijkstra(self._position, adjacency_list)
-        # get the nearest unvisited node from the belief
-        nearest_unvisited_node = self._get_nearest_unvisited_node(adjacency_list, degrees_of_seperation)
-        # log the nearest unvisited node
-        self.log.info(f"Agent {self._id} nearest unvisited node: {nearest_unvisited_node}")
-        # take the action that gets the agent closer to the nearest unvisited node
-        action = self._get_action_closer_to_node(action_space, nearest_unvisited_node, previous)
-        # log the action
-        self.log.info(f"Agent {self._id} greedy action: {action}")
+        # check if adjacency list has values
+        if not adjacency_list:
+            # if not, choose first unvisited node
+            action = action_space[0]
+            # log the action
+            self.log.info(f"Agent {self._id} is taking greedy (first) action {action}")
+            # return the action
+            return action
+        
+        # get the agent's node distances and the previous nodes to get there
+        distances, previous_nodes = self._dijkstra(position, adjacency_list)
+        # get the agent's nearest unvisited node
+        try:
+            nearest_unvisited_node = self._get_nearest_unvisited_node(distances, adjacency_list)
+            # get the action to take to get to the nearest unvisited node
+            action = self._get_action_closer_to_node(action_space, nearest_unvisited_node, previous_nodes)
+            # log the action
+            self.log.info(f"Agent {self._id} is taking greedy action {action}")
+        except Exception:
+            # if there are no unvisited nodes, return a random action fronm the action space
+            action = random.choice(action_space)
+            # log the action
+            self.log.info(f"Agent {self._id} is taking random action {action}")
 
         return action
 
@@ -304,7 +348,7 @@ class GreedyAgent(Agent):
 
         return adjacency_list
 
-    def _get_nearest_unvisited_node(self, adjacency_list, degrees_of_seperation):
+    def _get_nearest_unvisited_node(self, degrees_of_seperation, adjacency_list):
         """
         Method to get the nearest unvisited node
         :param adjacency_list: Adjacency list of the agent
@@ -337,7 +381,7 @@ class GreedyAgent(Agent):
                     # if so, set the nearest unvisited node to this node
                     return node
         else:
-            return None
+            return Exception
 
     def _get_action_closer_to_node(self, action_space, dest_node, previous):
         """
@@ -351,13 +395,13 @@ class GreedyAgent(Agent):
         current_position = self._position
         # check if the destination node is None
         if dest_node is None:
-            # if so, return the agent's current position
-            return current_position
+            # if so, return an Exception
+            return Exception
 
         # check if the destination node is the agent's current position
         if dest_node == current_position:
-            # if so, return agent's current position
-            return current_position
+            # if so, return an Exception
+            return Exception
 
         # get the previous node in the shortest path to the destination node
         while previous[dest_node] != current_position:
@@ -367,8 +411,8 @@ class GreedyAgent(Agent):
             # if so, return the action
             return dest_node
         else:
-            # if not, return agent's current position
-            return current_position
+            # if not, return an Exception
+            return Exception
 
     def _dijkstra(self, position, adjacency_list):
         """
