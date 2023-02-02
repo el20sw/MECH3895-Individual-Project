@@ -55,11 +55,16 @@ class Belief:
         self._agent_id = agent_id
         self._position = position
         self._nodes = {node: 1 for node in environment.adj_list.keys()}    # all nodes are unvisited by default
+        
         # update node status of the starting node to visited
         self._nodes[self._position] = 0
         self._links = []
 
         self._environment = environment
+        self._occupied_nodes = [node for node in self._nodes.keys() if self._nodes[node] == -10]
+        self._visited_nodes = [node for node in self._nodes.keys() if self._nodes[node] == 0]
+        self._unvisited_nodes = [node for node in self._nodes.keys() if self._nodes[node] == 1]
+        
     
     @property
     def agent_id(self):
@@ -84,6 +89,30 @@ class Belief:
         :return: Nodes
         """
         return self._nodes
+
+    @property
+    def unvisited_nodes(self):
+        """
+        Unvisited nodes getter
+        :return: Unvisited nodes
+        """
+        return self._unvisited_nodes
+
+    @property
+    def visited_nodes(self):
+        """
+        Visited nodes getter
+        :return: Visited nodes
+        """
+        return self._visited_nodes
+
+    @property
+    def occupied_nodes(self):
+        """
+        Occupied nodes getter
+        :return: Occupied nodes
+        """
+        return self._occupied_nodes
 
     @property
     def links(self):
@@ -203,7 +232,6 @@ class Belief:
         :return: Link tuple
         """
         return (node, prev_node, self._environment.adj_list[node][prev_node])
-
 
     # Method to update the belief state with the received belief state
     def _update_belief_state(self, belief_state):
