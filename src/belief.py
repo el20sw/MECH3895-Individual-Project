@@ -49,7 +49,7 @@ class Belief:
 
         """
         # Initialise the logger
-        self.log = logger.setup_logger(__name__, 'logs/belief.log')
+        self.log = logger.get_logger(__name__)
 
         # Initialise the belief state
         self._agent_id = agent_id
@@ -130,7 +130,10 @@ class Belief:
 
         # Update the belief state from the communication
         if communication:
-            self._update_from_communication(*communication)        
+            self._update_from_communication(*communication)
+
+        # Log the belief state
+        self.log.debug(f"Agent {self._agent_id} belief state: {self._nodes}")
 
     # Method to update from the observation
     def _update_from_observation(self, observation : Observation):
@@ -151,6 +154,7 @@ class Belief:
             # Add the link to the list of links if it is not already present
             if link not in self._links:
                 self._links.append(link)
+                self.log.debug(f"Agent {self._agent_id} added link {link} to the list of links")
 
         # Extract the node and neighbour information from the observation
         node = observation.state['node']
@@ -162,12 +166,14 @@ class Belief:
 
         # Update the node status to visited
         self._nodes[node] = 0
+        self.log.debug(f"Agent {self._agent_id} updated node {node} to visited")
 
         # Update the belief state with the local observation
         for neighbour in neighbours:
             # If the neightbour has not been visited or there is no information about the neighbour, set the status to unvisited
             if self._nodes[neighbour] == 1 or self._nodes[neighbour] is None:
                 self._nodes[neighbour] = 1
+                self.log.debug(f"Agent {self._agent_id} updated node {neighbour} to unvisited")
 
     # Method to update from the communication
     def _update_from_communication(self, *communication : Transmittable):
@@ -207,6 +213,8 @@ class Belief:
         :return: None
         """
 
+        # Get the agent ID from the received belief state
+        other_agent_id = belief_state.agent_id
         # Get the position of the agent from the received belief state
         other_agent_position = belief_state.position
         # Set the node status of the position to occupied
