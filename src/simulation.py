@@ -114,10 +114,10 @@ class Simulation:
             self.step()
             # Update the percentage of the environment explored
             self._pct_explored = self._overwatch.pct_explored
-            # Get results from the overwatch
-            self._results = self._results_from_overwatch()
             # Increment the turn
             self._turns += 1
+            # Get results from the overwatch
+            self._results = self._results_from_overwatch()
             # Log the turn
             self._log.info(f"Turn {self._turns} complete")
             # Log the turn (according to the overwatch)
@@ -148,8 +148,15 @@ class Simulation:
             agent.observe(self._environment)
 
         # iterate through agents and call communicate method for each agent
+        # for agent in self._agents:
+        #     agent.communicate(self._overwatch)
+
+        # iterate through agents and call communicate method for each agent - 2 parts (send and recieve)
         for agent in self._agents:
-            agent.communicate(self._overwatch)
+            agent.commsPart1(self._overwatch)
+
+        for agent in self._agents:
+            agent.commsPart2(self._overwatch)
 
         # iterate through agents and call action method 
         for agent in self._agents:
