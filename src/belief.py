@@ -269,6 +269,16 @@ class Belief:
         del other_agents_new
         del nodes_new
 
+        # Update the links
+        for belief in belief_stack:
+            # Get the nodes and the links from this agents belief state
+            this_belief_links = self._links
+            # Get the nodes and links from the received belief state
+            other_belief_links = belief.links
+            # Update the links
+            self._update_links(this_belief_links, other_belief_links)
+
+
     def _position_handler(self, belief_stack, nodes_new, other_agents_new):
         """
         Method to handle the beliefs of agent positions 
@@ -277,9 +287,9 @@ class Belief:
         """
 
         # extract the agent positions from the beliefs in the belief stack and update the other agents dictionary for agents in range
-        self.log.info(f'{self._agent_id}: Previous agent positions: {self._other_agents}')
+        self.log.debug(f'{self._agent_id}: Previous agent positions: {self._other_agents}')
         other_agents_new = self._update_other_agents(belief_stack)
-        self.log.info(f'{self._agent_id}: Updated agent positions: {other_agents_new}')
+        self.log.debug(f'{self._agent_id}: Updated agent positions: {other_agents_new}')
 
         # compare the previous agent positions to the new agent positions
         for id, position in other_agents_new.items():
@@ -288,18 +298,17 @@ class Belief:
                 old_position = self._other_agents[id]
                 if old_position is not None:
                     nodes_new[old_position] = VISITED
-                    self.log.info(f'{self._agent_id}: Updated node {old_position} to visited')
+                    self.log.debug(f'{self._agent_id}: Updated node {old_position} to visited')
             # if the agent is in range, set the new position to occupied and the old position to visited
             else:
                 nodes_new[position] = OCCUPIED
-                self.log.info(f'{self._agent_id}: Updated node {position} to occupied')
+                self.log.debug(f'{self._agent_id}: Updated node {position} to occupied')
                 old_position = self._other_agents.get(id, None)
                 if old_position is not None:
                     nodes_new[old_position] = VISITED
-                    self.log.info(f'{self._agent_id}: Updated node {old_position} to visited')
+                    self.log.debug(f'{self._agent_id}: Updated node {old_position} to visited')
                 else:
-                    self.log.info(f'{self._agent_id}: No old position for agent {id}')
-                
+                    self.log.info(f'{self._agent_id}: No old position for agent {id}')    
     
         return (nodes_new, other_agents_new)
 
@@ -337,44 +346,6 @@ class Belief:
         # return the copy
         return other_agents_new
 
-
-    # Method to update the belief state with the received belief state
-    def _update_belief_state(self, other_belief_state, nodes_old=None, other_agents_old=None):
-        """
-        Update the belief state with the received belief state
-
-        - If the node status of the received belief state is unvisited, the node status of the current belief state is unchanged
-        - If the node status of the received belief state is visited, the node status of the current belief state is updated to visited
-        - Occupied nodes are updated with the positions of the other agents in range - otherwise, if agent not in range anymore, set to visited
-
-        :param belief_state: Received belief state
-        :param nodes_old: Old belief state
-        :param other_agents_old: Old other agents dictionary
-        :return: None
-        """
-
-        # Get the agent ID from the received belief state
-        other_agent_id = other_belief_state.agent_id
-        # Get the position of the agent from the received belief state
-        other_agent_position = other_belief_state.position
-        # Set the node status of the position to occupied
-        # self._nodes[other_agent_position] = -10
-
-        # Get the nodes and the links from this agents belief state
-        this_belief_nodes = self._nodes
-        this_belief_links = self._links
-
-        # Get the nodes and links from the received belief state
-        other_belief_nodes = other_belief_state.nodes
-        other_belief_links = other_belief_state.links
-
-        # set occupied nodes to visited and update with 
-
-        # Update the nodes in the belief state
-
-        # Update the links in the belief state - a tuple of form (node1, node2, length)
-        self._update_links(this_belief_links, other_belief_links)
-
     def _update_links(self, this_belief_links, other_belief_links):
         """
         Update the links in the belief state
@@ -385,6 +356,7 @@ class Belief:
         for link in other_belief_links:
             if link not in this_belief_links:
                 self._links.append(link)
+                self.log.debug(f"Agent {self._agent_id} added link {link} to the list of links")
 
     # Method to create link tuple from node and previous node
     def _create_link(self, node, prev_node):
