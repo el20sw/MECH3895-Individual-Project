@@ -115,7 +115,7 @@ class Simulation:
             if self._turns == 0:
                 # Log the agents positions
                 for agent in self._agents:
-                    self._log.info(f"Agent {agent.id} is at {agent.position}")
+                    self._log.debug(f"Agent {agent.id} is at {agent.position}")
             # Run one step of the simulation
             self.step()
             # Update the percentage of the environment explored
@@ -124,15 +124,16 @@ class Simulation:
             self._turns += 1
             # Get results from the overwatch
             self._results = self._results_from_overwatch()
-            # Log the turn
-            self._log.info(f"Turn {self._turns} complete")
-            # Log the turn (according to the overwatch)
-            self._log.debug(f"Overwatch: Turn {self._overwatch.turns} complete")
             # Log the percentage of the environment explored
             self._log.info(f"Percentage of environment explored: {self._pct_explored}%")
+            
+            # may remove
+            self._log.info(f'Nodes explored: {sorted(set(self._overwatch.visited_nodes))}')
+            self._log.info(f'All nodes: {sorted(self._overwatch.all_nodes)}')
+
             # Log the agents positions
             for agent in self._agents:
-                self._log.info(f"Agent {agent.id} is at {agent.position}")
+                self._log.info(f"Agent {agent.id}: {agent.previous_position} -> {agent.position}")
 
     def step(self):
         """
@@ -148,6 +149,9 @@ class Simulation:
 
         :return: None
         """
+
+        # Log the turn beginning
+        self._log.info(f"Turn {self._turns} - (Sim) {self.overwatch.turns} - (Overwatch) beginning")
 
         # iterate through agents and call observe method for each agent
         for agent in self._agents:
@@ -174,6 +178,9 @@ class Simulation:
 
         # Update the overwatch
         self._overwatch.update()
+
+        # Log the turn ending
+        self._log.info(f"Turn {self._turns} - (Sim) {self.overwatch.turns} - (Overwatch) ending")
 
     def _results_from_overwatch(self):
         """
