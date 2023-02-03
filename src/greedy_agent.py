@@ -25,15 +25,16 @@ class GreedyAgent(Agent):
         """
     
         # Initialise the logger
-        self.log = logger.get_logger(__name__)
+        self._log = logger.get_logger(__name__)
 
         # Set the random seed
         random.seed(random_seed)
-        self.log.debug(f"Agent {id} is using random seed {random_seed}")
+        self._log.debug(f"Agent {id} is using random seed {random_seed}")
 
         # Initialise the agent
         self._id = id
         self._position = position
+        self._previous_position = None
         self._communication_range = communication_range
         self._visited_nodes = []
 
@@ -63,6 +64,14 @@ class GreedyAgent(Agent):
         :return: Agent's position
         """
         return self._position
+
+    @property
+    def previous_position(self):
+        """
+        Getter for the agent's previous position
+        :return: Agent's previous position
+        """
+        return self._previous_position
 
     @property
     def communication_range(self):
@@ -97,11 +106,12 @@ class GreedyAgent(Agent):
         :param action: Action to take - the new position of the agent
         :return: None
         """
-
+        # update the previous position
+        self._previous_position = self._position
         # update the agent's position
         self._position = self._action
         # log the agent's position
-        self.log.debug(f'{self._id} moved to {self._position}')
+        self._log.debug(f'{self._id} moved to {self._position}')
 
     def observe(self, environment):
         """
@@ -113,7 +123,7 @@ class GreedyAgent(Agent):
         # create an observation object
         observation = Observation(environment, self._position)
         # log the observation
-        self.log.debug(f"Agent {self._id} is observing {observation}")
+        self._log.debug(f"Agent {self._id} is observing {observation}")
         # update the belief of the agent with the observation
         self._belief.update(observation)
         # update the visited nodes
@@ -133,20 +143,20 @@ class GreedyAgent(Agent):
         # remove the agent's own id from the list of agents in range
         agents_in_range = [agent for agent in agents_in_range if agent.id != self._id]
         # log the agents in range
-        self.log.debug(f"Agent {self._id} is communicating with {agents_in_range}")
+        self._log.debug(f"Agent {self._id} is communicating with {agents_in_range}")
 
         # if there are agents in range
         if agents_in_range:
             # create transmittable object with the agent's belief
             transmittable = Transmittable(self._belief)
             # log the transmittable
-            self.log.debug(f"Agent {self._id} is transmitting {transmittable}")
+            self._log.debug(f"Agent {self._id} is transmitting {transmittable}")
             # send the transmittable to the agents in range - this is handled by the overwatch
             self._tx(self._id, transmittable, agents_in_range, overwatch)
             # request the transmittables from the agents in range - this is handled by the overwatch
             transmittables = self._rx(self._id, overwatch)
             # log the transmittables
-            self.log.debug(f"Agent {self._id} is receiving {transmittables}")
+            self._log.debug(f"Agent {self._id} is receiving {transmittables}")
             # update the agent's belief with the transmittables
             self._belief.update(*transmittables)
 
@@ -162,14 +172,14 @@ class GreedyAgent(Agent):
         # remove the agent's own id from the list of agents in range
         agents_in_range = [agent for agent in agents_in_range if agent.id != self._id]
         # log the agents in range
-        self.log.debug(f"Agent {self._id} is communicating with {agents_in_range}")
+        self._log.debug(f"Agent {self._id} is communicating with {agents_in_range}")
 
         # if there are agents in range
         if agents_in_range:
             # create transmittable object with the agent's belief
             transmittable = Transmittable(self._belief)
             # log the transmittable
-            self.log.debug(f"Agent {self._id} is transmitting {transmittable}")
+            self._log.debug(f"Agent {self._id} is transmitting {transmittable}")
             # send the transmittable to the agents in range - this is handled by the overwatch
             self._tx(self._id, transmittable, agents_in_range, overwatch)
 
@@ -183,11 +193,11 @@ class GreedyAgent(Agent):
         # request the transmittables from the agents in range - this is handled by the overwatch
         transmittables = self._rx(self._id, overwatch)
         # log the transmittables
-        self.log.debug(f"Agent {self._id} is receiving {transmittables}")
+        self._log.debug(f"Agent {self._id} is receiving {transmittables}")
         # update the agent's belief with the transmittables
         self.update_belief(*transmittables)
         # log the agent's belief
-        self.log.info(f'Agent {self._id} belief: {self._belief.nodes}')
+        self._log.debug(f'Agent {self._id} belief: {self._belief.nodes}')
 
     def send_communication(self, overwatch):
         """
@@ -201,14 +211,14 @@ class GreedyAgent(Agent):
         # remove the agent's own id from the list of agents in range
         self._agents_in_range = [agent for agent in self._agents_in_range if agent.id != self._id]
         # log the agents in range
-        self.log.debug(f"Agent {self._id} is communicating with {self._agents_in_range}")
+        self._log.debug(f"Agent {self._id} is communicating with {self._agents_in_range}")
 
         # if there are agents in range
         if self._agents_in_range:
             # create transmittable object with the agent's belief
             self._transmittable = Transmittable(self._belief)
             # log the transmittable
-            self.log.debug(f"Agent {self._id} is transmitting {self._transmittable}")
+            self._log.debug(f"Agent {self._id} is transmitting {self._transmittable}")
             # send the transmittable to the agents in range - this is handled by the overwatch
             self._tx(self._id, self._transmittable, self._agents_in_range, overwatch)
 
@@ -222,7 +232,7 @@ class GreedyAgent(Agent):
         # request the transmittables from the agents in range - this is handled by the overwatch
         self._transmittables = self._rx(self._id, overwatch)
         # log the transmittables
-        self.log.debug(f"Agent {self._id} is receiving {self._transmittables}")
+        self._log.debug(f"Agent {self._id} is receiving {self._transmittables}")
 
         return self._transmittables
 
@@ -266,10 +276,12 @@ class GreedyAgent(Agent):
         :return: None
         """
 
+        self._log.info(f"Agent {self._id} @ {self._position} is deciding on an action")
+
         # Get the action space - this is the list of possible actions (i.e. the nodes adjacent to the agent's current position)
         action_space = self._observation.state['neighbours']
         # log the action space
-        self.log.debug(f"Agent {self._id} @ {self._position} action space: {action_space}")
+        self._log.debug(f"Agent {self._id} @ {self._position} action space: {action_space}")
 
         # get a random action from the action space
         action = self._greedy_action(action_space)
@@ -287,7 +299,7 @@ class GreedyAgent(Agent):
         position = self._position
 
         # unvisited nodes
-        unvisited_nodes = self._belief.unvisited_nodes
+        unvisited_nodes = [node for node in self._belief.nodes if self._belief.nodes.get(node) == 1]
         # unvisited nodes in action space
         unvisited_nodes_action_space = []
         # check if any nodes in the action space are unvisited
@@ -297,18 +309,8 @@ class GreedyAgent(Agent):
 
         if unvisited_nodes_action_space:
             action = random.choice(unvisited_nodes_action_space)
+            self._log.info(f"Agent {self._id} is taking a random action {action} from the action space (unvisited nodes in action space)")
             return action
-
-        # # get the agent's adjacency list
-        # adjacency_list = self._build_agent_adjacency_list()
-        # # check if adjacency list has values
-        # if not adjacency_list:
-        #     # if not, choose first unvisited node
-        #     action = action_space[0]
-        #     # log the action
-        #     self.log.info(f"Agent {self._id} is taking greedy (first) action {action}")
-        #     # return the action
-        #     return action
 
         # get the agent's adjacency list
         adjacency_list = self._build_agent_adjacency_list()
@@ -320,12 +322,12 @@ class GreedyAgent(Agent):
             # get the action to take to get to the nearest unvisited node
             action = self._get_action_closer_to_node(action_space, nearest_unvisited_node, previous_nodes)
             # log the action
-            self.log.info(f"Agent {self._id} is taking greedy action {action}")
+            self._log.warning(f"Agent {self._id} is taking greedy action {action}")
         except Exception:
             # if there are no unvisited nodes, return a random action fronm the action space
             action = random.choice(action_space)
             # log the action
-            self.log.info(f"Agent {self._id} is taking random action {action}")
+            self._log.info(f"Agent {self._id} is taking random action {action}")
 
         return action
 
@@ -397,6 +399,7 @@ class GreedyAgent(Agent):
                 # check if the node is in the unvisited nodes in the adjacency list
                 if node in unvisited_nodes_in_adjacency_list:
                     # if so, set the nearest unvisited node to this node
+                    self._log.debug(f"Agent {self._id} has nearest unvisited node: {node}")
                     return node
         else:
             return Exception
@@ -411,6 +414,8 @@ class GreedyAgent(Agent):
 
         # get the agent's current position
         current_position = self._position
+        # get the agent's final destination
+        final_dest = dest_node.copy()
         # check if the destination node is None
         if dest_node is None:
             # if so, return an Exception
@@ -427,6 +432,7 @@ class GreedyAgent(Agent):
         # check if action is in the action space
         if dest_node in action_space:
             # if so, return the action
+            self._log.debug(f"Agent {self._id} is taking action {dest_node} to get closer to node {final_dest}")
             return dest_node
         else:
             # if not, return an Exception
@@ -494,6 +500,6 @@ class GreedyAgent(Agent):
         # get a random action from the action space
         action = random.choice(action_space)
         # log the action
-        self.log.info(f"Agent {self._id} is taking random action {action}")
+        self._log.info(f"Agent {self._id} is taking random action {action}")
 
         return action
