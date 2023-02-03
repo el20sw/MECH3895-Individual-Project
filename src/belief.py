@@ -73,8 +73,21 @@ class Belief:
         self._unvisited_nodes = [node for node in self._nodes.keys() if self._nodes[node] == UNVISITED]
 
         self._other_agent_positions = []
+
+    def __repr__(self) -> str:
+        """
+        Representation of the agent belief state
+        :return: Representation of the agent belief state
+        """
+        return f'Agent {self._agent_id} Belief'
         
-    
+    def __str__(self) -> str:
+        """
+        String representation of the agent belief state
+        :return: String representation of the agent belief state
+        """
+        return f'Agent {self._agent_id} Belief'
+
     @property
     def agent_id(self):
         """
@@ -247,44 +260,92 @@ class Belief:
 
         # make a copy of the other agents dictionary
         other_agents_new = deepcopy(self._other_agents)
-        # extract the agent positions from the beliefs in the belief stack and update the other agents dictionary
-        self._update_other_agents(belief_stack)
-
-        # make a copy of the belief state
+        # make a copy of the nodes dictionary
         nodes_new = deepcopy(self._nodes)
-        
-        # update the belief state from the beliefs in the belief stack
-        for belief in belief_stack:
-            self._update_belief_state(belief, nodes_new, other_agents_new)
+
+        self._nodes, self._other_agents = self._position_handler(belief_stack, nodes_new, other_agents_new)
 
         # destroy the copies
         del other_agents_new
         del nodes_new
 
-    def _update_other_agents(self, belief_stack):
+    def _position_handler(self, belief_stack, nodes_new, other_agents_new):
         """
-        Method to update the other agents in the belief state
+        Method to handle the beliefs of agent positions 
         :param belief_stack: Stack of beliefs
         :return: None
         """
-        for belief in belief_stack:
-            # Get the agent ID from the received belief state
-            if belief.agent_id not in self._other_agents.keys():
-                # First contact!
-                self._other_agents[belief.agent_id] = belief.position
-                self.log.debug(f"Agent {self._agent_id} added agent {belief.agent_id} to the list of other agents")
+
+        # extract the agent positions from the beliefs in the belief stack and update the other agents dictionary for agents in range
+        self.log.info(f'{self._agent_id}: Previous agent positions: {self._other_agents}')
+        other_agents_new = self._update_other_agents(belief_stack)
+        self.log.info(f'{self._agent_id}: Updated agent positions: {other_agents_new}')
+
+        # compare the previous agent positions to the new agent positions
+        for id, position in other_agents_new.items():
+            # if the agent is out of range, set the old position to visited
+            if position is None:
+                old_position = self._other_agents[id]
+                if old_position is not None:
+                    nodes_new[old_position] = VISITED
+                    self.log.info(f'{self._agent_id}: Updated node {old_position} to visited')
+            # if the agent is in range, set the new position to occupied and the old position to visited
             else:
-                # Update the position of the agent
-                self._other_agents.update({belief.agent_id: belief.position})
-                self.log.debug(f"Agent {self._agent_id} updated agent {belief.agent_id} position to {belief.position}")
+                nodes_new[position] = OCCUPIED
+                self.log.info(f'{self._agent_id}: Updated node {position} to occupied')
+                old_position = self._other_agents.get(id, None)
+                if old_position is not None:
+                    nodes_new[old_position] = VISITED
+                    self.log.info(f'{self._agent_id}: Updated node {old_position} to visited')
+                else:
+                    self.log.info(f'{self._agent_id}: No old position for agent {id}')
+                
+    
+        return (nodes_new, other_agents_new)
+
+    def _update_other_agents(self, belief_stack):
+        """
+        Method to update the other agents in the belief state based on received positions
+        :param belief_stack: Stack of beliefs
+        :return: None
+        """
+
+        # create a copy of the other agents dictionary
+        other_agents_new = deepcopy(self._other_agents)
+
+        for belief in belief_stack:
+            # If first contact!
+            if belief.agent_id not in other_agents_new.keys():
+                other_agents_new[belief.agent_id] = belief.position
+                self.log.debug(f"Agent {self._agent_id} added agent {belief.agent_id} to the list of other agents")
+            # Or if renewed contact
+            elif other_agents_new[belief.agent_id] is None:
+                other_agents_new[belief.agent_id] = belief.position
+                self.log.debug(f"Agent {self._agent_id} updated agent {belief.agent_id} to position {belief.position}")
+            # Otherwise
+            else:
+                for id, position in other_agents_new.items():
+                    # If the agent is in range, update the position
+                    if id == belief.agent_id:
+                        other_agents_new[id] = belief.position
+                        self.log.debug(f"Agent {self._agent_id} updated agent {id} to position {belief.position}")
+                    # Otherwise, set the position to None
+                    else:
+                        other_agents_new[id] = None
+                        self.log.debug(f"Agent {self._agent_id} updated agent {id} to position {None}")
+
+        # return the copy
+        return other_agents_new
+
 
     # Method to update the belief state with the received belief state
-    def _update_belief_state(self, belief_state, nodes_old=None, other_agents_old=None):
+    def _update_belief_state(self, other_belief_state, nodes_old=None, other_agents_old=None):
         """
         Update the belief state with the received belief state
 
         - If the node status of the received belief state is unvisited, the node status of the current belief state is unchanged
         - If the node status of the received belief state is visited, the node status of the current belief state is updated to visited
+        - Occupied nodes are updated with the positions of the other agents in range - otherwise, if agent not in range anymore, set to visited
 
         :param belief_state: Received belief state
         :param nodes_old: Old belief state
@@ -293,9 +354,9 @@ class Belief:
         """
 
         # Get the agent ID from the received belief state
-        other_agent_id = belief_state.agent_id
+        other_agent_id = other_belief_state.agent_id
         # Get the position of the agent from the received belief state
-        other_agent_position = belief_state.position
+        other_agent_position = other_belief_state.position
         # Set the node status of the position to occupied
         # self._nodes[other_agent_position] = -10
 
@@ -304,14 +365,23 @@ class Belief:
         this_belief_links = self._links
 
         # Get the nodes and links from the received belief state
-        other_belief_nodes = belief_state.nodes
-        other_belief_links = belief_state.links
+        other_belief_nodes = other_belief_state.nodes
+        other_belief_links = other_belief_state.links
 
-        # iterate through the nodes in the received belief state
-        for node, status in other_belief_nodes.items():
-            pass
+        # set occupied nodes to visited and update with 
+
+        # Update the nodes in the belief state
 
         # Update the links in the belief state - a tuple of form (node1, node2, length)
+        self._update_links(this_belief_links, other_belief_links)
+
+    def _update_links(self, this_belief_links, other_belief_links):
+        """
+        Update the links in the belief state
+        :param this_belief_links: Links in this belief state
+        :param other_belief_links: Links in the received belief state
+        :return: None
+        """
         for link in other_belief_links:
             if link not in this_belief_links:
                 self._links.append(link)
