@@ -87,6 +87,8 @@ class Simulation:
             # Add the agent to the overwatch
             self._overwatch.add_agent(a)
             self._log.info(f"Agent {a.id} added to simulation")
+            # Update the pct_explored
+            self._pct_explored = self._overwatch.pct_explored
 
         # Update the number of agents
         self._num_agents = len(self._agents)
