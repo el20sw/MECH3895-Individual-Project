@@ -38,6 +38,7 @@ class GreedyAgent(Agent):
         self._previous_position = None
         self._communication_range = communication_range
         self._visited_nodes = []
+        self._persistent_unvisited_neighbours = []
 
         # check if the position is in the network environment
         if self._position not in environment.node_names:
@@ -111,6 +112,9 @@ class GreedyAgent(Agent):
         self._previous_position = self._position
         # update the agent's position
         self._position = self._action
+        # if the position is in the persistent unvisited neighbours, remove
+        if self._position in self._persistent_unvisited_neighbours:
+            self._persistent_unvisited_neighbours.remove(self._position)
         # log the agent's position
         self._log.debug(f'{self._id} moved to {self._position}')
 
@@ -303,18 +307,22 @@ class GreedyAgent(Agent):
         unvisited_nodes = [node for node in self._belief.nodes if self._belief.nodes.get(node) == 1]
         # unvisited nodes in action space
         unvisited_nodes_action_space = []
+        
         # check if any nodes in the action space are unvisited
         for neighbour in action_space:
             if neighbour in unvisited_nodes:
                 unvisited_nodes_action_space.append(neighbour)
+                # Add unvisited neighbour to the persistent unvisited neighbours
+                self._persistent_unvisited_neighbours.append(neighbour)
 
         if unvisited_nodes_action_space:
             action = random.choice(unvisited_nodes_action_space)
-            self._log.info(f"Agent {self._id} is taking a random action {action} from the action space (unvisited nodes in action space)")
+            self._log.info(f"Agent {self._id} is taking a greeedy random action {action} from the action space (unvisited nodes in action space)")
             return action
 
         # get the agent's adjacency list
         adjacency_list = self._build_agent_adjacency_list(action_space=action_space)
+        self._log.debug(f"Agent {self._id} adjacency list: {adjacency_list}")
         # get the agent's node distances and the previous nodes to get there
         distances, previous_nodes = self._dijkstra(position, adjacency_list)
         # get the agent's nearest unvisited node
@@ -386,17 +394,23 @@ class GreedyAgent(Agent):
         nodes = self._belief.nodes
         # Get the visited nodes known by the agent
         visited_nodes = [i for i in nodes if nodes.get(i) == 0]
+        self._log.debug(f"(NUN) Agent {self._id} visited nodes: {visited_nodes}")
         # Get the unvisited nodes known by the agent
         unvisited_nodes = [i for i in nodes if nodes.get(i) == 1]
+        self._log.debug(f"(NUN) Agent {self._id} unvisited nodes: {unvisited_nodes}")
         # Get the occupied nodes known by the agent
         occupied_nodes = [i for i in nodes if nodes.get(i) == -10]
+        self._log.debug(f"(NUN) Agent {self._id} occupied nodes: {occupied_nodes}")
 
         # Get the nodes in the adjacency list
         adjacency_list_nodes = list(adjacency_list.keys())
+        self._log.debug(f"(NUN) Agent {self._id} adjacency list nodes: {adjacency_list_nodes}")
         # Get the unvisited nodes in the adjacency list - this is the list of nodes that the agent can move to
         unvisited_nodes_in_adjacency_list = [i for i in adjacency_list_nodes if i in unvisited_nodes]
+        self._log.debug(f"(NUN) Agent {self._id} unvisited nodes in adjacency list: {unvisited_nodes_in_adjacency_list}")
         # Get the occupied nodes in the adjacency list
         occupied_nodes_in_adjacency_list = [i for i in adjacency_list_nodes if i in occupied_nodes]
+        self._log.debug(f"(NUN) Agent {self._id} occupied nodes in adjacency list: {occupied_nodes_in_adjacency_list}")
 
         # Check if there are unvisited nodes in the adjacency list
         if len(unvisited_nodes_in_adjacency_list) > 0:
@@ -408,6 +422,7 @@ class GreedyAgent(Agent):
                     self._log.debug(f"Agent {self._id} has nearest unvisited node: {node}")
                     return node
         else:
+            self._log.debug(f"Agent {self._id} has no unvisited nodes in the adjacency list")
             return Exception
 
     def _get_action_closer_to_node(self, action_space, dest_node, previous):
