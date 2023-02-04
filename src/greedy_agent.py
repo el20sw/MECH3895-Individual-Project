@@ -38,7 +38,8 @@ class GreedyAgent(Agent):
         self._previous_position = None
         self._communication_range = communication_range
         self._visited_nodes = []
-        self._persistent_unvisited_neighbours = []
+        self._persistent_unvisited_neighbours = {}
+        # self._persistent_adjacency_list = {}
 
         # check if the position is in the network environment
         if self._position not in environment.node_names:
@@ -114,7 +115,8 @@ class GreedyAgent(Agent):
         self._position = self._action
         # if the position is in the persistent unvisited neighbours, remove
         if self._position in self._persistent_unvisited_neighbours:
-            self._persistent_unvisited_neighbours.remove(self._position)
+            self._persistent_unvisited_neighbours.pop(self._position)
+            self._log.debug(f"Agent {self._id} removed {self._position} from persistent unvisited neighbours")
         # log the agent's position
         self._log.debug(f'{self._id} moved to {self._position}')
 
@@ -313,11 +315,23 @@ class GreedyAgent(Agent):
             if neighbour in unvisited_nodes:
                 unvisited_nodes_action_space.append(neighbour)
                 # Add unvisited neighbour to the persistent unvisited neighbours
-                self._persistent_unvisited_neighbours.append(neighbour)
+                if neighbour in self._persistent_unvisited_neighbours.keys():
+                    self._persistent_unvisited_neighbours[neighbour].append(position)
+                else:
+                    self._persistent_unvisited_neighbours[neighbour] = [position]
+                self._log.debug(f"Agent {self._id} has found an unvisited node {neighbour} in the action space")
+                self._log.debug(f"Agent {self._id} has persistent unvisited neighbours: {self._persistent_unvisited_neighbours}")
+
 
         if unvisited_nodes_action_space:
             action = random.choice(unvisited_nodes_action_space)
             self._log.info(f"Agent {self._id} is taking a greeedy random action {action} from the action space (unvisited nodes in action space)")
+
+            # remove action from persistent unvisited neighbours
+            if action in self._persistent_unvisited_neighbours.keys():
+                self._persistent_unvisited_neighbours.pop(action)
+                self._log.debug(f"Agent {self._id} has persistent unvisited neighbours: {self._persistent_unvisited_neighbours}")
+
             return action
 
         # get the agent's adjacency list
@@ -379,6 +393,17 @@ class GreedyAgent(Agent):
         if action_space:
             # add the action space to the adjacency list
             adjacency_list[self._position] = action_space
+
+        # it the persistent unvisited neighbours is not empty
+        if self._persistent_unvisited_neighbours:
+            # add the persistent unvisited neighbours to the adjacency list
+            for node, neighbours in self._persistent_unvisited_neighbours.items():
+                if node not in adjacency_list:
+                    adjacency_list[node] = []
+                for neighbour in neighbours:
+                    if node not in adjacency_list[neighbour]:
+                        adjacency_list[neighbour].append(node)
+                        adjacency_list[node].append(neighbour)
 
         return adjacency_list
 
