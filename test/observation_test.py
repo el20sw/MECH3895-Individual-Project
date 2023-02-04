@@ -14,22 +14,25 @@ class TestObservation(unittest.TestCase):
     Testing Observation Class
     """
     def setUp(self):
-        self.log = logger.get_logger(__name__)
-        tracemalloc.start()
-        self.net1 = Network('networks/Net1.inp')
-        self.obs1 = Observation(self.net1, '11')
+        self.network = Network('networks/Net1.inp')
+        self.observation = Observation(self.network, '11')
 
     def test_observation(self):
-        self.assertIsInstance(self.obs1, Observation)
+        self.assertIsInstance(self.observation, Observation)
 
-    def test_observation_position(self):
-        self.assertIsInstance(self.obs1.position, str)
-        self.assertEqual(self.obs1.position, '11')
+    def test_position(self):
+        self.assertIsInstance(self.observation.position, str)
+        self.assertEqual(self.observation.position, '11')
 
-    def test_observation_state(self):
-        self.assertIsInstance(self.obs1.state, dict)
-        self.assertDictEqual(self.obs1.state, {'node' : '11', 'neighbours' : ['10', '12', '21']})
+    def test_state(self):
+        self.assertIsInstance(self.observation.state, dict)
+        self.assertDictEqual(self.observation.state, {'node' : '11', 'neighbours' : ['10', '12', '21']})
 
+    def test_observe(self):
+        self.observe = Observation.observe(self.network, '11')
+        self.assertIsInstance(self.observe, Observation)
+        self.assertEqual(self.observe.position, '11')
+        self.assertDictEqual(self.observe.state, {'node' : '11', 'neighbours' : ['10', '12', '21']})
 
 if __name__ == '__main__':
     unittest.main()
