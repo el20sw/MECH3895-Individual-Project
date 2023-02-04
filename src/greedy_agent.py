@@ -1,4 +1,5 @@
 # Import modules
+from copy import deepcopy
 import src.debug.logger as logger
 
 from typing import List
@@ -313,7 +314,7 @@ class GreedyAgent(Agent):
             return action
 
         # get the agent's adjacency list
-        adjacency_list = self._build_agent_adjacency_list()
+        adjacency_list = self._build_agent_adjacency_list(action_space=action_space)
         # get the agent's node distances and the previous nodes to get there
         distances, previous_nodes = self._dijkstra(position, adjacency_list)
         # get the agent's nearest unvisited node
@@ -332,7 +333,7 @@ class GreedyAgent(Agent):
         return action
 
     # NOTE: This does not include link lengths in the returned adjacency list
-    def _build_agent_adjacency_list(self):
+    def _build_agent_adjacency_list(self, action_space=None):
         """
         Method to build the adjacency list of the agent given the belief of the agent
         :return: Adjacency list of the agent (note: this does not include link lengths)
@@ -365,6 +366,11 @@ class GreedyAgent(Agent):
             if node_1 not in adjacency_list[node_2]:
                 # if not, add it
                 adjacency_list[node_2].append(node_1)
+
+        # if the action space is not None
+        if action_space:
+            # add the action space to the adjacency list
+            adjacency_list[self._position] = action_space
 
         return adjacency_list
 
@@ -415,7 +421,7 @@ class GreedyAgent(Agent):
         # get the agent's current position
         current_position = self._position
         # get the agent's final destination
-        final_dest = dest_node.copy()
+        final_dest = deepcopy(dest_node)
         # check if the destination node is None
         if dest_node is None:
             # if so, return an Exception
