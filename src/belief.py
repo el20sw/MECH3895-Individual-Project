@@ -227,6 +227,13 @@ class Belief:
         self._nodes[node] = VISITED
         self.log.debug(f"Agent {self._agent_id} updated node {node} to visited")
 
+        # Update the list of visited nodes
+        self._visited_nodes = [node for node in self._nodes.keys() if self._nodes[node] == VISITED]
+        # Update the list of unvisited nodes
+        self._unvisited_nodes = [node for node in self._nodes.keys() if self._nodes[node] == UNVISITED]
+        # Update the list of occupied nodes
+        self._occupied_nodes = [node for node in self._nodes.keys() if self._nodes[node] == OCCUPIED]
+
         # Update the belief state with the local observation
         for neighbour in neighbours:
             # If the neightbour has not been visited or there is no information about the neighbour, set the status to unvisited
@@ -263,11 +270,24 @@ class Belief:
         # make a copy of the nodes dictionary
         nodes_new = deepcopy(self._nodes)
 
-        self._nodes, self._other_agents = self._position_handler(belief_stack, nodes_new, other_agents_new)
+        # Update the belief state from the other agents visited nodes
+        nodes_new = self._visited_handler(belief_stack, nodes_new)
+        # Update the belief state from the other agents positions
+        nodes_new, other_agents_new = self._position_handler(belief_stack, nodes_new, other_agents_new)
+
+        self._nodes = nodes_new
+        self._other_agents = other_agents_new
 
         # destroy the copies
         del other_agents_new
         del nodes_new
+
+        # Update the list of visited nodes
+        self._visited_nodes = [node for node in self._nodes.keys() if self._nodes[node] == VISITED]
+        # Update the list of unvisited nodes
+        self._unvisited_nodes = [node for node in self._nodes.keys() if self._nodes[node] == UNVISITED]
+        # Update the list of occupied nodes
+        self._occupied_nodes = [node for node in self._nodes.keys() if self._nodes[node] == OCCUPIED]
 
         # Update the links
         for belief in belief_stack:
@@ -282,8 +302,10 @@ class Belief:
     def _position_handler(self, belief_stack, nodes_new, other_agents_new):
         """
         Method to handle the beliefs of agent positions 
-        :param belief_stack: Stack of beliefs
-        :return: None
+        :param belief_stack: Stack of beliefs received from other agents
+        :param nodes_new: Copy of the nodes dictionary
+        :param other_agents_new: Copy of the other agents dictionary
+        :return: Updated nodes dictionary and updated other agents dictionary
         """
 
         # extract the agent positions from the beliefs in the belief stack and update the other agents dictionary for agents in range
@@ -345,6 +367,29 @@ class Belief:
 
         # return the copy
         return other_agents_new
+
+    def _visited_handler(self, belief_stack, nodes_new):
+        """
+        Method to handle the beliefs of visited nodes
+        :param belief_stack: Stack of beliefs
+        :param nodes_new: Copy of the nodes dictionary
+        :return: Updated nodes dictionary
+        """
+        self.log.debug(f'{self._agent_id}: Previous visited nodes: {self._visited_nodes}')
+
+        visited_nodes = []
+        
+        for belief in belief_stack:
+            for node, status in belief.nodes.items():
+                if status == VISITED:
+                    visited_nodes.append(node)
+                    nodes_new[node] = VISITED
+                    self.log.debug(f'{self._agent_id}: Updated node {node} to visited')
+
+        
+        self.log.debug(f'{self._agent_id}: Updated visited nodes: {visited_nodes}')
+
+        return nodes_new
 
     def _update_links(self, this_belief_links, other_belief_links):
         """
