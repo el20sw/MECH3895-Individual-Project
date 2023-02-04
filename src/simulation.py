@@ -118,19 +118,25 @@ class Simulation:
                     self._log.debug(f"Agent {agent.id} is at {agent.position}")
             # Run one step of the simulation
             self.step()
-            # Update the percentage of the environment explored
-            self._pct_explored = self._overwatch.pct_explored
-            # Increment the turn
-            self._turns += 1
             # Get results from the overwatch
             self._results = self._results_from_overwatch()
+            # Update the percentage of the environment explored
+            self._pct_explored = self._overwatch.pct_explored
+            if self._pct_explored == 100:
+                self._log.info(f"Simulation complete - 100% of environment explored")
+
+                self._log.debug(f'Nodes explored: {sorted(set(self._overwatch.visited_nodes))}')
+                self._log.debug(f'All nodes: {sorted(self._overwatch.all_nodes)}')
+
+                for agent in self._agents:
+                    self._log.debug(f"Agent {agent.id} path: {self._overwatch.agent_paths[agent.id]}")
+                    self._log.debug(f"Agent {agent.id} path length: {len(self._overwatch.agent_paths[agent.id])}")
+
+                break
+
             # Log the percentage of the environment explored
             self._log.info(f"Percentage of environment explored: {self._pct_explored}%")
             
-            # may remove
-            self._log.info(f'Nodes explored: {sorted(set(self._overwatch.visited_nodes))}')
-            self._log.info(f'All nodes: {sorted(self._overwatch.all_nodes)}')
-
             # Log the agents positions
             for agent in self._agents:
                 self._log.info(f"Agent {agent.id}: {agent.previous_position} -> {agent.position}")
@@ -176,8 +182,11 @@ class Simulation:
         for agent in self._agents:
             agent.move()
 
+        # Update the number of turns
+        self._turns += 1
+
         # Update the overwatch
-        self._overwatch.update()
+        self._overwatch.update(self._turns)
 
         # Log the turn ending
         self._log.info(f"Turn {self._turns} - (Sim) {self.overwatch.turns} - (Overwatch) ending")
