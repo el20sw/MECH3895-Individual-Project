@@ -54,11 +54,11 @@ class Observation:
 
     # Class method to make observation
     @classmethod
-    def observe(cls, position, environment):
+    def observe(cls, environment, position):
         """
         Class method to make observation
-        :param position: Position of the agent in the environment
         :param environment: Environment in which the agent is operating - the pipe network
+        :param position: Position of the agent in the environment
         :return: Observation
         """
-        return cls(position, environment)
+        return cls(environment, position)
