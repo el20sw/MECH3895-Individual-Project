@@ -27,6 +27,7 @@ class Overwatch:
         self._agents = agents
         self._num_agents = len(agents)
         self._agent_positions = {}
+        self._agent_paths = {}
         self._visited_nodes = []
         self._all_nodes = self._environment.node_names
         self._turns = 0
@@ -57,6 +58,10 @@ class Overwatch:
     @property
     def agent_positions(self) -> dict:
         return self._agent_positions
+
+    @property
+    def agent_paths(self) -> dict:
+        return self._agent_paths
 
     @property
     def visited_nodes(self) -> list:
@@ -95,26 +100,28 @@ class Overwatch:
         self._num_agents = len(self._agents)
         # Update the agent positions
         self._agent_positions[agent.id] = agent.position
+        self._agent_paths[agent.id] = [agent.position]
         # Update the communication buffer
         self._communication_buffer[agent.id] = []
 
-    def update(self):
+    def update(self, turns=None):
         """
         Method to update the overwatch
         :return: None
         """
         # Update the number of turns
-        self._turns += 1
-        self._log.debug(f"Turn {self._turns}")
-        # Update the percentage of nodes explored
-        self._pct_explored = self.update_pct_explored()
-        self._log.debug(f"Percentage of nodes explored: {self._pct_explored}")
+        if turns is not None:
+            self._turns = turns
+            self._log.debug(f"Turn {self._turns}")
         # Update the agent positions
         self._agent_positions = self.update_agent_positions()
         self._log.debug(f"Agent positions: {self._agent_positions}")
         # Update the visited nodes
         self._visited_nodes = self.update_visited_nodes()
         self._log.debug(f"Visited nodes: {self._visited_nodes}")
+        # Update the percentage of nodes explored
+        self._pct_explored = self.update_pct_explored()
+        self._log.debug(f"Percentage of nodes explored: {self._pct_explored}")
 
     def update_agent_positions(self):
         """
@@ -124,6 +131,7 @@ class Overwatch:
         # Get the positions of the agents
         for agent in self._agents:
             self._agent_positions[agent.id] = agent.position
+            self._agent_paths[agent.id].append(agent.position)
         # Return the dictionary
         return self._agent_positions
 
