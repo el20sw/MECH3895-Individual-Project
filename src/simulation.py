@@ -130,7 +130,7 @@ class Simulation:
 
                 for agent in self._agents:
                     self._log.debug(f"Agent {agent.id} path: {self._overwatch.agent_paths[agent.id]}")
-                    self._log.debug(f"Agent {agent.id} path length: {len(self._overwatch.agent_paths[agent.id])}")
+                    self._log.debug(f"Agent {agent.id} path length: {len(self._overwatch.agent_paths[agent.id]) - 1}")
 
                 break
 
