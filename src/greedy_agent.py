@@ -395,10 +395,27 @@ class GreedyAgent(Agent):
             for node, neighbours in self._belief._persistent_unvisited_neighbours.items():
                 if node not in adjacency_list:
                     adjacency_list[node] = []
+                    self._log.debug(f"Agent {self._id} added local node {node} to it's adjacency list")
                 for neighbour in neighbours:
                     if node not in adjacency_list[neighbour]:
                         adjacency_list[neighbour].append(node)
                         adjacency_list[node].append(neighbour)
+                        self._log.debug(f"Agent {self._id} discovered a local link between {node} - {neighbour}")
+
+        # if the other agent's persistent unvisited neighbours in not empty
+        if self._belief.other_agents_unvisited_neighbours:
+            # iterate through each agent
+            for agent, unvisited_neighbours in self._belief.other_agents_unvisited_neighbours.items():
+                # iterate through the agents unvisited neighbours
+                for node, neighbours in unvisited_neighbours.items():
+                    if node not in adjacency_list:
+                        adjacency_list[node] = []
+                        self._log.critical(f"Agent {self._id} added remote node {node} to it's adjacency list")
+                    for neighbour in neighbours:
+                        if node not in adjacency_list[neighbour]:
+                            adjacency_list[neighbour].append(node)
+                            adjacency_list[node].append(neighbour)
+                            self._log.critical(f"Agent {self._id} discovered a remote link between {node} - {neighbour}")
 
         return adjacency_list
 
