@@ -439,8 +439,8 @@ class GreedyAgent(Agent):
 
         # Check if there are unvisited nodes in the adjacency list
         if len(unvisited_nodes_in_adjacency_list) > 0:
-            # If so, iterate through the degrees of seperation and find the nearest unvisited node
-            for node in degrees_of_seperation:
+            # If so, iterate through the degrees of seperation and find the nearest unvisited node - reveresed so that the nearest node is found first
+            for node in reversed(degrees_of_seperation):
                 # check if the node is in the unvisited nodes in the adjacency list
                 if node in unvisited_nodes_in_adjacency_list:
                     # if so, set the nearest unvisited node to this node
@@ -533,6 +533,9 @@ class GreedyAgent(Agent):
                     distances[neighbour] = distance
                     # update the previous node of the neighbour
                     previous[neighbour] = current_node
+
+        # log the distances
+        self._log.debug(f"Agent {self._id} @ {self._position} has distances: {distances}")
 
         return distances, previous
 
