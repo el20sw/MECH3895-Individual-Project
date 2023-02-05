@@ -23,6 +23,7 @@ class Simulation:
         # Initialise the simulation
         self._environment = environment
         self._log.info(f'Environment: {self._environment}')
+        self._num_nodes = environment._num_nodes
 
         # Initialise the agents
         self._agents: List[Agent] = []
@@ -123,7 +124,7 @@ class Simulation:
             # Update the percentage of the environment explored
             self._pct_explored = self._overwatch.pct_explored
             if self._pct_explored == 100:
-                self._log.info(f"Simulation complete - 100% of environment explored")
+                self._log.info(f"Simulation complete - {self._pct_explored}% of environment explored")
 
                 self._log.debug(f'Nodes explored: {sorted(set(self._overwatch.visited_nodes))}')
                 self._log.debug(f'All nodes: {sorted(self._overwatch.all_nodes)}')
@@ -131,6 +132,8 @@ class Simulation:
                 for agent in self._agents:
                     self._log.debug(f"Agent {agent.id} path: {self._overwatch.agent_paths[agent.id]}")
                     self._log.debug(f"Agent {agent.id} path length: {len(self._overwatch.agent_paths[agent.id]) - 1}")
+
+                self._log.info(f'It took {self._num_agents} agent(s) {self._turns} to explore {self._num_nodes} nodes')
 
                 break
 
