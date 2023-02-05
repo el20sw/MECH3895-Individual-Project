@@ -10,7 +10,7 @@ def setup_logger(logger_name=APP_LOGGER_NAME, file_name='%(name)s.log', level='D
     logger.setLevel(level)
 
     # set log format
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
 
     # set stream handler
     sh = logging.StreamHandler()
