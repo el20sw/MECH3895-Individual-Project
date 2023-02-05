@@ -73,6 +73,8 @@ class Belief:
         self._unvisited_nodes = [node for node in self._nodes.keys() if self._nodes[node] == UNVISITED]
 
         self._other_agent_positions = []
+        self._persistent_unvisited_neighbours = {}
+        self._other_persistent_unvisited_neighbours = []
 
     def __repr__(self) -> str:
         """
@@ -412,3 +414,23 @@ class Belief:
         :return: Link tuple
         """
         return (node, prev_node, self._environment.adj_list[node][prev_node])
+
+
+    def _update_persistent_unvisited_neighbours(self, neighbour, position):
+        """
+        Method to update the persistent unvisited neighbours dictionary
+        :param neighbour: Unvisited neighbour
+        :return: None
+        """
+
+        # check if position is equal to the current position
+        if position != self._position:
+            self.log.critical(f"Agent {self._agent_id} has different belief position {self._position} to actual position {position}")
+
+        if neighbour in self._persistent_unvisited_neighbours.keys():
+            self._persistent_unvisited_neighbours[neighbour].append(position)
+        else:
+            self._persistent_unvisited_neighbours[neighbour] = [position]
+            
+        self.log.debug(f"Agent {self._agent_id} has found an unvisited node {neighbour} in the action space")
+        self.log.debug(f"Agent {self._agent_id} has persistent unvisited neighbours: {self._persistent_unvisited_neighbours}")
