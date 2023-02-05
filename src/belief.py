@@ -55,7 +55,7 @@ class Belief:
 
         """
         # Initialise the logger
-        self.log = logger.get_logger(__name__)
+        self._log = logger.get_logger(__name__)
 
         # Initialise the belief state
         self._agent_id = agent_id
@@ -74,7 +74,7 @@ class Belief:
 
         self._other_agent_positions = []
         self._persistent_unvisited_neighbours = {}
-        self._other_persistent_unvisited_neighbours = []
+        self._other_agents_unvisited_neighbours = {}
 
     def __repr__(self) -> str:
         """
@@ -154,6 +154,22 @@ class Belief:
         """
         return self._other_agents
 
+    @property
+    def persistent_unvisited_neighbours(self):
+        """
+        Persistent unvisited neighbours getter
+        :return: Persistent unvisited neighbours
+        """
+        return self._persistent_unvisited_neighbours
+
+    @property
+    def other_agents_unvisited_neighbours(self):
+        """
+        Other persistent unvisited neighbours getter
+        :return: Other persistent unvisited neighbours
+        """
+        return self._other_agents_unvisited_neighbours
+
     def update(self, *information : Union[Observation, Transmittable]):
         """
         Update the belief state of the agent
@@ -182,7 +198,7 @@ class Belief:
             # If the information is neither an observation nor a transmittable object, raise an error
             else:
                 e = ValueError(f"Information {info} is type {type(info)} and not an observation or a transmittable object")
-                self.log.error(e)
+                self._log.error(e)
                 raise e
 
         # Update the belief state from the observation
@@ -194,7 +210,7 @@ class Belief:
             self._update_from_communication(*communication)
 
         # Log the belief state
-        self.log.debug(f"Agent {self._agent_id} belief state: {self._nodes}")
+        self._log.debug(f"Agent {self._agent_id} belief state: {self._nodes}")
 
     # Method to update from the observation
     def _update_from_observation(self, observation : Observation):
@@ -215,7 +231,7 @@ class Belief:
             # Add the link to the list of links if it is not already present
             if link not in self._links:
                 self._links.append(link)
-                self.log.debug(f"Agent {self._agent_id} added link {link} to the list of links")
+                self._log.debug(f"Agent {self._agent_id} added link {link} to the list of links")
 
         # Extract the node and neighbour information from the observation
         node = observation.state['node']
@@ -227,7 +243,7 @@ class Belief:
 
         # Update the node status to VISITED
         self._nodes[node] = VISITED
-        self.log.debug(f"Agent {self._agent_id} updated node {node} to visited")
+        self._log.debug(f"Agent {self._agent_id} updated node {node} to visited")
 
         # Update the list of visited nodes
         self._visited_nodes = [node for node in self._nodes.keys() if self._nodes[node] == VISITED]
@@ -241,7 +257,7 @@ class Belief:
             # If the neightbour has not been visited or there is no information about the neighbour, set the status to unvisited
             if self._nodes[neighbour] == UNVISITED or self._nodes[neighbour] is None:
                 self._nodes[neighbour] = UNVISITED
-                self.log.debug(f"Agent {self._agent_id} updated node {neighbour} to unvisited")
+                self._log.debug(f"Agent {self._agent_id} updated node {neighbour} to unvisited")
 
     # Method to update from the communication
     def _update_from_communication(self, *communication : Transmittable):
@@ -264,7 +280,7 @@ class Belief:
                     belief_stack.append(obj)
                 else:
                     # Log the error
-                    self.log.error(f"Object {obj} is not of type Belief")
+                    self._log.error(f"Object {obj} is not of type Belief")
                     continue
 
         # make a copy of the other agents dictionary
@@ -299,7 +315,8 @@ class Belief:
             other_belief_links = belief.links
             # Update the links
             self._update_links(this_belief_links, other_belief_links)
-
+            # add to dictionary of other agents persistent unvisited neighbours
+            self._update_other_agents_unvisited_neighbours(belief)
 
     def _position_handler(self, belief_stack, nodes_new, other_agents_new):
         """
@@ -311,9 +328,9 @@ class Belief:
         """
 
         # extract the agent positions from the beliefs in the belief stack and update the other agents dictionary for agents in range
-        self.log.debug(f'{self._agent_id}: Previous agent positions: {self._other_agents}')
+        self._log.debug(f'{self._agent_id}: Previous agent positions: {self._other_agents}')
         other_agents_new = self._update_other_agents(belief_stack)
-        self.log.debug(f'{self._agent_id}: Updated agent positions: {other_agents_new}')
+        self._log.debug(f'{self._agent_id}: Updated agent positions: {other_agents_new}')
 
         # compare the previous agent positions to the new agent positions
         for id, position in other_agents_new.items():
@@ -322,17 +339,17 @@ class Belief:
                 old_position = self._other_agents[id]
                 if old_position is not None:
                     nodes_new[old_position] = VISITED
-                    self.log.debug(f'{self._agent_id}: Updated node {old_position} to visited')
+                    self._log.debug(f'{self._agent_id}: Updated node {old_position} to visited')
             # if the agent is in range, set the new position to occupied and the old position to visited
             else:
                 nodes_new[position] = OCCUPIED
-                self.log.debug(f'{self._agent_id}: Updated node {position} to occupied')
+                self._log.debug(f'{self._agent_id}: Updated node {position} to occupied')
                 old_position = self._other_agents.get(id, None)
                 if old_position is not None:
                     nodes_new[old_position] = VISITED
-                    self.log.debug(f'{self._agent_id}: Updated node {old_position} to visited')
+                    self._log.debug(f'{self._agent_id}: Updated node {old_position} to visited')
                 else:
-                    self.log.info(f'{self._agent_id}: No old position for agent {id}')    
+                    self._log.info(f'{self._agent_id}: No old position for agent {id}')    
     
         return (nodes_new, other_agents_new)
 
@@ -350,22 +367,22 @@ class Belief:
             # If first contact!
             if belief.agent_id not in other_agents_new.keys():
                 other_agents_new[belief.agent_id] = belief.position
-                self.log.debug(f"Agent {self._agent_id} added agent {belief.agent_id} to the list of other agents")
+                self._log.debug(f"Agent {self._agent_id} added agent {belief.agent_id} to the list of other agents")
             # Or if renewed contact
             elif other_agents_new[belief.agent_id] is None:
                 other_agents_new[belief.agent_id] = belief.position
-                self.log.debug(f"Agent {self._agent_id} updated agent {belief.agent_id} to position {belief.position}")
+                self._log.debug(f"Agent {self._agent_id} updated agent {belief.agent_id} to position {belief.position}")
             # Otherwise
             else:
                 for id, position in other_agents_new.items():
                     # If the agent is in range, update the position
                     if id == belief.agent_id:
                         other_agents_new[id] = belief.position
-                        self.log.debug(f"Agent {self._agent_id} updated agent {id} to position {belief.position}")
+                        self._log.debug(f"Agent {self._agent_id} updated agent {id} to position {belief.position}")
                     # Otherwise, set the position to None
                     else:
                         other_agents_new[id] = None
-                        self.log.debug(f"Agent {self._agent_id} updated agent {id} to position {None}")
+                        self._log.debug(f"Agent {self._agent_id} updated agent {id} to position {None}")
 
         # return the copy
         return other_agents_new
@@ -377,7 +394,7 @@ class Belief:
         :param nodes_new: Copy of the nodes dictionary
         :return: Updated nodes dictionary
         """
-        self.log.debug(f'{self._agent_id}: Previous visited nodes: {self._visited_nodes}')
+        self._log.debug(f'{self._agent_id}: Previous visited nodes: {self._visited_nodes}')
 
         visited_nodes = []
         
@@ -386,10 +403,10 @@ class Belief:
                 if status == VISITED:
                     visited_nodes.append(node)
                     nodes_new[node] = VISITED
-                    self.log.debug(f'{self._agent_id}: Updated node {node} to visited')
+                    self._log.debug(f'{self._agent_id}: Updated node {node} to visited')
 
         
-        self.log.debug(f'{self._agent_id}: Updated visited nodes: {visited_nodes}')
+        self._log.debug(f'{self._agent_id}: Updated visited nodes: {visited_nodes}')
 
         return nodes_new
 
@@ -403,7 +420,7 @@ class Belief:
         for link in other_belief_links:
             if link not in this_belief_links:
                 self._links.append(link)
-                self.log.debug(f"Agent {self._agent_id} added link {link} to the list of links")
+                self._log.debug(f"Agent {self._agent_id} added link {link} to the list of links")
 
     # Method to create link tuple from node and previous node
     def _create_link(self, node, prev_node):
@@ -425,12 +442,30 @@ class Belief:
 
         # check if position is equal to the current position
         if position != self._position:
-            self.log.critical(f"Agent {self._agent_id} has different belief position {self._position} to actual position {position}")
+            self._log.critical(f"Agent {self._agent_id} has different belief position {self._position} to actual position {position}")
 
         if neighbour in self._persistent_unvisited_neighbours.keys():
             self._persistent_unvisited_neighbours[neighbour].append(position)
         else:
             self._persistent_unvisited_neighbours[neighbour] = [position]
             
-        self.log.debug(f"Agent {self._agent_id} has found an unvisited node {neighbour} in the action space")
-        self.log.debug(f"Agent {self._agent_id} has persistent unvisited neighbours: {self._persistent_unvisited_neighbours}")
+        self._log.debug(f"Agent {self._agent_id} has found an unvisited node {neighbour} in the action space")
+        self._log.debug(f"Agent {self._agent_id} has persistent unvisited neighbours: {self._persistent_unvisited_neighbours}")
+
+    def _update_other_agents_unvisited_neighbours(self, other_agents_belief):
+        """
+        Method to update the other agents unvisited neighbours dictionary
+        :param other_agents_belief: Other agents belief state
+        :return: None
+        """
+
+        other_agent_id = other_agents_belief.agent_id
+        other_agents_persistent_unvisited_neighbours = other_agents_belief.persistent_unvisited_neighbours
+
+        if other_agent_id in self._other_agents_unvisited_neighbours.keys():
+            self._other_agents_unvisited_neighbours[other_agent_id].update(other_agents_persistent_unvisited_neighbours)
+        else:
+            self._other_agents_unvisited_neighbours[other_agent_id] = other_agents_persistent_unvisited_neighbours
+
+        # log the other agents unvisited neighbours
+        self._log.critical(f"Agent {self._agent_id} has other agents unvisited neighbours: {self._other_agents_unvisited_neighbours}")
