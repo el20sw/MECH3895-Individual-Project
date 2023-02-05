@@ -468,4 +468,4 @@ class Belief:
             self._other_agents_unvisited_neighbours[other_agent_id] = other_agents_persistent_unvisited_neighbours
 
         # log the other agents unvisited neighbours
-        self._log.critical(f"Agent {self._agent_id} has other agents unvisited neighbours: {self._other_agents_unvisited_neighbours}")
+        self._log.debug(f"Agent {self._agent_id} has other agents unvisited neighbours: {self._other_agents_unvisited_neighbours}")
