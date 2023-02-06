@@ -11,4 +11,6 @@ logs/
 results/
 # Ignore data
 data/
+# Ignore misc
+misc/
 

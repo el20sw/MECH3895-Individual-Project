@@ -29,6 +29,7 @@ class Agent(ABC):
 
         self._id = id
         self._position = position
+        self._previous_position = None
         self._communication_range = communication_range
         self._visited_nodes = []
 
@@ -79,6 +80,24 @@ class Agent(ABC):
         pass
 
     @abstractmethod
+    def commsPart1(self, overwatch):
+        """
+        Method to send a communication to other agents in the environment
+        :param overwatch: overwatcher facilitating communication
+        :return: None
+        """
+        pass
+
+    @abstractmethod
+    def commsPart2(self, overwatch):
+        """
+        Method to recieve communication from other agents in the environment
+        :param overwatch: overwatcher facilitating communication
+        :return: None
+        """
+        pass
+
+    @abstractmethod
     def _tx(self, id, transmittable, agents_in_range, overwatch):
         """
         Method to transmit a transmittable to the agents in range
@@ -117,12 +136,20 @@ class Agent(ABC):
         return self._id
 
     @property
-    def position(self) -> str:
+    def position(self):
         """
         Method to get the position of the agent
         :return: Position of the agent
         """
         return self._position
+
+    @property
+    def previous_position(self):
+        """
+        Method to get the previous position of the agent
+        :return: Previous position of the agent
+        """
+        return self._previous_position
 
     @property
     def communication_range(self) -> int:

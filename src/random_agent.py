@@ -29,7 +29,7 @@ class RandomAgent(Agent):
 
         # set the random seed
         random.seed(random_seed)
-        self.log.info(f"Agent {id} is using random seed 0")
+        self.log.info(f"Agent {id} is using random seed {random_seed}")
         
         # set the agent's id, position and communication range
         self._id = id
@@ -145,7 +145,8 @@ class RandomAgent(Agent):
         self._visited_nodes.append(self._position)
 
         self._observation =  observation
-
+        
+    # NOTE: This method does not work
     def communicate(self, overwatch):
         """
         Method to communicate with other agents in the environment
@@ -174,6 +175,43 @@ class RandomAgent(Agent):
             self.log.info(f"Agent {self._id} is receiving {transmittables}")
             # update the agent's belief with the transmittables
             self._belief.update()
+
+    def commsPart1(self, overwatch):
+        """
+        Method to send a communication to other agents in the environment
+        :param overwatch: overwatcher facilitating communication
+        :return: None
+        """
+
+        # query the overwatch for the agents in the agent's communication range
+        agents_in_range = overwatch.get_agents_in_range(self._position, self._communication_range)
+        # remove the agent's own id from the list of agents in range
+        agents_in_range = [agent for agent in agents_in_range if agent.id != self._id]
+        # log the agents in range
+        self.log.info(f"Agent {self._id} is communicating with {agents_in_range}")
+
+        # if there are agents in range
+        if agents_in_range:
+            # create transmittable object with the agent's belief
+            transmittable = Transmittable(self._belief)
+            # log the transmittable
+            self.log.info(f"Agent {self._id} is transmitting {transmittable}")
+            # send the transmittable to the agents in range - this is handled by the overwatch
+            self._tx(self._id, transmittable, agents_in_range, overwatch)
+
+    def commsPart2(self, overwatch):
+        """
+        Method to recieve communication from other agents in the environment
+        :param overwatch: overwatcher facilitating communication
+        :return: None
+        """
+
+        # request the transmittables from the agents in range - this is handled by the overwatch
+        transmittables = self._rx(self._id, overwatch)
+        # log the transmittables
+        self.log.info(f"Agent {self._id} is receiving {transmittables}")
+        # update the agent's belief with the transmittables
+        self._belief.update(*transmittables)
 
     def send_communication(self, overwatch):
         """

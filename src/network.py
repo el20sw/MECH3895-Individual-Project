@@ -40,6 +40,10 @@ class Network:
         self._junctions = [node for node in self._nodes if node['node_type'] == 'Junction']
         self._junction_names = self._wn.junction_name_list
 
+        self._wn_num_nodes = self._wn.num_nodes
+        self._num_nodes = len(self._nodes)
+        assert self._wn_num_nodes == self._num_nodes
+
         # Create frozen nodes and links
         self._frozen_nodes = FrozenNodes(self._node_names)
         self._frozen_links = FrozenLinks(self._link_names)
@@ -72,6 +76,10 @@ class Network:
     @property
     def node_names(self) -> list:
         return self._node_names
+
+    @property
+    def num_nodes(self) -> int:
+        return self._wn_num_nodes
 
     @property
     def junctions(self) -> list:
