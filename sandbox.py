@@ -13,7 +13,7 @@ def main():
     # Initialise the simulation
     log.info('Initialising the simulation')
     # Create the environment layer
-    env = Network('networks/Net1.inp')
+    env = Network('networks/Net2.inp')
     log.debug(f'Environment: {env}')
     # Create the agent layer
     agentA = GreedyAgent(env, 'A', '11', communication_range=-1, random_seed=0)
@@ -33,8 +33,8 @@ def main():
     log.debug(f'Overwatch Comms Buffer: {simulation.overwatch.communication_buffer}')
 
     simulation.add_agent(agentA)
-    simulation.add_agent(agentB)
-    simulation.add_agent(agentC)
+    # simulation.add_agent(agentB)
+    # simulation.add_agent(agentC)
 
     log.debug(f'Simulation Agents: {simulation.agents}')
     log.debug(f'Overwatch Agents: {simulation.overwatch.agents}')
