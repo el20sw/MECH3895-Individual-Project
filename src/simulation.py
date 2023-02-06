@@ -120,7 +120,7 @@ class Simulation:
             # Run one step of the simulation
             self.step()
             # Get results from the overwatch
-            self._results = self._results_from_overwatch()
+            self._results_from_overwatch()
             # Update the percentage of the environment explored
             self._pct_explored = self._overwatch.pct_explored
             if self._pct_explored == 100:
