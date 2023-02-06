@@ -36,7 +36,7 @@ class Overwatch:
         # Communication variables
         self._transmittables = []
         # create dictionary of agents (keys) and empty values in preparation for communication - each turn the dictionary will be updated with the transmittables to be sent to each agent
-        self._communication_buffer: dict = {agent.id: [] for agent in self._agents}
+        self._communication_buffer: dict = {agent.agent_id: [] for agent in self._agents}
 
     ### Attributes ###
     @property
@@ -99,10 +99,10 @@ class Overwatch:
         # Update the number of agents
         self._num_agents = len(self._agents)
         # Update the agent positions
-        self._agent_positions[agent.id] = agent.position
-        self._agent_paths[agent.id] = [agent.position]
+        self._agent_positions[agent.agent_id] = agent.position
+        self._agent_paths[agent.agent_id] = [agent.position]
         # Update the communication buffer
-        self._communication_buffer[agent.id] = []
+        self._communication_buffer[agent.agent_id] = []
 
     def update(self, turns=None):
         """
@@ -130,8 +130,8 @@ class Overwatch:
         """
         # Get the positions of the agents
         for agent in self._agents:
-            self._agent_positions[agent.id] = agent.position
-            self._agent_paths[agent.id].append(agent.position)
+            self._agent_positions[agent.agent_id] = agent.position
+            self._agent_paths[agent.agent_id].append(agent.position)
         # Return the dictionary
         return self._agent_positions
 
@@ -171,7 +171,7 @@ class Overwatch:
 
         # If rx_agent is Agent, get the ID
         if isinstance(rx_agent, Agent):
-            rx_agent_id = rx_agent.id
+            rx_agent_id = rx_agent.agent_id
         # Otherwise, assume rx_agent is an ID
         else:
             rx_agent_id = rx_agent
@@ -196,7 +196,7 @@ class Overwatch:
         """
         
         # Extract the agent from the agents list using the agent ID
-        agent = [agent for agent in self._agents if agent.id == agent_id][0]
+        agent = [agent for agent in self._agents if agent.agent_id == agent_id][0]
         # Get the transmittable from the agent
         tx_transmittable = transmittable
         
@@ -223,7 +223,7 @@ class Overwatch:
         :return: None
         """
         # Clear the communication buffer
-        self._communication_buffer = {agent.id: [] for agent in self._agents}
+        self._communication_buffer = {agent.agent_id: [] for agent in self._agents}
          
     def get_agents_in_range(self, position, communication_range=-1):
         """

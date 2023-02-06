@@ -49,7 +49,7 @@ class RandomAgent(Agent):
         self._belief = Belief(environment, self._id, self._position)
 
     @property
-    def id(self):
+    def agent_id(self):
         """
         Getter for the agent's id
         :return: Agent's id

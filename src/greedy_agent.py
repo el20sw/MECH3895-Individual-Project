@@ -16,7 +16,7 @@ from src.overwatch import Overwatch
 ### Greedy Agent Class ###
 class GreedyAgent(Agent):
     # Initialise the agent
-    def __init__(self, environment: Network, id, position, communication_range: int =-1, random_seed: int = 0):
+    def __init__(self, environment: Network, agent_id, position, communication_range: int =-1, random_seed: int = 0):
         """
         Constructor for the GreedyAgent class
         :param environment: Enviroment the agent is operating in (Network)
@@ -30,10 +30,10 @@ class GreedyAgent(Agent):
 
         # Set the random seed
         random.seed(random_seed)
-        self._log.debug(f"Agent {id} is using random seed {random_seed}")
+        self._log.debug(f"Agent {agent_id} is using random seed {random_seed}")
 
         # Initialise the agent
-        self._id = id
+        self._id = agent_id
         self._position = position
         self._previous_position = None
         self._communication_range = communication_range
@@ -53,7 +53,7 @@ class GreedyAgent(Agent):
         self._belief = Belief(environment, self._id, self._position)
 
     @property
-    def id(self):
+    def agent_id(self):
         """
         Getter for the agent's id
         :return: Agent's id
@@ -167,7 +167,7 @@ class GreedyAgent(Agent):
             # update the agent's belief with the transmittables
             self._belief.update(*transmittables)
 
-    def commsPart1(self, overwatch):
+    def comms_part1(self, overwatch):
         """
         Method to send a communication to other agents in the environment
         :param overwatch: overwatcher facilitating communication
@@ -177,7 +177,7 @@ class GreedyAgent(Agent):
         # query the overwatch for the agents in the agent's communication range
         agents_in_range = overwatch.get_agents_in_range(self._position, self._communication_range)
         # remove the agent's own id from the list of agents in range
-        agents_in_range = [agent for agent in agents_in_range if agent.id != self._id]
+        agents_in_range = [agent for agent in agents_in_range if agent.agent_id != self._id]
         # log the agents in range
         self._log.debug(f"Agent {self._id} is communicating with {agents_in_range}")
 
@@ -190,7 +190,7 @@ class GreedyAgent(Agent):
             # send the transmittable to the agents in range - this is handled by the overwatch
             self._tx(self._id, transmittable, agents_in_range, overwatch)
 
-    def commsPart2(self, overwatch):
+    def comms_part2(self, overwatch):
         """
         Method to recieve communication from other agents in the environment
         :param overwatch: overwatcher facilitating communication
@@ -216,7 +216,7 @@ class GreedyAgent(Agent):
         # query the overwatch for the agents in the agent's communication range
         self._agents_in_range = overwatch.get_agents_in_range(self._position, self._communication_range)
         # remove the agent's own id from the list of agents in range
-        self._agents_in_range = [agent for agent in self._agents_in_range if agent.id != self._id]
+        self._agents_in_range = [agent for agent in self._agents_in_range if agent.agent_id != self._id]
         # log the agents in range
         self._log.debug(f"Agent {self._id} is communicating with {self._agents_in_range}")
 
