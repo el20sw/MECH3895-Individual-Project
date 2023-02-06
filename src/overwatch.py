@@ -207,12 +207,12 @@ class Overwatch:
             # if the transmittable is a list, for each transmittable in the list, add it to the communication buffer
             if isinstance(tx_transmittable, list):
                 for transmittable in tx_transmittable:
-                    self._communication_buffer[agent.id].append(transmittable)
-                    self._log.debug(f"{transmittable} from {agent_id} added to agent {agent.id} communication buffer")
+                    self._communication_buffer[agent.agent_id].append(transmittable)
+                    self._log.debug(f"{transmittable} from {agent_id} added to agent {agent.agent_id} communication buffer")
             else:
                 # add transmittable to the communication dictionary
-                self._communication_buffer[agent.id].append(tx_transmittable)
-                self._log.debug(f"{transmittable} from {agent_id} added to agent {agent.id} communication buffer")
+                self._communication_buffer[agent.agent_id].append(tx_transmittable)
+                self._log.debug(f"{transmittable} from {agent_id} added to agent {agent.agent_id} communication buffer")
 
         # log the communication buffer
         self._log.debug(f"Communication buffer: {self._communication_buffer}")
