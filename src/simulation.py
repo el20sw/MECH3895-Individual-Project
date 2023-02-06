@@ -78,16 +78,16 @@ class Simulation:
         # check if agent is aleady in the simulation
         for a in agent:
             if a in self._agents:
-                self._log.warning(f"Agent {a.id} already in simulation")
+                self._log.warning(f"Agent {a.agent_id} already in simulation")
                 return
             if a in self._overwatch.agents:
-                self._log.warning(f"Agent {a.id} already in simulation")
+                self._log.warning(f"Agent {a.agent_id} already in simulation")
                 return
             # Add the agent to the simulation agent list
             self._agents.append(a)
             # Add the agent to the overwatch
             self._overwatch.add_agent(a)
-            self._log.info(f"Agent {a.id} added to simulation")
+            self._log.info(f"Agent {a.agent_id} added to simulation")
             # Update the pct_explored
             self._pct_explored = self._overwatch.pct_explored
 
@@ -116,11 +116,11 @@ class Simulation:
             if self._turns == 0:
                 # Log the agents positions
                 for agent in self._agents:
-                    self._log.debug(f"Agent {agent.id} is at {agent.position}")
+                    self._log.debug(f"Agent {agent.agent_id} is at {agent.position}")
             # Run one step of the simulation
             self.step()
             # Get results from the overwatch
-            self._results = self._results_from_overwatch()
+            self._results_from_overwatch()
             # Update the percentage of the environment explored
             self._pct_explored = self._overwatch.pct_explored
             if self._pct_explored == 100:
@@ -130,8 +130,8 @@ class Simulation:
                 self._log.debug(f'All nodes: {sorted(self._overwatch.all_nodes)}')
 
                 for agent in self._agents:
-                    self._log.debug(f"Agent {agent.id} path: {self._overwatch.agent_paths[agent.id]}")
-                    self._log.debug(f"Agent {agent.id} path length: {len(self._overwatch.agent_paths[agent.id]) - 1}")
+                    self._log.debug(f"Agent {agent.agent_id} path: {self._overwatch.agent_paths[agent.agent_id]}")
+                    self._log.debug(f"Agent {agent.agent_id} path length: {len(self._overwatch.agent_paths[agent.agent_id]) - 1}")
 
                 self._log.info(f'It took {self._num_agents} agent(s) {self._turns} to explore {self._num_nodes} nodes')
 
@@ -142,7 +142,7 @@ class Simulation:
             
             # Log the agents positions
             for agent in self._agents:
-                self._log.info(f"Agent {agent.id}: {agent.previous_position} -> {agent.position}")
+                self._log.info(f"Agent {agent.agent_id}: {agent.previous_position} -> {agent.position}")
 
     def step(self):
         """
@@ -172,10 +172,10 @@ class Simulation:
 
         # iterate through agents and call communicate method for each agent - 2 parts (send and recieve)
         for agent in self._agents:
-            agent.commsPart1(self._overwatch)
+            agent.comms_part1(self._overwatch)
 
         for agent in self._agents:
-            agent.commsPart2(self._overwatch)
+            agent.comms_part2(self._overwatch)
 
         # iterate through agents and call action method 
         for agent in self._agents:

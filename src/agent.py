@@ -1,5 +1,3 @@
-### Import modules
-import src.debug.logger as logger
 from abc import ABC, abstractmethod
 
 from src.belief import Belief
@@ -18,16 +16,16 @@ class Agent(ABC):
     :param communication_range: Communication range of the agent
     """
 
-    def __init__(self, environment, id, position, communication_range=1) -> None:
+    def __init__(self, environment, agent_id, position, communication_range=1) -> None:
         """
         Constructor for the simple agent class
         :param environment: Environment in which the agent is operating - the pipe network
-        :param id: ID of the agent
+        :param agent_id: ID of the agent
         :param position: Position of the agent in the environment
         :param communication_range: Communication range of the agent
         """
 
-        self._id = id
+        self._id = agent_id
         self._position = position
         self._previous_position = None
         self._communication_range = communication_range
@@ -50,7 +48,6 @@ class Agent(ABC):
         This is a turn
         :return: None
         """
-        pass
 
     @abstractmethod
     def move(self) -> None:
@@ -58,7 +55,6 @@ class Agent(ABC):
         Method to move the agent to the new position in the environment
         :return: None
         """
-        pass
 
     @abstractmethod
     def observe(self, environment) -> Observation:
@@ -68,7 +64,6 @@ class Agent(ABC):
         :update: Update the visited nodes
         :return: Observation of the agent
         """
-        pass
 
     @abstractmethod
     def communicate(self, overwatch):
@@ -77,28 +72,25 @@ class Agent(ABC):
         :param environment: Environment in which the agent is communicating - the pipe network
         :return: None
         """
-        pass
 
     @abstractmethod
-    def commsPart1(self, overwatch):
+    def comms_part1(self, overwatch):
         """
         Method to send a communication to other agents in the environment
         :param overwatch: overwatcher facilitating communication
         :return: None
         """
-        pass
 
     @abstractmethod
-    def commsPart2(self, overwatch):
+    def comms_part2(self, overwatch):
         """
         Method to recieve communication from other agents in the environment
         :param overwatch: overwatcher facilitating communication
         :return: None
         """
-        pass
 
     @abstractmethod
-    def _tx(self, id, transmittable, agents_in_range, overwatch):
+    def _tx(self, agent_id, transmittable, agents_in_range, overwatch):
         """
         Method to transmit a transmittable to the agents in range
         :param id: Id of the agent
@@ -107,17 +99,15 @@ class Agent(ABC):
         :param overwatch: Overwatcher
         :return: None
         """
-        pass
 
     @abstractmethod
-    def _rx(self, id, overwatch):
+    def _rx(self, agent_id, overwatch):
         """
         Method to receive transmittables from the agents in range
         :param id: Id of the agent
         :param overwatch: Overwatcher
         :return: Transmittables received
         """
-        pass
 
     @abstractmethod
     def action(self):
@@ -125,10 +115,9 @@ class Agent(ABC):
         Method to get the action of the agent - update the action space
         :return: Action of the agent
         """
-        pass
 
     @property
-    def id(self) -> int:
+    def agent_id(self) -> int:
         """
         Method to get the ID of the agent
         :return: ID of the agent
@@ -189,7 +178,7 @@ def coroutine(func):
     Decorator to start a coroutine
     """
     def start(*args,**kwargs):
-        cr = func(*args,**kwargs)
-        cr.__next__()
-        return cr
+        routine = func(*args,**kwargs)
+        routine.next()
+        return routine
     return start

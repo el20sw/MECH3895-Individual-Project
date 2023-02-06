@@ -34,6 +34,7 @@ class RandomAgent(Agent):
         # set the agent's id, position and communication range
         self._id = id
         self._position = position
+        self._previous_position = None
         self._communication_range = communication_range
         self._visited_nodes = []
 
@@ -49,7 +50,7 @@ class RandomAgent(Agent):
         self._belief = Belief(environment, self._id, self._position)
 
     @property
-    def id(self):
+    def agent_id(self):
         """
         Getter for the agent's id
         :return: Agent's id
@@ -63,6 +64,14 @@ class RandomAgent(Agent):
         :return: Agent's position
         """
         return self._position
+    
+    @property
+    def previous_position(self):
+        """
+        Getter for the agent's previous position
+        :return: Agent's previous position
+        """
+        return self._previous_position
 
     @property
     def communication_range(self):
@@ -122,7 +131,8 @@ class RandomAgent(Agent):
         :param action: Action to take - the new position of the agent
         :return: None
         """
-        
+        # update the previous position
+        self._previous_position = self._position        
         # update the agent's position
         self._position = self._action
         # log the agent's position
@@ -157,7 +167,7 @@ class RandomAgent(Agent):
         # query the overwatch for the agents in the agent's communication range
         agents_in_range = overwatch.get_agents_in_range(self._position, self._communication_range)
         # remove the agent's own id from the list of agents in range
-        agents_in_range = [agent for agent in agents_in_range if agent.id != self._id]
+        agents_in_range = [agent for agent in agents_in_range if agent.agent_id != self._id]
         # log the agents in range
         self.log.info(f"Agent {self._id} is communicating with {agents_in_range}")
 
@@ -176,7 +186,7 @@ class RandomAgent(Agent):
             # update the agent's belief with the transmittables
             self._belief.update()
 
-    def commsPart1(self, overwatch):
+    def comms_part1(self, overwatch):
         """
         Method to send a communication to other agents in the environment
         :param overwatch: overwatcher facilitating communication
@@ -186,7 +196,7 @@ class RandomAgent(Agent):
         # query the overwatch for the agents in the agent's communication range
         agents_in_range = overwatch.get_agents_in_range(self._position, self._communication_range)
         # remove the agent's own id from the list of agents in range
-        agents_in_range = [agent for agent in agents_in_range if agent.id != self._id]
+        agents_in_range = [agent for agent in agents_in_range if agent.agent_id != self._id]
         # log the agents in range
         self.log.info(f"Agent {self._id} is communicating with {agents_in_range}")
 
@@ -199,7 +209,7 @@ class RandomAgent(Agent):
             # send the transmittable to the agents in range - this is handled by the overwatch
             self._tx(self._id, transmittable, agents_in_range, overwatch)
 
-    def commsPart2(self, overwatch):
+    def comms_part2(self, overwatch):
         """
         Method to recieve communication from other agents in the environment
         :param overwatch: overwatcher facilitating communication
@@ -223,7 +233,7 @@ class RandomAgent(Agent):
         # query the overwatch for the agents in the agent's communication range
         self._agents_in_range = overwatch.get_agents_in_range(self._position, self._communication_range)
         # remove the agent's own id from the list of agents in range
-        self._agents_in_range = [agent for agent in self._agents_in_range if agent.id != self._id]
+        self._agents_in_range = [agent for agent in self._agents_in_range if agent.agent_id != self._id]
         # log the agents in range
         self.log.info(f"Agent {self._id} is communicating with {self._agents_in_range}")
 
@@ -273,7 +283,7 @@ class RandomAgent(Agent):
         # call the overwatch receive method
         overwatch.upload(id, transmittable, agents_in_range)
 
-    def _rx(self, id, overwatch: Overwatch) -> List[Transmittable]:
+    def _rx(self, agent_id, overwatch: Overwatch) -> List[Transmittable]:
         """
         Method to receive transmittables from the overwatch
         :param id: Id of the agent
@@ -282,7 +292,7 @@ class RandomAgent(Agent):
         """
             
         # call the overwatch send method
-        return overwatch.download(id)
+        return overwatch.download(agent_id)
 
     def action(self):
         """
