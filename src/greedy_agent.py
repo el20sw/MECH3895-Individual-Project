@@ -1,9 +1,25 @@
+"""
+Greedy Agent Module
+===================
+This module contains the source code for the GreedyAgent class.
+A GreedyAgent is an agent that selects, randomly, the nearest unvisited node to its current position.
+If that is one of the neighbours of the current position, it moves to that node. Otherwise, it moves to the nearest
+unvisited nodes according to a belief of the environment and, if communication is enabled, the beliefs of other agents.
+
+The Greedy Agent has multiple states:
+- 'move' - the agent is moving to a new node
+- 'observe' - the agent is observing the node it is currently at
+- 'communicate' - the agent is communicating with other agents
+- 'action' - the agent is determining it's next action
+
+"""
+
 # Import modules
 from copy import deepcopy
-import src.debug.logger as logger
-
 from typing import List
 import random
+
+import src.debug.logger as logger
 
 # Import classes
 from src.agent import Agent
