@@ -5,6 +5,7 @@ from src.simulation import Simulation
 from src.network import Network
 from src.random_agent import RandomAgent
 from src.greedy_agent import GreedyAgent
+from src.behavioural_agent import BehaviouralAgent
 
 ### Main Function ###
 def main():
@@ -16,11 +17,11 @@ def main():
     env = Network('networks/Net1.inp')
     log.debug(f'Environment: {env}')
     # Create the agent layer
-    agentA = GreedyAgent(env, 'A', '11', communication_range=-1, random_seed=0)
-    agentB = GreedyAgent(env, 'B', '31', communication_range=-1, random_seed=0)
+    agentA = BehaviouralAgent(env, 'A', '11', communication_range=-1, decay=0.5, random_seed=0)
+    agentB = BehaviouralAgent(env, 'B', '12', communication_range=-1, decay=0.5, random_seed=0)
     agentC = GreedyAgent(env, 'C', '23', communication_range=-1, random_seed=0)
     log.debug(f'{agentA} @ {agentA.position}')
-    log.debug(f'{agentB} @ {agentB.position}')
+    # log.debug(f'{agentB} @ {agentB.position}')
     # Create the simulation layer
     agent_list = [agentA, agentB, agentC]
     simulation = Simulation(env)
@@ -44,13 +45,13 @@ def main():
 
     # Run the simulation
     log.info('Running the simulation')
-    simulation.run(max_turns=200)
+    simulation.run(max_turns=100)
 
     # Get the results
     simulation.write_results('results/sandbox.json')
 
     # Render the network
-    env.plot_network(show=True, node_labels=True, link_labels=True)
+    env.plot_network(show=False, node_labels=True, link_labels=True)
 
 # call main function
 if __name__ == '__main__':
