@@ -43,6 +43,8 @@ class GreedyAgent(Agent):
     
         # Initialise the logger
         self._log = logger.get_logger(__name__)
+        
+        self._environment = environment
 
         # Set the random seed
         random.seed(random_seed)
@@ -127,6 +129,11 @@ class GreedyAgent(Agent):
         """
         # update the previous position
         self._previous_position = self._position
+        
+        # sanity check - check if a link exists between the current position and the action
+        if self._action not in self._environment.adj_list[self._position]:
+            raise ValueError(f'Action {self._action} is not in the adjacency list of {self._position}')
+        
         # update the agent's position
         self._position = self._action
         # if the position is in the persistent unvisited neighbours, remove
@@ -326,6 +333,13 @@ class GreedyAgent(Agent):
         # unvisited nodes in action space
         unvisited_nodes_action_space = []
         
+        try:
+            # get the agent's adjacency list
+            adjacency_list = self._build_agent_adjacency_list(action_space=action_space)
+            self._log.debug(f"Agent {self._id} adjacency list: {adjacency_list}")
+        except KeyError:
+            adjacency_list = {}
+        
         # check if any nodes in the action space are unvisited
         for neighbour in action_space:
             if neighbour in unvisited_nodes:
@@ -345,9 +359,6 @@ class GreedyAgent(Agent):
 
             return action
 
-        # get the agent's adjacency list
-        adjacency_list = self._build_agent_adjacency_list(action_space=action_space)
-        self._log.debug(f"Agent {self._id} adjacency list: {adjacency_list}")
         # get the agent's node distances and the previous nodes to get there
         distances, previous_nodes = self._dijkstra(position, adjacency_list)
         # get the agent's nearest unvisited node
