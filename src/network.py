@@ -101,6 +101,14 @@ class Network:
     def adj_list(self) -> dict:
         return self._adj_list
     
+    @property
+    def water_network_model(self) -> wntr.network.WaterNetworkModel:
+        """
+        Getter for the water network model
+        :return: Water network model
+        """
+        return self._wn
+    
     # Get adjacency list
     def _get_adj_list(self) -> dict:
         """
