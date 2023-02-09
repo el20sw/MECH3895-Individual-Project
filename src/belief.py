@@ -247,10 +247,13 @@ class Belief:
 
         # Update the list of visited nodes
         self._visited_nodes = [node for node in self._nodes.keys() if self._nodes[node] == VISITED]
+        self._log.debug(f"Agent {self._agent_id} updated list of visited nodes to {self._visited_nodes}")
         # Update the list of unvisited nodes
         self._unvisited_nodes = [node for node in self._nodes.keys() if self._nodes[node] == UNVISITED]
+        self._log.debug(f"Agent {self._agent_id} updated list of unvisited nodes to {self._unvisited_nodes}")
         # Update the list of occupied nodes
         self._occupied_nodes = [node for node in self._nodes.keys() if self._nodes[node] == OCCUPIED]
+        self._log.debug(f"Agent {self._agent_id} updated list of occupied nodes to {self._occupied_nodes}")
 
         # Update the belief state with the local observation
         for neighbour in neighbours:
@@ -258,6 +261,12 @@ class Belief:
             if self._nodes[neighbour] == UNVISITED or self._nodes[neighbour] is None:
                 self._nodes[neighbour] = UNVISITED
                 self._log.debug(f"Agent {self._agent_id} updated node {neighbour} to unvisited")
+                
+        # Update persistent unvisited neighbours
+        for neighbour in neighbours:
+            if neighbour not in self._unvisited_nodes:
+                continue
+            self._update_persistent_unvisited_neighbours(neighbour, self._position)
 
     # Method to update from the communication
     def _update_from_communication(self, *communication : Transmittable):
@@ -317,6 +326,7 @@ class Belief:
             self._update_links(this_belief_links, other_belief_links)
             # add to dictionary of other agents persistent unvisited neighbours
             self._update_other_agents_unvisited_neighbours(belief)
+            self._log.debug(f"Agent {self._agent_id} updated links to {self._links}")
 
     def _position_handler(self, belief_stack, nodes_new, other_agents_new):
         """
