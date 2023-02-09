@@ -15,6 +15,7 @@ class Simulation:
     Simulation Class
     ----------
     Class to simulate the pipe network environment
+    :param environment: Network object
     """
 
     def __init__(self, environment: Network):
@@ -234,4 +235,4 @@ class Simulation:
         # If there is an error, log it
         except Exception as e:
             self._log.error(f"Error writing adjacency list to file: {e}")
-
+        
