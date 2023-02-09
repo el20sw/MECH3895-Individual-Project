@@ -326,7 +326,8 @@ class BehaviouralAgent(Agent):
             if neighbour in unvisited_nodes:
                 unvisited_nodes_action_space.append(neighbour)
                 # Add unvisited neighbour to the persistent unvisited neighbours
-                self._belief._update_persistent_unvisited_neighbours(neighbour, position)
+                # self._belief._update_persistent_unvisited_neighbours(neighbour, position)
+        self._log.debug(f"Agent {self._id} unvisited nodes in action space: {unvisited_nodes_action_space}")
                 
         # get the agent's adjacency list
         adjacency_list = self._build_agent_adjacency_list(action_space=action_space)
@@ -382,9 +383,12 @@ class BehaviouralAgent(Agent):
         visited.add(node)
         self._log.warning(f"Agent {self._id} pseudo-visited: {visited}")
         exploration_value = exploration_bonus + penalty_value
-        for neighbour in adjacency_list[node]:
-            if neighbour not in visited:
-                exploration_value += decay * self._calculate_exploration_value(neighbour, adjacency_list, visited, decay)
+        try:
+            for neighbour in adjacency_list[node]:
+                if neighbour not in visited:
+                    exploration_value += decay * self._calculate_exploration_value(neighbour, adjacency_list, visited, decay)
+        except KeyError:
+            pass
         
         return exploration_value
     
@@ -459,6 +463,7 @@ class BehaviouralAgent(Agent):
 
         # if the other agent's persistent unvisited neighbours in not empty
         if self._belief.other_agents_unvisited_neighbours:
+            self._log.critical(f"Agent {self._id} has discovered remote nodes - {self._belief.other_agents_unvisited_neighbours}")
             # iterate through each agent
             for agent, unvisited_neighbours in self._belief.other_agents_unvisited_neighbours.items():
                 # iterate through the agents unvisited neighbours
@@ -467,10 +472,13 @@ class BehaviouralAgent(Agent):
                         adjacency_list[node] = []
                         self._log.critical(f"Agent {self._id} added remote node {node} to it's adjacency list")
                     for neighbour in neighbours:
-                        if node not in adjacency_list[neighbour]:
-                            adjacency_list[neighbour].append(node)
-                            adjacency_list[node].append(neighbour)
-                            self._log.critical(f"Agent {self._id} discovered a remote link between {node} - {neighbour}")
+                        try:
+                            if node not in adjacency_list[neighbour]:
+                                adjacency_list[neighbour].append(node)
+                                adjacency_list[node].append(neighbour)
+                                self._log.critical(f"Agent {self._id} discovered a remote link between {node} - {neighbour}")
+                        except KeyError:
+                            pass
 
         return adjacency_list
 
