@@ -1,8 +1,10 @@
 # Import logger
+import os
+from datetime import datetime
+from typing import List
+import pandas as pd
+
 import src.debug.logger as logger
-
-from typing import Any, List, Tuple
-
 from src.network import Network
 from src.agent import Agent
 from src.transmittable import Transmittable
@@ -20,6 +22,8 @@ class Overwatch:
     """
 
     def __init__(self, environment: Network, agents: List[Agent]):
+        # create unique id for this simulation
+        self._simulation_id = datetime.now().strftime('%Y%m%d_%H%M%S')
         # Initialise the logger
         self._log = logger.get_logger(__name__)
         # Initialise the overwatch
@@ -28,7 +32,7 @@ class Overwatch:
         self._num_agents = len(agents)
         self._agent_positions = {}
         self._agent_paths = {}
-        self._visited_nodes = []
+        self._visited_nodes = set()
         self._all_nodes = self._environment.node_names
         self._turns = 0
         self._pct_explored = 0
@@ -37,6 +41,17 @@ class Overwatch:
         self._transmittables = []
         # create dictionary of agents (keys) and empty values in preparation for communication - each turn the dictionary will be updated with the transmittables to be sent to each agent
         self._communication_buffer: dict = {agent.agent_id: [] for agent in self._agents}
+        
+        # create/find results directory
+        self._results_dir = 'results'
+        # create subdirectory for this simulation
+        self._results_subdir = f'{self._results_dir}/simulation_{self._simulation_id}'
+        # create directory
+        os.makedirs(self._results_subdir, exist_ok=True)
+        # create file for results
+        self._results_file = f'{self._results_subdir}/results.csv'
+        # create dataframe to store results
+        self._results = pd.DataFrame(columns=['turn', 'pct_explored'])
 
     ### Attributes ###
     @property
@@ -64,7 +79,7 @@ class Overwatch:
         return self._agent_paths
 
     @property
-    def visited_nodes(self) -> list:
+    def visited_nodes(self) -> set:
         return self._visited_nodes
 
     @property
@@ -103,6 +118,14 @@ class Overwatch:
         self._agent_paths[agent.agent_id] = [agent.position]
         # Update the communication buffer
         self._communication_buffer[agent.agent_id] = []
+        
+        # Add agent to results dataframe
+        self._results[agent.agent_id] = None
+        # if turn 0 doesn't exist in results dataframe, add it
+        if 0 not in self._results['turn'].values:
+            self._results.loc[0, 'turn'] = 0
+            self._results.loc[0, 'pct_explored'] = 0
+        self._results.loc[0, agent.agent_id] = agent.position
 
     def update(self, turns=None):
         """
@@ -122,7 +145,50 @@ class Overwatch:
         # Update the percentage of nodes explored
         self._pct_explored = self.update_pct_explored()
         self._log.debug(f"Percentage of nodes explored: {self._pct_explored}")
-
+        # write results to file
+        self.update_results()
+        
+    def update_results(self):
+        """
+        Method to update the results
+        :return: None
+        """
+        
+        # add turn to results dataframe
+        self._results.loc[self._turns, 'turn'] = self._turns
+        # add percentage of nodes explored to results dataframe
+        self._results.loc[self._turns, 'pct_explored'] = self._pct_explored
+        # add agent positions to results dataframe
+        for agent_id, position in self._agent_positions.items():
+            self._results.loc[self._turns, agent_id] = position
+        
+    def write_results(self):
+        """
+        Method to write the results to a file
+        :return: None
+        """
+        
+        # results = self.format_results()
+        # turn = results["turn"]
+        # pct_explored = results["pct_explored"]
+        
+        # # get agent ids
+        # agent_ids = [agent.agent_id for agent in self._agents]
+        
+        # write results to file
+        # with open(self._results_file, 'a') as results_file:
+        #     # write header if file is empty
+        #     if os.stat(self._results_file).st_size == 0:
+        #         results_file.write(f"turn,{''.join([f'{agent_id},' for agent_id in agent_ids])}pct_explored")
+        #     # write results
+        #     results_file.write(f"\n{turn},{''.join([f'{results[agent_id]},' for agent_id in agent_ids])}{pct_explored}")
+            
+        # close file
+        # results_file.close()
+        
+        # convert results to csv and write to results file
+        self._results.to_csv(self._results_file, index=False)
+            
     def update_agent_positions(self):
         """
         Method to get the positions of the agents
@@ -142,7 +208,7 @@ class Overwatch:
         """
         # Get the unique visited nodes of the agents
         for agent in self._agents:
-            self._visited_nodes.extend(agent.visited_nodes)
+            self._visited_nodes.add(agent.position)
         # Return the dictionary
         return self._visited_nodes
 
@@ -152,7 +218,7 @@ class Overwatch:
         :return: Percentage of nodes explored
         """
         # Get the percentage of nodes explored
-        pct_explored = len(set(self._visited_nodes)) / len(self._all_nodes) * 100
+        pct_explored = len(self._visited_nodes) / len(self._all_nodes) * 100
         # Return the percentage
         return pct_explored
 
@@ -236,3 +302,22 @@ class Overwatch:
             return self._agents
         elif communication_range == 0:
             return []
+        
+    def format_results(self):
+        """
+        Method to format the results of the simulation
+        :return: Formatted results
+        """
+        
+        # Get the agent positions
+        agents = {agent.agent_id: agent.position for agent in self._agents}
+        # Get the current turn
+        turn = self._turns
+        # Get the percentage of nodes explored
+        pct_explored = self._pct_explored
+        # Put the results in a dictionary
+        results = {"turn": turn, "pct_explored": pct_explored}
+        for agent_id, agent_position in agents.items():
+            results.update({agent_id: agent_position})
+        # Return the results
+        return results
