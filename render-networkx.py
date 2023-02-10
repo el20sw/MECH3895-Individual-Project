@@ -12,6 +12,8 @@ wn = net._wn
 # Get the data
 df = pd.read_csv('results/simulation_20230210_154320/results.csv', index_col=0)
 agent_ids = [col for col in df.columns if col not in ['turn', 'pct_explored']]
+num_turns = len(df.index)
+print(num_turns)
 
 print(df)
 print(agent_ids)
@@ -86,14 +88,47 @@ nx.draw_networkx_labels(uG, all_pos, labels=agent_node_labels,
                         horizontalalignment='left', verticalalignment='bottom', 
                         bbox=dict(facecolor='red', alpha=0.5), font_weight='bold'
                         )
-# Draw legend
-plt.legend()
+
+
+def animate(i):
+    # get the current turn - turns are the index of the dataframe
+    turn = df.index[i]
+    # get the current percentage explored
+    pct_explored = df['pct_explored'][i]
+    # get the current positions of the agents
+    agent_pos = {}
+    for agent_id in agent_ids:
+        agent_node = str(df[agent_id][i])
+        # get the node position
+        agent_pos[agent_id] = node_pos[agent_node]
+    # update the positions of the agents
+    nx.set_node_attributes(uG, agent_pos, 'pos')
+    # get the positions of all objects
+    all_pos = nx.get_node_attributes(uG, 'pos')
+    # update the positions of all objects
+    nx.set_node_attributes(uG, all_pos, 'pos')
+    # update the figure
+    fig.clear()
+    # Draw background environment nodes
+    nx.draw_networkx_nodes(uG, all_pos, nodelist=env_nodes, node_color='blue', label='Environment Nodes')
+    # Draw agent nodes
+    nx.draw_networkx_nodes(uG, all_pos, nodelist=agent_nodes, node_color='red', label='Agent Nodes')
+    # Draw edges
+    nx.draw_networkx_edges(uG, all_pos)
+    # Draw labels - make labels to the right of the nodes if node label is environment node and to the left if it is an agent node
+    env_node_labels = {node: node for node in uG.nodes() if node in env_nodes}
+    agent_node_labels = {node: node for node in uG.nodes() if node in agent_nodes}
+    # Draw labels
+    nx.draw_networkx_labels(uG, all_pos, labels=env_node_labels,
+                            horizontalalignment='right', verticalalignment='top',
+                            font_weight='bold'
+                            )
+    nx.draw_networkx_labels(uG, all_pos, labels=agent_node_labels,
+                            horizontalalignment='left', verticalalignment='bottom',
+                            bbox=dict(facecolor='red', alpha=0.5), font_weight='bold'
+                            )
+    # Add title
+    plt.title('Turn: {} - {}% explored'.format(turn, pct_explored))
+    
+ani = FuncAnimation(plt.gcf(), animate, frames=num_turns*2, repeat=False, interval=500)
 plt.show()
-
-# def animate(i):
-#     # Redraw the graph
-#     pos = nx.get_node_attributes(uG, 'pos')
-#     nx.draw(uG, pos, with_labels=True)
-
-
-# ani = FuncAnimation(plt.gcf(), animate, frames=100, repeat=False)
