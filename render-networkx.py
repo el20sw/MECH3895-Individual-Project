@@ -6,11 +6,11 @@ from matplotlib.animation import FuncAnimation
 from src.network import Network
 
 # create a network
-net = Network('networks/Net1.inp')
+net = Network('networks/Net2.inp')
 wn = net._wn
 
 # Get the data
-df = pd.read_csv('results/simulation_20230210_154320/results.csv', index_col=0)
+df = pd.read_csv('results/simulation_20230210_172350/results.csv', index_col=0)
 agent_ids = [col for col in df.columns if col not in ['turn', 'pct_explored']]
 num_turns = len(df.index)
 print(num_turns)
@@ -91,16 +91,18 @@ nx.draw_networkx_labels(uG, all_pos, labels=agent_node_labels,
 
 
 def animate(i):
+    
     # get the current turn - turns are the index of the dataframe
     turn = df.index[i]
     # get the current percentage explored
-    pct_explored = df['pct_explored'][i]
+    pct_explored = df['pct_explored'][i]    
     # get the current positions of the agents
     agent_pos = {}
     for agent_id in agent_ids:
         agent_node = str(df[agent_id][i])
         # get the node position
         agent_pos[agent_id] = node_pos[agent_node]
+    
     # update the positions of the agents
     nx.set_node_attributes(uG, agent_pos, 'pos')
     # get the positions of all objects
@@ -127,8 +129,12 @@ def animate(i):
                             horizontalalignment='left', verticalalignment='bottom',
                             bbox=dict(facecolor='red', alpha=0.5), font_weight='bold'
                             )
+
     # Add title
     plt.title('Turn: {} - {}% explored'.format(turn, pct_explored))
+    
+    # Add title
+    plt.title('Turn: {} - {}% explored'.format(turn, pct_explored))    
     
 ani = FuncAnimation(plt.gcf(), animate, frames=num_turns*2, repeat=False, interval=500)
 plt.show()
