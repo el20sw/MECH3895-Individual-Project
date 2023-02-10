@@ -137,6 +137,9 @@ class Simulation:
                 self._log.info(f'It took {self._num_agents} agent(s) {self._turns} to explore {self._num_nodes} nodes')
 
                 break
+            
+            # Write the results to a file
+            self._overwatch.write_results()
 
             # Log the percentage of the environment explored
             self._log.info(f"Percentage of environment explored: {self._pct_explored}%")
