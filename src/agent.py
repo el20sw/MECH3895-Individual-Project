@@ -117,7 +117,7 @@ class Agent(ABC):
         """
 
     @property
-    def agent_id(self) -> int:
+    def agent_id(self):
         """
         Method to get the ID of the agent
         :return: ID of the agent
