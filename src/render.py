@@ -5,7 +5,7 @@ Class for rendering a simulation
 import networkx as nx
 import matplotlib.pyplot as plt
 import pandas as pd
-from matplotlib.animation import FuncAnimation
+from matplotlib.animation import FuncAnimation, FFMpegWriter
 
 from src.network import Network
 from src.simulation import Simulation
@@ -19,7 +19,8 @@ class Render:
         self.env_wn = self.env.water_network_model
         
         # get the raw data associated with the simulation
-        simulation.overwatch.path_to_results_file
+        self.results_directory = simulation.overwatch.path_to_results_directory
+        self.results_file_path = simulation.overwatch.path_to_results_file
         self.df = pd.read_csv(simulation.overwatch.path_to_results_file, index_col=0)
         
         # get the agent ids
@@ -59,17 +60,17 @@ class Render:
         nx.set_node_attributes(self.G, self.agent_start_pos, 'pos')
         
         # get the positions of all objects
-        all_pos = nx.get_node_attributes(self.G, 'pos')
-        nx.set_node_attributes(self.G, all_pos, 'pos')
+        self.all_pos = nx.get_node_attributes(self.G, 'pos')
+        nx.set_node_attributes(self.G, self.all_pos, 'pos')
         
         # initialise the figure
         self.fig = plt.figure(figsize=(10, 10), dpi=100, facecolor='w', edgecolor='k')
         
         # draw the network nodes
-        nx.draw_networkx_nodes(self.G, self.env_node_pos, nodelist=self.env_nodes, node_color='blue', label='Environmental Nodes')
+        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.env_nodes, node_color='blue', label='Environmental Nodes')
         
         # draw the agent nodes
-        nx.draw_networkx_nodes(self.G, self.env_node_pos, nodelist=self.agent_nodes, node_color='red', label='Agent Nodes')
+        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.agent_nodes, node_color='red', label='Agent Nodes')
         
         # draw the edges
         nx.draw_networkx_edges(self.G, self.env_node_pos)
@@ -78,18 +79,21 @@ class Render:
         env_node_labels = {node: node for node in self.G.nodes() if node in self.env_nodes}
         agent_node_labels = {node: node for node in self.G.nodes() if node in self.agent_nodes}
         nx.draw_networkx_labels(
-            self.G, all_pos, labels=env_node_labels, 
+            self.G, self.all_pos, labels=env_node_labels, 
             horizontalalignment='right', verticalalignment='top',
             font_weight='bold'
             )
         nx.draw_networkx_labels(
-            self.G, all_pos, labels=agent_node_labels, 
+            self.G, self.all_pos, labels=agent_node_labels, 
             horizontalalignment='left', verticalalignment='bottom', 
             bbox=dict(facecolor='red', alpha=0.5), font_weight='bold'
             )
         
     def animate(self, i):
         
+        # check if i < num_turns
+        if i >= self.num_turns:
+            return
         # get the current turn - turns are the index of the dataframe
         turn = self.df.index[i]
         # get the current percentage explored
@@ -104,28 +108,28 @@ class Render:
         # update the positions of the agents
         nx.set_node_attributes(self.G, agent_pos, 'pos')
         # get the positions of all objects
-        all_pos = nx.get_node_attributes(self.G, 'pos')
+        self.all_pos = nx.get_node_attributes(self.G, 'pos')
         # update the positions of all objects
-        nx.set_node_attributes(self.G, all_pos, 'pos')
+        nx.set_node_attributes(self.G, self.all_pos, 'pos')
         # update the figure
         self.fig.clear()
         
         # Draw background environment nodes
-        nx.draw_networkx_nodes(self.G, all_pos, nodelist=self.env_nodes, node_color='blue', label='Environment Nodes')
+        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.env_nodes, node_color='blue', label='Environment Nodes')
         # Draw agent nodes
-        nx.draw_networkx_nodes(self.G, all_pos, nodelist=self.agent_nodes, node_color='red', label='Agent Nodes')
+        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.agent_nodes, node_color='red', label='Agent Nodes')
         # Draw edges
-        nx.draw_networkx_edges(self.G, all_pos)
+        nx.draw_networkx_edges(self.G, self.all_pos)
         
         # Draw labels - make labels to the right of the nodes if node label is environment node and to the left if it is an agent node
         env_node_labels = {node: node for node in self.G.nodes() if node in self.env_nodes}
         agent_node_labels = {node: node for node in self.G.nodes() if node in self.agent_nodes}
         # Draw labels
-        nx.draw_networkx_labels(self.G, all_pos, labels=env_node_labels,
+        nx.draw_networkx_labels(self.G, self.all_pos, labels=env_node_labels,
                                 horizontalalignment='right', verticalalignment='top',
                                 font_weight='bold'
                                 )
-        nx.draw_networkx_labels(self.G, all_pos, labels=agent_node_labels,
+        nx.draw_networkx_labels(self.G, self.all_pos, labels=agent_node_labels,
                                 horizontalalignment='left', verticalalignment='bottom',
                                 bbox=dict(facecolor='red', alpha=0.5), font_weight='bold'
                                 )
@@ -137,13 +141,18 @@ class Render:
         plt.title('Turn: {} - {}% explored'.format(turn, pct_explored)) 
     
 
-    def render(self):
+    def render(self, frames=None, repeat=False, interval=500):
         """
         Function to render a simulation
         :param simulation: Simulation object
         """
         
+        if frames is None:
+            frames = self.num_turns + 1
         # create animation object
-        animation = FuncAnimation(plt.gcf(), self.animate, frames=self.num_turns*2, repeat=False, interval=500)
-        plt.show()
+        writervideo = FFMpegWriter(fps=1)
+        animation = FuncAnimation(plt.gcf(), self.animate, frames=frames, repeat=repeat, interval=interval)
+        animation_loc = f'{self.results_directory}/animation.mp4'
+        animation.save(animation_loc, writer=writervideo)
+        plt.close()
     
