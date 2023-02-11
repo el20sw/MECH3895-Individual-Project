@@ -19,13 +19,16 @@ OCCUPANCY_PENALTY = -10
 ### Behavioural Agent Class ###
 class BehaviouralAgent(Agent):
     # Initialise the agent
-    def __init__(self, environment: Network, agent_id, position, communication_range:int=-1, decay=0.5, random_seed:int=0):
+    def __init__(self, environment: Network, agent_id, position, communication_range:int=-1, decay=0.5, random_seed:int=0, first=False):
         """
         Constructor for the BehaviouralAgent class
         :param environment: Enviroment the agent is operating in (Network)
         :param id: ID of the agent
         :param position: Position of the agent in the environment
         :param communication_range: Range of communication of the agent - default is -1 (infinite communication)
+        :param decay: Decay rate of the agent's belief
+        :param random_seed: Random seed for the agent
+        :param first: Boolean to indicate if the agent is the first agent - first agent immune to occupancy penalty
         """
     
         # Initialise the logger
@@ -44,6 +47,7 @@ class BehaviouralAgent(Agent):
         self._communication_range = communication_range
         self._visited_nodes = []
         self._decay = decay
+        self._first = first
         
         self._exploration_values = {node: None for node in environment.adj_list.keys()}
 
@@ -360,25 +364,13 @@ class BehaviouralAgent(Agent):
         exploration_bonus = EXPLORATION_BONUS if self.belief.nodes.get(node) == 1 else 0
         self._log.debug(f"Agent {self._id} exploration bonus @ {node}: {exploration_bonus}")
         # penalty value
-        penalty_value = OCCUPANCY_PENALTY if self.belief.nodes.get(node) == -10 else 0
-        self._log.debug(f"Agent {self._id} penalty value @ {node}: {penalty_value}")
-        
-        # if node is self._position:
-        #     self._log.debug(f"Agent {self._id} is at {node}")
-        #     return 0
-        
-        # if node in visited:
-        #     self._log.debug(f"Agent {self._id} already pseudo-visited: {node}")
-        #     return 0
-        
-        # visited.add(node)
-        # self._log.debug(f"Agent {self._id} pseudo-visited: {visited}")
-        
-        # exploration_value = exploration_bonus + penalty_value
-        # self._log.debug(f"Agent {self._id} exploration value @ {node}: {exploration_value}")
-        # for neighbour in adjacency_list[node]:
-        #     exploration_value += decay * self._calculate_exploration_value(neighbour, adjacency_list, visited, decay)
-        #     self._log.debug(f"Agent {self._id} exploration value @ {node}: {exploration_value}")    
+        if self._first:
+            # first agent ignores penalty - reduces chance of deadlock occuring
+            penalty_value = 0
+            self._log.debug(f"Agent {self._id} (First Agent) - penalty value @ {node}: {penalty_value}")
+        else:
+            penalty_value = OCCUPANCY_PENALTY if self.belief.nodes.get(node) == -10 else 0
+            self._log.debug(f"Agent {self._id} penalty value @ {node}: {penalty_value}")   
             
         visited.add(node)
         self._log.warning(f"Agent {self._id} pseudo-visited: {visited}")
