@@ -125,6 +125,11 @@ class Simulation:
             # Update the percentage of the environment explored
             self._pct_explored = self._overwatch.pct_explored
             if self._pct_explored == 100:
+                # update overwatch
+                self._overwatch.update(turns=self._turns)
+                # write results to file
+                self._overwatch.write_results()
+                
                 self._log.info(f"Simulation complete - {self._pct_explored}% of environment explored")
 
                 self._log.debug(f'Nodes explored: {sorted(set(self._overwatch.visited_nodes))}')
