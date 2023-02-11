@@ -145,10 +145,10 @@ class Overwatch:
         # Update the percentage of nodes explored
         self._pct_explored = self.update_pct_explored()
         self._log.debug(f"Percentage of nodes explored: {self._pct_explored}")
-        # write results to file
-        self.update_results()
+        # update results data frame
+        self.update_results_df()
         
-    def update_results(self):
+    def update_results_df(self):
         """
         Method to update the results
         :return: None
@@ -156,11 +156,14 @@ class Overwatch:
         
         # add turn to results dataframe
         self._results.loc[self._turns, 'turn'] = self._turns
+        self._log.debug(f"Turn {self._turns} added to results dataframe")
         # add percentage of nodes explored to results dataframe
         self._results.loc[self._turns, 'pct_explored'] = self._pct_explored
+        self._log.debug(f"Percentage of nodes explored {self._pct_explored} added to results dataframe")
         # add agent positions to results dataframe
         for agent_id, position in self._agent_positions.items():
             self._results.loc[self._turns, agent_id] = position
+            self._log.debug(f"Agent {agent_id} position {position} added to results dataframe")
         
     def write_results(self):
         """
