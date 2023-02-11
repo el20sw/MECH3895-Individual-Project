@@ -52,6 +52,9 @@ class Overwatch:
         self._results_file = f'{self._results_subdir}/results.csv'
         # create dataframe to store results
         self._results = pd.DataFrame(columns=['turn', 'pct_explored'])
+        
+        # path to results file
+        self._results_path = self._results_file
 
     ### Attributes ###
     @property
@@ -97,6 +100,14 @@ class Overwatch:
     @property
     def communication_buffer(self) -> dict:
         return self._communication_buffer
+    
+    @property
+    def path_to_results_file(self):
+        return self._results_path
+    
+    @property
+    def path_to_results_directory(self):
+        return self._results_subdir
 
     ### Methods ###
     def add_agent(self, agent: Agent):
