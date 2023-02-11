@@ -1,19 +1,3 @@
-"""
-Greedy Agent Module
-===================
-This module contains the source code for the GreedyAgent class.
-A GreedyAgent is an agent that selects, randomly, the nearest unvisited node to its current position.
-If that is one of the neighbours of the current position, it moves to that node. Otherwise, it moves to the nearest
-unvisited nodes according to a belief of the environment and, if communication is enabled, the beliefs of other agents.
-
-The Greedy Agent has multiple states:
-- 'move' - the agent is moving to a new node
-- 'observe' - the agent is observing the node it is currently at
-- 'communicate' - the agent is communicating with other agents
-- 'action' - the agent is determining it's next action
-
-"""
-
 # Import modules
 from copy import deepcopy
 from typing import List
@@ -29,16 +13,22 @@ from src.transmittable import Transmittable
 from src.network import Network
 from src.overwatch import Overwatch
 
-### Greedy Agent Class ###
-class GreedyAgent(Agent):
+EXPLORATION_BONUS = 1
+OCCUPANCY_PENALTY = -10
+
+### Behavioural Agent Class ###
+class BehaviouralAgent(Agent):
     # Initialise the agent
-    def __init__(self, environment: Network, agent_id, position, communication_range: int =-1, random_seed: int = 0):
+    def __init__(self, environment: Network, agent_id, position, communication_range:int=-1, decay=0.5, random_seed:int=0, first=False):
         """
-        Constructor for the GreedyAgent class
+        Constructor for the BehaviouralAgent class
         :param environment: Enviroment the agent is operating in (Network)
         :param id: ID of the agent
         :param position: Position of the agent in the environment
         :param communication_range: Range of communication of the agent - default is -1 (infinite communication)
+        :param decay: Decay rate of the agent's belief
+        :param random_seed: Random seed for the agent
+        :param first: Boolean to indicate if the agent is the first agent - first agent immune to occupancy penalty
         """
     
         # Initialise the logger
@@ -56,8 +46,10 @@ class GreedyAgent(Agent):
         self._previous_position = None
         self._communication_range = communication_range
         self._visited_nodes = []
-        # self._persistent_unvisited_neighbours = {}
-        # self._persistent_adjacency_list = {}
+        self._decay = decay
+        self._first = first
+        
+        self._exploration_values = {node: None for node in environment.adj_list.keys()}
 
         # check if the position is in the network environment
         if self._position not in environment.node_names:
@@ -314,15 +306,15 @@ class GreedyAgent(Agent):
         self._log.debug(f"Agent {self._id} @ {self._position} action space: {action_space}")
 
         # get a random action from the action space
-        action = self._greedy_action(action_space)
+        action = self._behavioural_action(action_space)
 
         self._action = action
 
-    def _greedy_action(self, action_space):
+    def _behavioural_action(self, action_space):
         """
-        Method to get a greedy action from the action space
+        Method to get an action from the action space based on a behavioural policy
         :param action_space: Action space
-        :return: Greedy action
+        :return: Behavioural action
         """
 
         # get agent's position
@@ -333,53 +325,85 @@ class GreedyAgent(Agent):
         # unvisited nodes in action space
         unvisited_nodes_action_space = []
         
-        try:
-            # get the agent's adjacency list
-            adjacency_list = self._build_agent_adjacency_list(action_space=action_space)
-            self._log.debug(f"Agent {self._id} adjacency list: {adjacency_list}")
-        except KeyError:
-            adjacency_list = {}
-        
         # check if any nodes in the action space are unvisited
         for neighbour in action_space:
             if neighbour in unvisited_nodes:
                 unvisited_nodes_action_space.append(neighbour)
                 # Add unvisited neighbour to the persistent unvisited neighbours
-                self._belief._update_persistent_unvisited_neighbours(neighbour, position)
-
-
-        if unvisited_nodes_action_space:
-            action = random.choice(unvisited_nodes_action_space)
-            self._log.info(f"Agent {self._id} is taking a greeedy random action {action} from the action space (unvisited nodes in action space)")
-
-            # remove action from persistent unvisited neighbours
-            if action in self._belief._persistent_unvisited_neighbours.keys():
-                self._belief._persistent_unvisited_neighbours.pop(action)
-                self._log.debug(f"Agent {self._id} has persistent unvisited neighbours: {self._belief._persistent_unvisited_neighbours}")
-
-            return action
-
-        # get the agent's node distances and the previous nodes to get there
-        distances, previous_nodes = self._dijkstra(position, adjacency_list)
-        # get the agent's nearest unvisited node
-        try:
-            nearest_unvisited_node = self._get_nearest_unvisited_node(distances, adjacency_list)
-            # get the action to take to get to the nearest unvisited node
-            action = self._get_action_closer_to_node(action_space, nearest_unvisited_node, previous_nodes)
-            # log the action
-            self._log.warning(f"Agent {self._id} is taking greedy action {action}")
-        except Exception:
-            # if there are no unvisited nodes, return a random action fronm the action space
-            action = random.choice(action_space)
-            # log the action
-            self._log.info(f"Agent {self._id} is taking random action {action}")
-
+                # self._belief._update_persistent_unvisited_neighbours(neighbour, position)
+        self._log.debug(f"Agent {self._id} unvisited nodes in action space: {unvisited_nodes_action_space}")
+                
+        # get the agent's adjacency list
+        adjacency_list = self._build_agent_adjacency_list(action_space=action_space)
+        self._log.debug(f"Agent {self._id} adjacency list: {adjacency_list}")
+        
+        scores = {}
+        
+        # get the score for the node
+        scores = self._build_exploration_values(position, adjacency_list, decay=self._decay)
+        self._log.debug(f"Agent {self._id} scores: {scores}")
+            
+        action = max(scores, key=scores.get)
+        self._log.debug(f"Agent {self._id} action: {action}")
+        
         return action
+    
+    def _calculate_exploration_value(self, node, adjacency_list, visited, decay):
+        """
+        Method to calculate the exploration value of a node
+        :param node: Node to calculate the exploration value of
+        :param adjacency_list: Adjacency list of the agent
+        :param visited: List of visited nodes
+        :param decay: Decay value
+        :return: Exploration value
+        """
+        
+        self._log.debug(f"Agent {self._id} calculating exploration value @ {node}")
+        
+        # exploration bonus
+        exploration_bonus = EXPLORATION_BONUS if self.belief.nodes.get(node) == 1 else 0
+        self._log.debug(f"Agent {self._id} exploration bonus @ {node}: {exploration_bonus}")
+        # penalty value
+        if self._first:
+            # first agent ignores penalty - reduces chance of deadlock occuring
+            penalty_value = 0
+            self._log.debug(f"Agent {self._id} (First Agent) - penalty value @ {node}: {penalty_value}")
+        else:
+            penalty_value = OCCUPANCY_PENALTY if self.belief.nodes.get(node) == -10 else 0
+            self._log.debug(f"Agent {self._id} penalty value @ {node}: {penalty_value}")   
+            
+        visited.add(node)
+        self._log.warning(f"Agent {self._id} pseudo-visited: {visited}")
+        exploration_value = exploration_bonus + penalty_value
+        try:
+            for neighbour in adjacency_list[node]:
+                if neighbour not in visited:
+                    exploration_value += decay * self._calculate_exploration_value(neighbour, adjacency_list, visited, decay)
+        except KeyError:
+            pass
+        
+        return exploration_value
+    
+    def _build_exploration_values(self, start_node, adjacency_list, decay=0.5):
+        """
+        Method to build the exploration values for a given node
+        :param start_node: Node to build the exploration values for
+        :param decay: Decay value
+        :return: dictionary of scores
+        """
+        
+        visited = set()
+        visited.add(start_node)
+        scores = {}
+        for node in adjacency_list.get(start_node):
+            scores[node] = self._calculate_exploration_value(node, adjacency_list, visited, decay)
+        return scores
 
     # NOTE: This does not include link lengths in the returned adjacency list
     def _build_agent_adjacency_list(self, action_space=None):
         """
         Method to build the adjacency list of the agent given the belief of the agent
+        :optional param action_space: Action space of the agent
         :return: Adjacency list of the agent (note: this does not include link lengths)
         """
 
@@ -431,6 +455,7 @@ class GreedyAgent(Agent):
 
         # if the other agent's persistent unvisited neighbours in not empty
         if self._belief.other_agents_unvisited_neighbours:
+            self._log.critical(f"Agent {self._id} has discovered remote nodes - {self._belief.other_agents_unvisited_neighbours}")
             # iterate through each agent
             for agent, unvisited_neighbours in self._belief.other_agents_unvisited_neighbours.items():
                 # iterate through the agents unvisited neighbours
@@ -439,10 +464,13 @@ class GreedyAgent(Agent):
                         adjacency_list[node] = []
                         self._log.critical(f"Agent {self._id} added remote node {node} to it's adjacency list")
                     for neighbour in neighbours:
-                        if node not in adjacency_list[neighbour]:
-                            adjacency_list[neighbour].append(node)
-                            adjacency_list[node].append(neighbour)
-                            self._log.critical(f"Agent {self._id} discovered a remote link between {node} - {neighbour}")
+                        try:
+                            if node not in adjacency_list[neighbour]:
+                                adjacency_list[neighbour].append(node)
+                                adjacency_list[node].append(neighbour)
+                                self._log.critical(f"Agent {self._id} discovered a remote link between {node} - {neighbour}")
+                        except KeyError:
+                            pass
 
         return adjacency_list
 

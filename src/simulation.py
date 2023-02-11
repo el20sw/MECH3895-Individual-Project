@@ -15,6 +15,7 @@ class Simulation:
     Simulation Class
     ----------
     Class to simulate the pipe network environment
+    :param environment: Network object
     """
 
     def __init__(self, environment: Network):
@@ -124,6 +125,11 @@ class Simulation:
             # Update the percentage of the environment explored
             self._pct_explored = self._overwatch.pct_explored
             if self._pct_explored == 100:
+                # update overwatch
+                self._overwatch.update(turns=self._turns)
+                # write results to file
+                self._overwatch.write_results()
+                
                 self._log.info(f"Simulation complete - {self._pct_explored}% of environment explored")
 
                 self._log.debug(f'Nodes explored: {sorted(set(self._overwatch.visited_nodes))}')
@@ -136,6 +142,9 @@ class Simulation:
                 self._log.info(f'It took {self._num_agents} agent(s) {self._turns} to explore {self._num_nodes} nodes')
 
                 break
+            
+            # Write the results to a file
+            self._overwatch.write_results()
 
             # Log the percentage of the environment explored
             self._log.info(f"Percentage of environment explored: {self._pct_explored}%")
@@ -234,4 +243,4 @@ class Simulation:
         # If there is an error, log it
         except Exception as e:
             self._log.error(f"Error writing adjacency list to file: {e}")
-
+        
