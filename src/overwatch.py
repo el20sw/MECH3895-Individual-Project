@@ -116,6 +116,8 @@ class Overwatch:
         # Update the agent positions
         self._agent_positions[agent.agent_id] = agent.position
         self._agent_paths[agent.agent_id] = [agent.position]
+        # Update the visited nodes
+        self._visited_nodes.add(agent.position)
         # Update the communication buffer
         self._communication_buffer[agent.agent_id] = []
         
@@ -171,24 +173,6 @@ class Overwatch:
         :return: None
         """
         
-        # results = self.format_results()
-        # turn = results["turn"]
-        # pct_explored = results["pct_explored"]
-        
-        # # get agent ids
-        # agent_ids = [agent.agent_id for agent in self._agents]
-        
-        # write results to file
-        # with open(self._results_file, 'a') as results_file:
-        #     # write header if file is empty
-        #     if os.stat(self._results_file).st_size == 0:
-        #         results_file.write(f"turn,{''.join([f'{agent_id},' for agent_id in agent_ids])}pct_explored")
-        #     # write results
-        #     results_file.write(f"\n{turn},{''.join([f'{results[agent_id]},' for agent_id in agent_ids])}{pct_explored}")
-            
-        # close file
-        # results_file.close()
-        
         # convert results to csv and write to results file
         self._results.to_csv(self._results_file, index=False)
             
@@ -213,6 +197,7 @@ class Overwatch:
         for agent in self._agents:
             self._visited_nodes.add(agent.position)
         # Return the dictionary
+        self._log.debug(f"Visited nodes @ turn {self._turns}: {self._visited_nodes}")
         return self._visited_nodes
 
     def update_pct_explored(self):
