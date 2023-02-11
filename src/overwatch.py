@@ -104,6 +104,10 @@ class Overwatch:
     @property
     def path_to_results_file(self):
         return self._results_path
+    
+    @property
+    def path_to_results_directory(self):
+        return self._results_subdir
 
     ### Methods ###
     def add_agent(self, agent: Agent):
