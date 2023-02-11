@@ -7,6 +7,8 @@ from src.random_agent import RandomAgent
 from src.greedy_agent import GreedyAgent
 from src.behavioural_agent import BehaviouralAgent
 
+from src.render import Render
+
 ### Main Function ###
 def main():
     ### Initialise the logger
@@ -14,12 +16,12 @@ def main():
     # Initialise the simulation
     log.info('Initialising the simulation')
     # Create the environment layer
-    env = Network('networks/Net1.inp')
+    env = Network('networks/Net2.inp')
     log.debug(f'Environment: {env}')
     # Create the agent layer
-    agentA = BehaviouralAgent(env, 'A', '11', communication_range=-1, decay=0.5, random_seed=0)
+    agentA = BehaviouralAgent(env, 'A', '11', communication_range=-1, decay=0.5, random_seed=0, first=True)
     agentB = BehaviouralAgent(env, 'B', '12', communication_range=-1, decay=0.5, random_seed=0)
-    agentC = GreedyAgent(env, 'C', '23', communication_range=-1, random_seed=0)
+    agentC = BehaviouralAgent(env, 'C', '23', communication_range=-1, decay=0.5, random_seed=0)
     log.debug(f'{agentA} @ {agentA.position}')
     # log.debug(f'{agentB} @ {agentB.position}')
     # Create the simulation layer
@@ -35,7 +37,7 @@ def main():
 
     simulation.add_agent(agentA)
     simulation.add_agent(agentB)
-    # simulation.add_agent(agentC)
+    simulation.add_agent(agentC)
 
     log.debug(f'Simulation Agents: {simulation.agents}')
     log.debug(f'Overwatch Agents: {simulation.overwatch.agents}')
@@ -51,8 +53,12 @@ def main():
     simulation.write_results('results/sandbox.json')
 
     # Render the network
-    env.plot_network(show=False, node_labels=True, link_labels=True)
+    # env.plot_network(show=False, node_labels=True, link_labels=True)
+    
+    render = Render(simulation)
+    render.render()
 
 # call main function
 if __name__ == '__main__':
     main()
+    
