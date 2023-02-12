@@ -299,9 +299,14 @@ class Overwatch:
         :return: IDs of the agents in range
         """
         if communication_range == -1:
+            # infinite range - return all agents
             return self._agents
         elif communication_range == 0:
+            # no communication range - return empty list
             return []
+        elif communication_range == 1:
+            # communication range is 1 node - return agents in the same node
+            return [agent for agent in self._agents if agent.position == position]
         else:
             # communication range is the depth of the search, number of nodes around the agent:
             # 1 = agents current node, 2 = agents current node and nodes 1 node away, etc.
@@ -311,8 +316,10 @@ class Overwatch:
             node_range = communication_range - 1
             node_tree = nx.bfs_tree(G, position, depth_limit=node_range)
             nodes_in_range = list(node_tree.nodes)
+            self._log.debug(f"Nodes in range @ node range {node_range}: {nodes_in_range}")
             # get the agents in range
             agents_in_range = [agent for agent in self._agents if agent.position in nodes_in_range]
+            self._log.debug(f"Agents in range @ node range {node_range}: {agents_in_range}")
             return agents_in_range
             
         
