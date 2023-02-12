@@ -1,4 +1,12 @@
-### Import modules
+"""
+Network Module
+==============
+
+Network module contains the Network class which is used to create the simulation environment and extract data from the environment
+to be used in the simulation
+"""
+
+# Import modules
 import src.debug.logger as logger
 
 import wntr
@@ -14,8 +22,13 @@ from src.keys import FrozenNodes, FrozenLinks
 class Network:
     """
     Pipe Network Class
+    ==================
+    
+    Parameters
     ----------
-    :param path_to_file: Path to the input file - .inp file
+    path_to_file : str
+        Path to the INP type file containing the network data
+    
     """
 
     def __init__(self, path_to_file) -> None:
@@ -55,38 +68,73 @@ class Network:
 
     @property
     def links(self) -> list:
+        """
+        :py:attr:`links` is a :py:class:`list` of :py:class:`dict` containing
+        the links in the network
+        """
         return self._links
 
     @property
     def link_names(self) -> list:
+        """
+        :py:attr:`link_names` is a :py:class:`list` of :py:class:`str`
+        containing the names of the links in the network
+        """
         return self._link_names
 
     @property
     def pipes(self) -> list:
+        """
+        :py:attr:`pipes` is a :py:class:`list` of :py:class:`dict` containing
+        the pipes in the network
+        """
         return self._pipes
 
     @property
     def pipe_names(self) -> list:
+        """
+        :py:attr:`pipe_names` is a :py:class:`list` of :py:class:`str` 
+        containing the names of the pipes in the network
+        """
         return self._pipe_names
 
     @property
     def nodes(self) -> list:
+        """
+        :py:attr:`nodes` is a :py:class:`list` of :py:class:`dict` containing
+        the nodes in the network
+        """
         return self._nodes
 
     @property
     def node_names(self) -> list:
+        """
+        :py:attr:`node_names` is a :py:class:`list` of :py:class:`str` 
+        containing the names of the nodes in the network
+        """
         return self._node_names
 
     @property
     def num_nodes(self) -> int:
+        """
+        :py:attr:`num_nodes` is an :py:class:`int` containing the number of nodes in the network
+        """
         return self._wn_num_nodes
 
     @property
     def junctions(self) -> list:
+        """
+        :py:attr:`junctions` is a :py:class:`list` of :py:class:`dict` containing
+        the junctions in the network
+        """
         return self._junctions
 
     @property
     def junction_names(self) -> list:
+        """
+        :py:attr:`junction_names` is a :py:class:`list` of :py:class:`str`
+        containing the names of the junctions in the network
+        """
         return self._junction_names
 
     @property
@@ -99,13 +147,15 @@ class Network:
 
     @property
     def adj_list(self) -> dict:
+        """
+        :py:attr:`adj_list` is a :py:class:`dict` containing the adjacency list
+        """
         return self._adj_list
     
     @property
     def water_network_model(self) -> wntr.network.WaterNetworkModel:
         """
-        Getter for the water network model
-        :return: Water network model
+        :py:attr:`water_network_model` is a :py:class:`wntr.network.WaterNetworkModel` - allows access to WNTR methods
         """
         return self._wn
     
@@ -142,10 +192,7 @@ class Network:
     # Method to calculate the length of a link using the coordinates of the start and end nodes
     def calculate_link_length(self, start_node, end_node) -> float:
         """
-        Method to calculate the length of a link using the coordinates of the start and end nodes
-        :param start_node: Start node
-        :param end_node: End node
-        :return: Length of the link
+        :py:meth:`calculate_link_length` is a :py:class:`float` method to calculate the length of a link given the coordinates of the start and end nodes
         """
         # Get coordinates of start and end nodes
         start_node = self._wn.get_node(start_node)
@@ -163,9 +210,7 @@ class Network:
     # Method to write the adjacency list to a file
     def write_adj_list_to_file(self, path_to_file) -> None:
         """
-        Method to write the adjacency list to a json file
-        :param path_to_file: Path to the file
-        :return: None
+        Method to write the adjacency list to a file
         """
         # Get adjacency list
         self._get_adj_list()
@@ -188,7 +233,8 @@ class Network:
         """
         Method for an agent to request the state of the network at a node level
         - Currently this gives the keys (node names) of the nodes that are connected to the node
-        :return: State of the network at a node - currently this is the keys (node names) of the nodes that are connected to the node
+        
+        Returns: State of the network at a node - currently this is the keys (node names) of the nodes that are connected to the node
         """
         if node not in self._frozen_nodes.frozen_node_keys:
             raise ValueError(f"Node {node} is not valid")
@@ -202,9 +248,7 @@ class Network:
     # Method to get links from a node
     def get_links(self, node) -> list:
         """
-        Method to get links from a node
-        :param node: Node
-        :return: List of links
+        Method to get links from a given node
         """
         # Get adjacency list
         self._get_adj_list()
@@ -218,10 +262,7 @@ class Network:
     # Method to plot the network using wntr graphics api
     def plot_network(self, show=False, *args, **kwargs) -> None:
         """
-        Method to plot the network
-        :param args: Arguments to pass to the wntr.graphics.plot_network method
-        :param kwargs: Keyword arguments to pass to the wntr.graphics.plot_network method
-        :return: None
+        Method to plot the network using wntr graphics api
         """
         # Plot the network
         wntr.graphics.plot_network(self._wn, *args, **kwargs)

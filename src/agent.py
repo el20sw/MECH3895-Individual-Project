@@ -7,7 +7,7 @@ from src.observation import Observation
 class Agent(ABC):
     """
     Base Agent Class
-    ----------
+    ----------------
     Abstract class for agents - all agents should inherit from this class
 
     :param environment: Environment in which the agent is operating - the pipe network

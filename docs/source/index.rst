@@ -6,11 +6,19 @@
 Welcome to MECH3895 Individual Mechatronics and Robotics Project - Pipe Robot Exploration's documentation!
 ==========================================================================================================
 
+A Level 3 Mechatronics and Robotics Project by Sam Wilson. This project aims to simulate robotic agents exploring a pipe network,
+and to use this simulation to explore the effects of different parameters on the efficiency of the exploration.
+
+.. admonition:: Note
+
+   This project is still in development, and is not yet complete.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-
+   framework
+   api
 
 Indices and tables
 ==================
