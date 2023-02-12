@@ -1,6 +1,7 @@
 """
+**************
 Network Module
-==============
+**************
 
 Network module contains the Network class which is used to create the simulation environment and extract data from the environment
 to be used in the simulation
