@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from typing import List
 import pandas as pd
+import networkx as nx
 
 import src.debug.logger as logger
 from src.network import Network
@@ -301,6 +302,19 @@ class Overwatch:
             return self._agents
         elif communication_range == 0:
             return []
+        else:
+            # communication range is the depth of the search, number of nodes around the agent:
+            # 1 = agents current node, 2 = agents current node and nodes 1 node away, etc.
+            # get the water network model as an undirected nx graph
+            G = self.environment.water_network_model.to_graph().to_undirected()
+            # get the node range - the number of nodes away from the agent (communication range - 1 as 0 is the agent's current node but used to show no communication)
+            node_range = communication_range - 1
+            node_tree = nx.bfs_tree(G, position, depth_limit=node_range)
+            nodes_in_range = list(node_tree.nodes)
+            # get the agents in range
+            agents_in_range = [agent for agent in self._agents if agent.position in nodes_in_range]
+            return agents_in_range
+            
         
     def format_results(self):
         """
