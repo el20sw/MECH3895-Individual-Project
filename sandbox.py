@@ -19,9 +19,9 @@ def main():
     env = Network('networks/Net2.inp')
     log.debug(f'Environment: {env}')
     # Create the agent layer
-    agentA = BehaviouralAgent(env, 'A', '11', communication_range=-1, decay=0.5, random_seed=0, first=True)
-    agentB = BehaviouralAgent(env, 'B', '12', communication_range=-1, decay=0.5, random_seed=0)
-    agentC = BehaviouralAgent(env, 'C', '23', communication_range=-1, decay=0.5, random_seed=0)
+    agentA = BehaviouralAgent(env, 'A', '11', communication_range=3, decay=0.5, random_seed=0, first=True)
+    agentB = BehaviouralAgent(env, 'B', '12', communication_range=3, decay=0.5, random_seed=0)
+    agentC = BehaviouralAgent(env, 'C', '23', communication_range=3, decay=0.5, random_seed=0)
     log.debug(f'{agentA} @ {agentA.position}')
     # log.debug(f'{agentB} @ {agentB.position}')
     # Create the simulation layer
