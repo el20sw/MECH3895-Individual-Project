@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.animation import FuncAnimation, FFMpegWriter
 
-from src.network import Network
 from src.simulation import Simulation
 
 class Render:
