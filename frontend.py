@@ -1,6 +1,8 @@
+import platform
+import subprocess
+import random
 import tkinter as tk
 from tkinter import filedialog
-import random
 
 # supress all logging
 import logging
@@ -78,6 +80,14 @@ def select_file():
     return file_path
     
 if __name__ == "__main__":
+    os = platform.system()
+    if os == "Windows":
+        subprocess.run(["cmd.exe", "/K", "python -i"])
+    elif os == "Linux":
+        subprocess.run(["gnome-terminal", "-x", "python -i"])
+    else:
+        print("OS not supported")
+        exit(1)
         
     agent_type = input("Enter agent type (random, greedy, behavioural): ") or "random"
     num_agents = int(input("Enter number of agents: ") or 4)
