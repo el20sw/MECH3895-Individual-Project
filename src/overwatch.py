@@ -56,6 +56,12 @@ class Overwatch:
         # create dataframe to store results
         self._results = pd.DataFrame(columns=['turn', 'pct_explored'])
         
+        # create a subdirectory for miscellaneous data that may be of interest
+        self._data_subdir = f'{self._results_subdir}/data/'
+        os.makedirs(self._data_subdir)
+        # create visited nodes file
+        self._visited_nodes_file = f'{self._data_subdir}/visited_nodes.txt'
+        
         # path to results file
         self._results_path = self._results_csv_file
 
@@ -163,6 +169,12 @@ class Overwatch:
         self._log.debug(f"Percentage of nodes explored: {self._pct_explored}")
         # update results data frame
         self.update_results_df()
+        
+        # write visited nodes to file
+        with open(self._visited_nodes_file, 'a') as nodes_file:
+            to_write = str(self._turns) + ':' + ','.join(self._visited_nodes)
+            nodes_file.write(f"{to_write}\n")
+            nodes_file.close()
         
     def update_results_df(self):
         """
