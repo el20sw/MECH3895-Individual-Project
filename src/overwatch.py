@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import List
 import pandas as pd
 import networkx as nx
+import json
 
 import src.debug.logger as logger
 from src.network import Network
@@ -50,12 +51,13 @@ class Overwatch:
         # create directory
         os.makedirs(self._results_subdir, exist_ok=True)
         # create file for results
-        self._results_file = f'{self._results_subdir}/results.csv'
+        self._results_csv_file = f'{self._results_subdir}/results.csv'
+        self._results_json_file = f'{self._results_subdir}/abridged_results.json'
         # create dataframe to store results
         self._results = pd.DataFrame(columns=['turn', 'pct_explored'])
         
         # path to results file
-        self._results_path = self._results_file
+        self._results_path = self._results_csv_file
 
     ### Attributes ###
     @property
@@ -186,7 +188,7 @@ class Overwatch:
         """
         
         # convert results to csv and write to results file
-        self._results.to_csv(self._results_file, index=False)
+        self._results.to_csv(self._results_csv_file, index=False)
             
     def update_agent_positions(self):
         """
@@ -321,7 +323,6 @@ class Overwatch:
             agents_in_range = [agent for agent in self._agents if agent.position in nodes_in_range]
             self._log.debug(f"Agents in range @ node range {node_range}: {agents_in_range}")
             return agents_in_range
-            
         
     def format_results(self):
         """
@@ -341,3 +342,33 @@ class Overwatch:
             results.update({agent_id: agent_position})
         # Return the results
         return results
+    
+    def _save_results(self):
+        """
+        Method to write the abridged results to a json file
+        """
+        
+        pct_explored = self._pct_explored
+        turns = self._turns
+        num_agents = self._num_agents
+        
+        results = {
+            "pct_explored": pct_explored,
+            "turns": turns,
+            "num_agents": num_agents
+            }
+            
+        # Create the filename
+        filename = self._results_json_file
+        filepath = self._results_subdir
+        
+        # Try to write the adjacency list to a file
+        try:
+            with open(filename, 'w') as f:
+                json.dump(results, f)
+        # If there is an error, log it
+        except Exception as e:
+            self._log.error(f"Error writing adjacency list to file: {e}")
+            
+        return filepath
+        
