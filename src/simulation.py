@@ -4,8 +4,9 @@ import src.debug.logger as logger
 from typing import List
 import json
 import os
+import random
 
-from src.agent import Agent
+from src.agents.agent import Agent
 from src.network import Network
 from src.overwatch import Overwatch
 
@@ -37,6 +38,9 @@ class Simulation:
 
         # Initialise the overwatch
         self._overwatch = Overwatch(self._environment, self._agents)
+        
+        # Initialise the random seed
+        random.seed(0)
 
     ### Attributes ###
     @property
@@ -202,7 +206,35 @@ class Simulation:
 
         # Log the turn ending
         self._log.info(f"Turn {self._turns} - (Sim) {self.overwatch.turns} - (Overwatch) ending")
-
+            
+    def save_results(self):
+        """
+        :py:meth:`save_results` method to save the results of the simulation
+        Returns the path to the results file
+        """
+        
+        path = self.overwatch._save_results()
+        return path
+        
+            
+    def get_random_positions(self, num_agents: int):
+        """
+        :py:meth:`get_random_positions` method to get random starting positions for
+        the agents in the simulation
+        """
+        
+        # Get the number of nodes in the environment
+        num_nodes = self._environment.num_nodes
+        # Get the nodes in the environment
+        nodes = self._environment.node_names
+        # Make sure that the number of agents is less than the number of nodes
+        if num_agents > num_nodes:
+            raise ValueError(f"Number of agents ({num_agents}) must be less than the number of nodes ({num_nodes})")
+        # Get a random sample of nodes
+        random_nodes = random.sample(nodes, num_agents)
+        # Return the random nodes
+        return random_nodes
+    
     def _results_from_overwatch(self):
         """
         Method to get the results from the overwatch
@@ -221,7 +253,7 @@ class Simulation:
             "num_agents": self._num_agents,
         }
 
-    def write_results(self, filename: str):
+    def _write_results(self, filename: str):
         """
         Method to write the results of the simulation to a JSON file
         :param filename: Name of the file to write to
@@ -243,4 +275,4 @@ class Simulation:
         # If there is an error, log it
         except Exception as e:
             self._log.error(f"Error writing adjacency list to file: {e}")
-        
+    

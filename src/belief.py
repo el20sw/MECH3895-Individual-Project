@@ -390,9 +390,9 @@ class Belief:
                         other_agents_new[id] = belief.position
                         self._log.debug(f"Agent {self._agent_id} updated agent {id} to position {belief.position}")
                     # Otherwise, set the position to None
-                    else:
-                        other_agents_new[id] = None
-                        self._log.debug(f"Agent {self._agent_id} updated agent {id} to position {None}")
+                    # else:
+                    #     other_agents_new[id] = None
+                    #     self._log.debug(f"Agent {self._agent_id} updated agent {id} to position {None}")
 
         # return the copy
         return other_agents_new

@@ -2,7 +2,7 @@
 from typing import List
 import src.debug.logger as logger
 
-from src.agent import Agent, coroutine
+from src.agents.agent import Agent, coroutine
 from src.belief import Belief
 from src.observation import Observation
 from src.transmittable import Transmittable
