@@ -71,12 +71,49 @@ def create_simulation(agent_type,
     render = Render(simulation)
     render.render()
     
-    print(f"\nResults found at: {path}")  
+    print(f"\nResults found at: {path}")
+    
+def gui():
+    # Create the GUI
+    root = tk.Tk()
+    root.title("Simulation Settings")
+    
+    # Create the widgets
+    # Agent type - listbox with options random, greedy, behavioural
+    label_agent_type = tk.Label(root, text="Agent Type")
+    listbox_agent_type = tk.Listbox(root, selectmode="single")
+    listbox_agent_type.insert(1, "random")
+    listbox_agent_type.insert(2, "greedy")
+    listbox_agent_type.insert(3, "behavioural")
+    listbox_agent_type.select_set(0)
+    entry_agent_type_i = listbox_agent_type.curselection()
+    
+    label_num_agents = tk.Label(root, text="Number of Agents")
+    entry_num_agents = tk.Entry(root)
+    
+    args = (entry_agent_type_i, entry_num_agents)
+    
+    def submit(*args):
+        for arg in args:
+            print(arg.get())
+        root.destroy()
+    
+    submit_button = tk.Button(root, text="Submit", command=lambda: submit(*args))
+    
+    label_agent_type.pack()
+    listbox_agent_type.pack()
+    
+    label_num_agents.pack()
+    entry_num_agents.pack()
+    
+    submit_button.pack()
+    
+    root.mainloop()
     
 def select_file():
     root = tk.Tk()
     root.withdraw()
-    file_path = filedialog.askopenfilename()
+    file_path = filedialog.askopenfilename(filetypes=[("Network files", "*.inp")])
     return file_path
     
 if __name__ == "__main__":
