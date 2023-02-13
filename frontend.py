@@ -74,7 +74,7 @@ def create_simulation(agent_type,
     print(f"\nResults found at: {path}")
     
 def gui():
-    # Create the GUI
+    # Create the GUI - wip
     root = tk.Tk()
     root.title("Simulation Settings")
     
