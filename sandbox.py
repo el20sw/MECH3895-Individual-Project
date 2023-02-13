@@ -10,7 +10,7 @@ from src.agents.behavioural_agent import BehaviouralAgent
 
 from src.render import Render
 
-# logging.disable(logging.CRITICAL)
+logging.disable(logging.CRITICAL)
 
 ### Main Function ###
 def main():
