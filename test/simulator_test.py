@@ -7,7 +7,7 @@ import src.debug.logger as logger
 
 from src.simulation import Simulation
 from src.network import Network
-from src.random_agent import RandomAgent
+from src.agents.random_agent import RandomAgent
 
 class TestSimulation(unittest.TestCase):
     """

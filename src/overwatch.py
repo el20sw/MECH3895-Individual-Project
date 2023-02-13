@@ -7,7 +7,7 @@ import networkx as nx
 
 import src.debug.logger as logger
 from src.network import Network
-from src.agent import Agent
+from src.agents.agent import Agent
 from src.transmittable import Transmittable
 
 ### Overwatch Class ###

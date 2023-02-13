@@ -5,7 +5,7 @@ import unittest
 import tracemalloc
 import src.debug.logger as logger
 from src.network import Network
-from src.random_agent import RandomAgent
+from src.agents.random_agent import RandomAgent
 from src.overwatch import Overwatch
 
 class TestOverwatch(unittest.TestCase):

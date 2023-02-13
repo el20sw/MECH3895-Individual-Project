@@ -5,7 +5,7 @@ from typing import List
 import json
 import os
 
-from src.agent import Agent
+from src.agents.agent import Agent
 from src.network import Network
 from src.overwatch import Overwatch
 

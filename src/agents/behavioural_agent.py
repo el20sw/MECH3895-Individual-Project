@@ -6,7 +6,7 @@ import random
 import src.debug.logger as logger
 
 # Import classes
-from src.agent import Agent
+from src.agents.agent import Agent
 from src.belief import Belief
 from src.observation import Observation
 from src.transmittable import Transmittable

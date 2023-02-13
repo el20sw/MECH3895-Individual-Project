@@ -3,9 +3,9 @@ import src.debug.logger as logger
 
 from src.simulation import Simulation
 from src.network import Network
-from src.random_agent import RandomAgent
-from src.greedy_agent import GreedyAgent
-from src.behavioural_agent import BehaviouralAgent
+from src.agents.random_agent import RandomAgent
+from src.agents.greedy_agent import GreedyAgent
+from src.agents.behavioural_agent import BehaviouralAgent
 
 from src.render import Render
 
