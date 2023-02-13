@@ -2,6 +2,9 @@
 Class for rendering a simulation
 """
 
+import matplotlib
+matplotlib.use("module://matplotlib.backends.backend_agg")
+
 import networkx as nx
 import matplotlib.pyplot as plt
 import pandas as pd
