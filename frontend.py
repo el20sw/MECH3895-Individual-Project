@@ -48,11 +48,13 @@ def create_simulation(agent_type,
     agent_positions = simulation.get_random_positions(num_agents)
     # Add agents to the simulation
     for i in range(num_agents):
+        # convert i to hex
+        i_hex = hex(i)
         if i == 0 and agent_type == "behavioural":
-            agent = agent_class(env, str(i), agent_positions[i], communication_range=comm_range, first=True)
+            agent = agent_class(env, str(i_hex), agent_positions[i], communication_range=comm_range, first=True)
             print(f"Agent {i} created at position {agent_positions[i]}, communication range {comm_range}, first=True")
         else:
-            agent = agent_class(env, str(i), agent_positions[i], communication_range=comm_range)
+            agent = agent_class(env, str(i_hex), agent_positions[i], communication_range=comm_range)
             print(f"Agent {i} created at position {agent_positions[i]}, communication range {comm_range}")
         simulation.add_agent(agent)
         
