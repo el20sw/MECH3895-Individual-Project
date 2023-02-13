@@ -319,6 +319,8 @@ class BehaviouralAgent(Agent):
 
         # get agent's position
         position = self._position
+        # get agent's last position
+        previous_position = self._previous_position
 
         # unvisited nodes
         unvisited_nodes = [node for node in self._belief.nodes if self._belief.nodes.get(node) == 1]
@@ -342,6 +344,13 @@ class BehaviouralAgent(Agent):
         # get the score for the node
         scores = self._build_exploration_values(position, adjacency_list, decay=self._decay)
         self._log.debug(f"Agent {self._id} scores: {scores}")
+        
+        # if scores are all the same and there are multiple options - choose from any that aren't last visited position
+        if len(set(scores.values())) == 1 and len(scores.values()) > 1:
+            try:   
+                scores.pop(previous_position)
+            except KeyError:
+                pass
             
         action = max(scores, key=scores.get)
         self._log.debug(f"Agent {self._id} action: {action}")
