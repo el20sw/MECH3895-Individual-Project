@@ -1,4 +1,5 @@
 # import logger
+import logging
 import src.debug.logger as logger
 
 from src.simulation import Simulation
@@ -8,6 +9,8 @@ from src.agents.greedy_agent import GreedyAgent
 from src.agents.behavioural_agent import BehaviouralAgent
 
 from src.render import Render
+
+logging.disable(logging.CRITICAL)
 
 ### Main Function ###
 def main():
@@ -19,9 +22,9 @@ def main():
     env = Network('networks/Net2.inp')
     log.debug(f'Environment: {env}')
     # Create the agent layer
-    agentA = BehaviouralAgent(env, 'A', '11', communication_range=3, decay=0.5, random_seed=0, first=True)
-    agentB = BehaviouralAgent(env, 'B', '12', communication_range=3, decay=0.5, random_seed=0)
-    agentC = BehaviouralAgent(env, 'C', '23', communication_range=3, decay=0.5, random_seed=0)
+    agentA = GreedyAgent(env, 'A', '11', communication_range=3, random_seed=0)
+    agentB = GreedyAgent(env, 'B', '12', communication_range=3, random_seed=0)
+    agentC = GreedyAgent(env, 'C', '23', communication_range=3, random_seed=0)
     log.debug(f'{agentA} @ {agentA.position}')
     # log.debug(f'{agentB} @ {agentB.position}')
     # Create the simulation layer
@@ -50,7 +53,8 @@ def main():
     simulation.run(max_turns=100)
 
     # Get the results
-    simulation.write_results('results/sandbox.json')
+    # simulation._write_results('results/sandbox.json')
+    simulation.save_results()
 
     # Render the network
     # env.plot_network(show=False, node_labels=True, link_labels=True)
