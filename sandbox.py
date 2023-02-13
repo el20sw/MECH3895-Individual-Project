@@ -10,7 +10,7 @@ from src.agents.behavioural_agent import BehaviouralAgent
 
 from src.render import Render
 
-logging.disable(logging.CRITICAL)
+# logging.disable(logging.CRITICAL)
 
 ### Main Function ###
 def main():
@@ -22,9 +22,9 @@ def main():
     env = Network('networks/Net2.inp')
     log.debug(f'Environment: {env}')
     # Create the agent layer
-    agentA = GreedyAgent(env, 'A', '11', communication_range=3, random_seed=0)
-    agentB = GreedyAgent(env, 'B', '12', communication_range=3, random_seed=0)
-    agentC = GreedyAgent(env, 'C', '23', communication_range=3, random_seed=0)
+    agentA = BehaviouralAgent(env, 'A', '11', communication_range=-1, random_seed=0, first=True)
+    agentB = BehaviouralAgent(env, 'B', '12', communication_range=-1, random_seed=0)
+    agentC = BehaviouralAgent(env, 'C', '23', communication_range=-1, random_seed=0)
     log.debug(f'{agentA} @ {agentA.position}')
     # log.debug(f'{agentB} @ {agentB.position}')
     # Create the simulation layer
