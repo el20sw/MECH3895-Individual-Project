@@ -164,6 +164,13 @@ class Agent(ABC):
         :return: Visited nodes of the agent
         """
         return self._visited_nodes
+    
+    @property
+    def params(self):
+        """
+        Method to get the parameters of the agent
+        :return: Parameters of the agent
+        """
 
     def __str__(self) -> str:
         return f'Agent {self._id}'
