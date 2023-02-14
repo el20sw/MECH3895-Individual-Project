@@ -52,6 +52,7 @@ class GreedyAgent(Agent):
 
         # Initialise the agent
         self._id = agent_id
+        self._start_position = position
         self._position = position
         self._previous_position = None
         self._communication_range = communication_range
@@ -117,6 +118,19 @@ class GreedyAgent(Agent):
         :return: Agent's observation
         """
         return self._observation
+    
+    @property
+    def params(self):
+        """
+        Getter for the agent's parameters
+        :return: Agent's parameters
+        """
+        return {
+            'id': self._id,
+            'start_position': self._start_position,
+            'communication_range': self._communication_range,
+            'random_seed': random.getstate()[1][0],
+        }
 
     async def step(self, environment, overwatch):
         pass
