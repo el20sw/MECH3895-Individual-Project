@@ -40,6 +40,7 @@ class Network:
 
         # Initialise network
         self._wn = wntr.network.WaterNetworkModel(path_to_file)
+        self._path_to_file = path_to_file
 
         # Initialise network dictionary
         self._wn_dict = wntr.network.to_dict(self._wn)
@@ -161,6 +162,13 @@ class Network:
         :py:attr:`water_network_model` is a :py:class:`wntr.network.WaterNetworkModel` - allows access to WNTR methods
         """
         return self._wn
+    
+    @property
+    def path_to_file(self) -> str:
+        """
+        :py:attr:`path_to_file`
+        """
+        return self._path_to_file
     
     # Get adjacency list
     def _get_adj_list(self) -> dict:
