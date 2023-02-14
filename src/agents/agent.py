@@ -171,6 +171,10 @@ class Agent(ABC):
         Method to get the parameters of the agent
         :return: Parameters of the agent
         """
+        
+    @property
+    def type(self):
+        return self.__class__.__name__
 
     def __str__(self) -> str:
         return f'Agent {self._id}'
