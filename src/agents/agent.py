@@ -26,6 +26,7 @@ class Agent(ABC):
         """
 
         self._id = agent_id
+        self._start_position = position
         self._position = position
         self._previous_position = None
         self._communication_range = communication_range
