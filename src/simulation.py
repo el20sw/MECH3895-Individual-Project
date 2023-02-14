@@ -26,6 +26,7 @@ class Simulation:
         self._environment = environment
         self._log.info(f'Environment: {self._environment}')
         self._num_nodes = environment._num_nodes
+        self._max_turns = 100
 
         # Initialise the agents
         self._agents: List[Agent] = []
@@ -58,6 +59,10 @@ class Simulation:
     @property
     def turns(self) -> int:
         return self._turns
+    
+    @property
+    def max_turns(self) -> int:
+        return self._max_turns
 
     @property
     def pct_explored(self) -> float:
@@ -116,6 +121,8 @@ class Simulation:
         :param max_turns: Maximum number of turns to run the simulation for
         :return: None
         """
+        
+        self._max_turns = max_turns
         # Run the simulation for a maximum number of turns
         while self._turns < max_turns and self._pct_explored < 100:
             if self._turns == 0:
