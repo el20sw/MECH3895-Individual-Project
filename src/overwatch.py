@@ -38,6 +38,8 @@ class Overwatch:
         self._all_nodes = self._environment.node_names
         self._turns = 0
         self._pct_explored = 0
+        self._agent_types = []
+        self._sim_params = {}
 
         # Communication variables
         self._transmittables = []
@@ -61,6 +63,8 @@ class Overwatch:
         os.makedirs(self._data_subdir)
         # create visited nodes file
         self._visited_nodes_file = f'{self._data_subdir}/visited_nodes.txt'
+        # create config file
+        self._config_file = f'{self._data_subdir}/config.json'
         
         # path to results file
         self._results_path = self._results_csv_file
@@ -148,6 +152,8 @@ class Overwatch:
             self._results.loc[0, 'turn'] = 0
             self._results.loc[0, 'pct_explored'] = 0
         self._results.loc[0, agent.agent_id] = agent.position
+        
+        # Add agent type to list
 
     def update(self, turns=None):
         """
@@ -383,4 +389,41 @@ class Overwatch:
             self._log.error(f"Error writing adjacency list to file: {e}")
             
         return filepath
+    
+    def make_config_file(self):
+        """
+        Method to create a config file for the simulation
+        """
+        
+        # path to the config file
+        config_file = self._config_file
+        
+        num_agents = self._num_agents
+        num_turns = self._turns
+        num_nodes = self._environment.num_nodes
+        water_network_model_file = self._environment.path_to_file
+        sim_params = self._sim_params
+        agents = self._agents
+        agent_params = {}
+        for agent in agents:
+            agent_params.update({agent.agent_id: agent.params})
+            
+        # Create the config file
+        # dump to a json file
+        config = {
+            "num_agents": num_agents,
+            "num_turns": num_turns,
+            "num_nodes": num_nodes,
+            "water_network_model_file": water_network_model_file,
+            "simulation_params": sim_params,
+            "agent_params": agent_params,
+            }
+        
+        try:
+            with open(config_file, 'w') as f:
+                json.dump(config, f, indent=4)
+                f.close()
+        except Exception as e:
+            self._log.error(f"Error writing config file: {e}")
+        
         
