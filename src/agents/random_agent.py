@@ -105,6 +105,7 @@ class RandomAgent(Agent):
         :return: Agent's parameters
         """
         return {
+            'type': 'Random',
             'id': self._id,
             'start_position': self._start_position,
             'communication_range': self._communication_range,

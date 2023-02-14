@@ -118,6 +118,7 @@ class BehaviouralAgent(Agent):
         :return: Agent's parameters
         """
         return {
+            'type': 'Behavioural',
             'id': self._id,
             'start_position': self._start_position,
             'communication_range': self._communication_range,
