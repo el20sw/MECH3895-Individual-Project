@@ -140,12 +140,12 @@ class Render:
         nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.agent_nodes, node_color='red', label='Agent Nodes')
         # Draw background environment nodes
         nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.env_nodes, node_color='blue', label='Environment Nodes')
-        try:
-            # Draw visited nodes
-            nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=visited_nodes, node_color='green', label='Visited Nodes')
-        except nx.NetworkXError:
-            # Do nothing if there is an error
-            pass
+        # try:
+        #     # Draw visited nodes
+        #     nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=visited_nodes, node_color='green', label='Visited Nodes')
+        # except nx.NetworkXError:
+        #     # Do nothing if there is an error
+        #     pass
         # Draw agent nodes - second pass
         nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.agent_nodes, node_color='red', label='Agent Nodes')
         # Draw edges
