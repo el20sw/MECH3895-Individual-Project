@@ -71,10 +71,10 @@ class Render:
         self.fig = plt.figure(figsize=(10, 10), dpi=100, facecolor='w', edgecolor='k')
 
         # draw the network nodes
-        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.env_nodes, node_color='blue', label='Environmental Nodes')
+        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.env_nodes, node_color='blue', node_size=10, label='Environmental Nodes')
 
         # draw the agent nodes
-        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.agent_nodes, node_color='red', label='Agent Nodes')
+        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.agent_nodes, node_color='red', node_size=10, label='Agent Nodes')
 
         # draw the edges
         nx.draw_networkx_edges(self.G, self.env_node_pos)
@@ -135,19 +135,11 @@ class Render:
         nx.set_node_attributes(self.G, self.all_pos, 'pos')
         # update the figure
         self.fig.clear()
-        
-        # Draw agent nodes - first pass
-        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.agent_nodes, node_color='red', label='Agent Nodes')
+
         # Draw background environment nodes
-        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.env_nodes, node_color='blue', label='Environment Nodes')
-        try:
-            # Draw visited nodes
-            nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=visited_nodes, node_color='green', label='Visited Nodes')
-        except nx.NetworkXError:
-            # Do nothing if there is an error
-            pass
-        # Draw agent nodes - second pass
-        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.agent_nodes, node_color='red', label='Agent Nodes')
+        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.env_nodes, node_color='blue', node_size=10, label='Environment Nodes')
+        # Draw agent nodes
+        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.agent_nodes, node_color='red', node_size=10, label='Agent Nodes')
         # Draw edges
         nx.draw_networkx_edges(self.G, self.all_pos)
 
@@ -157,7 +149,7 @@ class Render:
         # Draw labels
         nx.draw_networkx_labels(self.G, self.all_pos, labels=env_node_labels,
                                 horizontalalignment='right', verticalalignment='top',
-                                font_weight='bold'
+                                font_weight='bold', font_size=10
                                 )
         nx.draw_networkx_labels(self.G, self.all_pos, labels=agent_node_labels,
                                 horizontalalignment='left', verticalalignment='bottom',
