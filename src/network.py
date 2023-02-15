@@ -276,7 +276,9 @@ class Network:
         Method to plot the network using wntr graphics api
         """
         # Plot the network
-        wntr.graphics.plot_network(self._wn, *args, **kwargs)
+        node_size = kwargs.pop('node_size', 10)
+        link_width = kwargs.pop('link_width', 1)
+        wntr.graphics.plot_network(self._wn, node_size=node_size, link_width=link_width, *args, **kwargs)
         # if show, show the network
         if show:
             plt.show()
