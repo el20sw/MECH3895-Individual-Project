@@ -33,6 +33,7 @@ class RandomAgent(Agent):
         
         # set the agent's id, position and communication range
         self._id = id
+        self._start_position = position
         self._position = position
         self._previous_position = None
         self._communication_range = communication_range
@@ -96,6 +97,20 @@ class RandomAgent(Agent):
         :return: Agent's observation
         """
         return self._observation
+    
+    @property
+    def params(self):
+        """
+        Getter for the agent's parameters
+        :return: Agent's parameters
+        """
+        return {
+            'type': 'Random',
+            'id': self._id,
+            'start_position': self._start_position,
+            'communication_range': self._communication_range,
+            'random_seed': random.getstate()[1][0],
+        }
     
     async def step(self, environment, overwatch):
         """

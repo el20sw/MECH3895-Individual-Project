@@ -26,6 +26,7 @@ class Agent(ABC):
         """
 
         self._id = agent_id
+        self._start_position = position
         self._position = position
         self._previous_position = None
         self._communication_range = communication_range
@@ -163,6 +164,17 @@ class Agent(ABC):
         :return: Visited nodes of the agent
         """
         return self._visited_nodes
+    
+    @property
+    def params(self):
+        """
+        Method to get the parameters of the agent
+        :return: Parameters of the agent
+        """
+        
+    @property
+    def type(self):
+        return self.__class__.__name__
 
     def __str__(self) -> str:
         return f'Agent {self._id}'

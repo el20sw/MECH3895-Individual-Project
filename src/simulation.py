@@ -26,6 +26,7 @@ class Simulation:
         self._environment = environment
         self._log.info(f'Environment: {self._environment}')
         self._num_nodes = environment._num_nodes
+        self._max_turns = 100
 
         # Initialise the agents
         self._agents: List[Agent] = []
@@ -40,7 +41,7 @@ class Simulation:
         self._overwatch = Overwatch(self._environment, self._agents)
         
         # Initialise the random seed
-        random.seed(0)
+        self._random_seed: int = 0
 
     ### Attributes ###
     @property
@@ -58,6 +59,10 @@ class Simulation:
     @property
     def turns(self) -> int:
         return self._turns
+    
+    @property
+    def max_turns(self) -> int:
+        return self._max_turns
 
     @property
     def pct_explored(self) -> float:
@@ -71,6 +76,20 @@ class Simulation:
     @property
     def overwatch(self) -> Overwatch:
         return self._overwatch
+    
+    @property
+    def random_seed(self) -> int:
+        return self._random_seed
+    
+    @property
+    def params(self):
+        """
+        Simulation parameters
+        """
+        return {
+            'random_seed': self._random_seed,
+            'max_turns': self._max_turns,
+        }
 
     ### Methods ###
     def add_agent(self, *agent : Agent):
@@ -116,6 +135,9 @@ class Simulation:
         :param max_turns: Maximum number of turns to run the simulation for
         :return: None
         """
+        
+        self._max_turns = max_turns
+        self._params_to_overwatch()
         # Run the simulation for a maximum number of turns
         while self._turns < max_turns and self._pct_explored < 100:
             if self._turns == 0:
@@ -213,16 +235,20 @@ class Simulation:
         Returns the path to the results file
         """
         
+        self.overwatch.make_config_file()
         path = self.overwatch._save_results()
         return path
         
             
-    def get_random_positions(self, num_agents: int):
+    def get_random_positions(self, num_agents: int, seed: int = 0):
         """
         :py:meth:`get_random_positions` method to get random starting positions for
         the agents in the simulation
         """
         
+        # Set the seed
+        random.seed(seed)
+        self._random_seed = seed
         # Get the number of nodes in the environment
         num_nodes = self._environment.num_nodes
         # Get the nodes in the environment
@@ -275,4 +301,14 @@ class Simulation:
         # If there is an error, log it
         except Exception as e:
             self._log.error(f"Error writing adjacency list to file: {e}")
+            
+    def _params_to_overwatch(self):
+        """
+        Method to pass the parameters of the simulation to the overwatch
+        :return: None
+        """
+        # Get the parameters of the simulation
+        params = self.params
+        # Pass the parameters to the overwatch
+        self._overwatch._sim_params = params
     
