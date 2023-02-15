@@ -71,10 +71,10 @@ class Render:
         self.fig = plt.figure(figsize=(10, 10), dpi=100, facecolor='w', edgecolor='k')
 
         # draw the network nodes
-        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.env_nodes, node_color='blue', label='Environmental Nodes')
+        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.env_nodes, node_color='blue', node_size=10, label='Environmental Nodes')
 
         # draw the agent nodes
-        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.agent_nodes, node_color='red', label='Agent Nodes')
+        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.agent_nodes, node_color='red', node_size=10, label='Agent Nodes')
 
         # draw the edges
         nx.draw_networkx_edges(self.G, self.env_node_pos)
@@ -137,9 +137,9 @@ class Render:
         self.fig.clear()
 
         # Draw background environment nodes
-        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.env_nodes, node_color='blue', node_size=1, label='Environment Nodes')
+        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.env_nodes, node_color='blue', node_size=10, label='Environment Nodes')
         # Draw agent nodes
-        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.agent_nodes, node_color='red', node_size=1, label='Agent Nodes')
+        nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.agent_nodes, node_color='red', node_size=10, label='Agent Nodes')
         # Draw edges
         nx.draw_networkx_edges(self.G, self.all_pos)
 
