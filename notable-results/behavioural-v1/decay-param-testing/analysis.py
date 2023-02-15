@@ -9,7 +9,7 @@ import pandas as pd
 results_file = 'notable-results/behavioural-v1/decay-param-testing/results.csv'
 # read the results file
 df = pd.read_csv(results_file)
-# plot the results - pct_explored vs turn for each decay paramete
+# plot the results - pct_explored vs turn for each decay parameter
 # create a figure
 fig, ax = plt.subplots()
 # plot the results
