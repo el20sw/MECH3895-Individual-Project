@@ -18,7 +18,8 @@ def create_simulation(agent_type,
                       start_position,
                       comm_range,
                       network_file,
-                      turn_limit,):
+                      turn_limit,
+                      decay=0.5,):
     
     # set random seed
     random.seed(0)
@@ -52,12 +53,17 @@ def create_simulation(agent_type,
     for i in range(num_agents):
         # convert i to hex
         i_hex = hex(i)
-        if i == 0 and agent_type == "behavioural":
-            agent = agent_class(env, str(i_hex), agent_positions[i], communication_range=comm_range, first=True)
-            print(f"Agent {i} created at position {agent_positions[i]}, communication range {comm_range}, first=True")
+        if agent_type == "behavioural":
+            if i == 0:
+                agent = agent_class(env, str(i_hex), agent_positions[i], communication_range=comm_range, decay=decay, first=True)
+                print(f"Agent {i} created at position {agent_positions[i]}, communication range {comm_range}, first=True")
+            else:
+                agent = agent_class(env, str(i_hex), agent_positions[i], communication_range=comm_range, decay=decay)
+                print(f"Agent {i} created at position {agent_positions[i]}, communication range {comm_range}")
         else:
             agent = agent_class(env, str(i_hex), agent_positions[i], communication_range=comm_range)
             print(f"Agent {i} created at position {agent_positions[i]}, communication range {comm_range}")
+        
         simulation.add_agent(agent)
         
     # Run the simulation
@@ -118,6 +124,7 @@ def select_file():
     
 if __name__ == "__main__":
     os = platform.system()
+    
     # not working
     # if os == "Windows":
     #     subprocess.run(["cmd.exe", "/K", "python -i"])
@@ -128,11 +135,14 @@ if __name__ == "__main__":
     #     exit(1)
         
     agent_type = input("Enter agent type (random, greedy, behavioural): ") or "random"
+    decay = 0.5
+    if agent_type == "behavioural":
+        decay = float(input("Enter decay rate: ") or 0.5)
     num_agents = int(input("Enter number of agents: ") or 4)
     start_positions = bool(input("Random starting positions? (True/False): ") or True)
     comm_range = int(input("Enter communication range: ") or -1)
     network_file = input("Enter path to network file (or press enter to select a file): ") or select_file()
     turn_limit = int(input("Enter maximum number of turns: ") or 100)
     
-    create_simulation(agent_type, num_agents, start_positions, comm_range, network_file, turn_limit)
+    create_simulation(agent_type, num_agents, start_positions, comm_range, network_file, turn_limit, decay)
     
