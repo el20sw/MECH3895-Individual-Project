@@ -282,3 +282,27 @@ class Network:
         # if show, show the network
         if show:
             plt.show()
+            
+    # Method to get a link from a start and end node
+    def get_link(self, start_node, end_node):
+        """
+        Method to get a link from a start and end node
+        """
+        # Get adjacency list
+        self._get_adj_list()
+
+        # Get link
+        return self._adj_list[start_node][end_node]
+    
+    # Method to get a node from a start node and a link
+    def get_node(self, start_node, link):
+        """
+        Method to get a node from a start node and a link
+        """
+        # Get adjacency list
+        self._get_adj_list()
+
+        # Get node
+        for node in self._adj_list[start_node]:
+            if self._adj_list[start_node][node]['link_name'] == link:
+                return node
