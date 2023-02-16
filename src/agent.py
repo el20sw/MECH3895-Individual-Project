@@ -11,6 +11,7 @@ class Agent:
     def __init__(self, env: Network, start_pos) -> None:
         self._log = logger.get_logger(__name__)
         self.env = env
+        self.G = env.water_network_model.to_graph().to_directed()
         self.battery = 100
         self.current_node = start_pos
         self.previous_node = None
@@ -27,7 +28,25 @@ class Agent:
         self.current_node = self.env.get_node(self.current_node, self.link)
         self._log.debug(f"Agent moved from {self.previous_node} to {self.current_node}")
         
-    def RHW(self):
+    def communicate(self):
+        """
+        Method for the agent to communicate with other agents
+        """
+        
+        # get the agents in the same node
+        agents_in_node = None
+        # check if agents are in the same node
+        if agents_in_node:
+            # do something
+            pass
+        
+    def _ping(self):
+        
+        # broadcast a ping to all agents in the same node and get the response
+        pass
+        
+        
+    def RH_Traversal(self):
         """
         Method for the agent to follow the right hand wall rule - selects the next link to traverse
         """
