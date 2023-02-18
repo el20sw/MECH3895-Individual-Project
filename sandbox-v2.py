@@ -31,7 +31,7 @@ while pct_explored < 1:
     visited_nodes.add(agent.current_node)
     pct_explored = len(visited_nodes) / num_nodes
     log.info(f'pct_explored: {pct_explored}')
-    agent.RHW()
+    agent.RH_Traversal()
     agent.move()
     SIM_LENGTH -= 1
     
