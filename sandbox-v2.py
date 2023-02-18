@@ -14,7 +14,7 @@ SIM_LENGTH = 1000
 log = logger.setup_logger(file_name='logs/sandbox-2.log', level='DEBUG')
 
 env = Network('networks/Net3.inp')
-print(env.node_names)
+# print(env.node_names)
 agent = Agent(env=env, agent_id=0x1, start_pos='10')
 
 
@@ -22,12 +22,12 @@ G = env.water_network_model.to_graph().to_undirected()
 
 sim = Simulation(env, num_agents=10)
 
-for agent in sim.agents:
-    print(agent.agent_id, agent.position)
+sim.agents[0]._current_node = '22'
 
-for agent in sim.agents:
-    a_in_r = agent._ping(sim.agents)
-    print(f'{agent} sees {a_in_r}')
+sim.agents[1]._current_node = '10'
+sim.agents[2]._current_node = '10'
+
+sim._communication()
 
 # num_nodes = len(G.nodes)
 # pct_explored = 0
