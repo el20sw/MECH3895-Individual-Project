@@ -3,6 +3,7 @@ Module for enabling communication between agents in communication clusters
 """
 
 from typing import List
+from copy import copy
 
 import src.debug.logger as logger
 from src.agent import Agent
@@ -12,7 +13,7 @@ log = logger.get_logger(__name__)
 
 def communicate(agents: List[Agent], network: Network):
     """
-    Method for enabling communication between agents in communication clusters
+    Method for enabling communication between agents in communication clusters and allocating tasks
     
     Parameters
     ----------
@@ -22,11 +23,14 @@ def communicate(agents: List[Agent], network: Network):
     
     log.debug(f"Communication between {len(agents)} agents @ {agents[0].position}")
     
-    labels = synchronise_port_labelling(agents, network)
-    log.debug(f'Port labels: {labels}')
+    ports = synchronise_port_labelling(agents, network)
+    log.info(f'Port labels: {ports}')
     
     leader = establish_leader(agents)
-    print(f'Leader: {leader}')
+    log.info(f'Leader: {leader}')
+
+    allocate_tasks(agents, leader, ports)
+        
 
 def synchronise_port_labelling(agents: List[Agent], network: Network):
     """
@@ -57,7 +61,7 @@ def synchronise_port_labelling(agents: List[Agent], network: Network):
     # bearings.sort()
     return labels
     
-def establish_leader(agents):
+def establish_leader(agents: List[Agent]):
     """
     Method to establish a leader agent for the communication cluster
     
@@ -77,14 +81,38 @@ def establish_leader(agents):
     arbitrarily select another of agent to compare their ID with
     """
     
-    if len(agents) == 1:
+    # create a copy of the list of agents
+    working_agents = copy(agents)
+    
+    if len(working_agents) == 1:
         # If there is only one agent left, it is the leader
-        log.debug(f'Leader: {agents[0]}')
-        return agents[0]
+        log.debug(f'Leader: {working_agents[0]}')
+        leader = working_agents[0]
+        del working_agents
+        return leader
     # If there are more than one agent left, compare the first two agents
-    elif agents[0].agent_id < agents[1].agent_id:
+    elif working_agents[0].agent_id < working_agents[1].agent_id:
         # If the first agent has a lower ID than the second agent, remove the second agent from the list
         # log.debug(f'{agents[0]} has a lower ID than {agents[1]}')
-        agents.pop(1)
+        working_agents.pop(1)
         # Recursively call the function with the new list of agents
-        return establish_leader(agents)
+        return establish_leader(working_agents)
+
+def allocate_tasks(agents, leader, ports):
+    """
+    Method to allocate tasks to agents in the communication cluster
+    """
+    
+    working_agents = copy(agents)
+    working_ports = copy(ports)
+        
+    log.debug(f'Allocating tasks to {len(working_agents)} agents')
+    
+    # remove the leader from the list of agents
+    working_agents.remove(leader)
+    
+    log.debug(f'Leader: {leader}')
+    log.debug(f'Agents: {working_agents}')
+    leader.assign_tasks(agents=working_agents, ports=working_ports)
+
+        
