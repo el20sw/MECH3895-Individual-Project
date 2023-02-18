@@ -5,6 +5,7 @@ Agent's operate in the network environment. The basic behaviour of the agent is 
 """
 import src.debug.logger as logger
 from src.network import Network
+from src.observation import Observation
 
 class Agent:
     
@@ -69,10 +70,13 @@ class Agent:
         # get the agents in the same node
         agents_in_range = self._agents_in_range
         # check if agents are in the same node
-        if agents_in_range:
-            # Enter the communication protocol
-            self._log.debug(f"{self}: Entering communication protocol")
-            
+        if not agents_in_range:
+            # No agents in range
+            self._log.debug(f"{self} No agents in range")
+        else:
+            # Agents in range
+            self._log.debug(f"{self} Agents in range: {agents_in_range}")
+            # 
         
         
     def ping(self, agents):
@@ -114,5 +118,8 @@ class Agent:
         self._log.debug(f"Arrival port for node {self._current_node}: {arrival_port}")    
           
         # Select the next link to follow - traverse the edge with port number (arrival_port + 1) % degree
-        self.link = links[(arrival_port + 1) % degree]
-        self._log.debug(f"Next link to traverse: {self.link}")
+        link = links[(arrival_port + 1) % degree]
+        self.link = link
+        self._log.debug(f"Next link to traverse: {link}")
+        
+        return link
