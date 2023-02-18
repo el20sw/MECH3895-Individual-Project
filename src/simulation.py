@@ -8,8 +8,9 @@ import random
 
 from src.agent import Agent
 from src.network import Network
-# from src.overwatch import Overwatch
+
 import src.agent_generator as agent_generator
+import src.communication as communication
 
 ### Simulation Class ###
 class Simulation:
@@ -47,11 +48,11 @@ class Simulation:
 
     ### Methods ###
     
-    def _communication(self):
+    def comms_state(self):
         # Each agent pings
         for agent in self._agents:
             agent.ping(self._agents)
-            self._log.debug(f'{agent} pinged')
+            self._log.debug(f'{agent} has pinged')
             
         # Get the clusters
         self._agent_clusters = self._get_clusters()
@@ -61,10 +62,20 @@ class Simulation:
         # If there are clusters, agents in the same cluster communicate
         if self._agent_clusters:
             for cluster in self._agent_clusters:
-                for agent in cluster:
-                    agent.communicate()
-                    self._log.debug(f'{agent} communicated')
-            
+                communication.communicate(cluster, self._environment)
+                    
+    def decide_state(self):
+        # Each agent decides
+        # for agent in self._agents:
+        #     agent.decide()
+        #     self._log.debug(f'{agent} decided')
+        pass
+                    
+    def action_state(self):
+        # Each agent moves
+        for agent in self._agents:
+            agent.move()
+            self._log.debug(f'{agent} moved')
             
     def _get_clusters(self):
         # Get the clusters
