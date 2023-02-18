@@ -69,12 +69,14 @@ def establish_leader(agents):
     -----------
     Given that each agent has a unique ID, the agent with the lowest ID can be selected as the leader.
     This requires that the agents are all in agreement regarding which agent has the lowest ID.
+    
+    - Begin pairwise comparison of agent IDs
+    - The agent with the lowest ID will be selected as the leader of that pair of agents and the process will continue 
+    until only one agent remains, this agent will be the leader of the communication cluster
+    - This is a recursive function - in practice this would be done in parallel across all agents in the cluster though this simulation, agents would
+    arbitrarily select another of agent to compare their ID with
     """
     
-    # Begin pairwise comparison of agent IDs
-    # The agent with the lowest ID will be selected as the leader of that pair of agents and the process will continue
-    # until only one agent remains, this agent will be the leader of the communication cluster
-    # This is a recursive function
     if len(agents) == 1:
         # If there is only one agent left, it is the leader
         log.debug(f'Leader: {agents[0]}')
@@ -82,7 +84,7 @@ def establish_leader(agents):
     # If there are more than one agent left, compare the first two agents
     elif agents[0].agent_id < agents[1].agent_id:
         # If the first agent has a lower ID than the second agent, remove the second agent from the list
-        log.debug(f'{agents[0]} has a lower ID than {agents[1]}')
+        # log.debug(f'{agents[0]} has a lower ID than {agents[1]}')
         agents.pop(1)
         # Recursively call the function with the new list of agents
         return establish_leader(agents)
