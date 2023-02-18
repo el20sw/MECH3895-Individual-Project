@@ -6,7 +6,7 @@ import json
 import os
 import random
 
-from src.agents.agent import Agent
+from src.agent import Agent
 from src.network import Network
 from src.overwatch import Overwatch
 
@@ -19,7 +19,7 @@ class Simulation:
     :param environment: Network object
     """
 
-    def __init__(self, environment: Network):
+    def __init__(self, environment: Network) -> None:
         # Initialise the logger
         self._log = logger.get_logger(__name__)
         # Initialise the simulation
@@ -33,7 +33,7 @@ class Simulation:
         self._num_agents = 0
 
         # Variables
-        self._turns = 0
+        self._turns = 0 
         self._pct_explored = 0
         self._results = {}
 

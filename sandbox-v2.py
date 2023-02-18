@@ -12,7 +12,7 @@ log = logger.setup_logger(file_name='logs/sandbox-2.log', level='DEBUG')
 
 env = Network('networks/Net3.inp')
 print(env.node_names)
-agent = Agent(env=env, start_pos='10')
+agent = Agent(env=env, agent_id=0x1, start_pos='10')
 
 
 G = env.water_network_model.to_graph().to_undirected()
@@ -28,7 +28,7 @@ while pct_explored < 1:
         print('Simulation length exceeded')
         break
     
-    visited_nodes.add(agent.current_node)
+    visited_nodes.add(agent.position)
     pct_explored = len(visited_nodes) / num_nodes
     log.info(f'pct_explored: {pct_explored}')
     agent.RH_Traversal()
