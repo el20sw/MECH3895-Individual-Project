@@ -32,6 +32,7 @@ class Simulation:
         # Initialise the agents
         self._num_agents = num_agents
         self._agents = agent_generator.generate_agents(self._environment, self._num_agents)
+        self._agent_clusters = []
 
         # Variables
         self._turns = 0 
@@ -46,6 +47,45 @@ class Simulation:
 
     ### Methods ###
     
+    def _communication(self):
+        # Each agent pings
+        for agent in self._agents:
+            agent.ping(self._agents)
+            self._log.debug(f'{agent} pinged')
+            
+        # Get the clusters
+        self._agent_clusters = self._get_clusters()
+        for cluster in self._agent_clusters:
+            self._log.debug(f'Cluster: {cluster}')
+            
+        # If there are clusters, agents in the same cluster communicate
+        if self._agent_clusters:
+            for cluster in self._agent_clusters:
+                for agent in cluster:
+                    agent.communicate()
+                    self._log.debug(f'{agent} communicated')
+            
+            
+    def _get_clusters(self):
+        # Get the clusters
+        clusters = []
+        # Use each agents ping list to get the clusters
+        for agent in self._agents:
+            # Check if the agent is in a cluster
+            if all([agent not in cluster for cluster in clusters]):
+                # If not, create a new cluster
+                clusters.append([agent])
+                # Add the agents in the ping list to the cluster
+                for ping in agent.agents_in_range:
+                    clusters[-1].append(ping)
+                    
+        # Remove any clusters with only one agent
+        clusters = [cluster for cluster in clusters if len(cluster) > 1]
+
+        # Return the clusters
+        return clusters
+            
+            
 
     # def _write_results(self, filename: str):
     #     """
