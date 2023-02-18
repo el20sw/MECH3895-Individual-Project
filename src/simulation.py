@@ -52,16 +52,19 @@ class Simulation:
         # Each agent pings
         for agent in self._agents:
             agent.ping(self._agents)
-            self._log.debug(f'{agent} has pinged')
+            # self._log.debug(f'{agent} has pinged')
             
         # Get the clusters
         self._agent_clusters = self._get_clusters()
         for cluster in self._agent_clusters:
-            self._log.debug(f'Cluster: {cluster}')
+            cluster_pos = set(agent.position for agent in cluster)
+            self._log.debug(f'{cluster_pos} Cluster: {cluster}')
             
         # If there are clusters, agents in the same cluster communicate
         if self._agent_clusters:
+            self._log.debug('Communicating')
             for cluster in self._agent_clusters:
+                self._log.debug(f'Cluster: {cluster}')
                 communication.communicate(cluster, self._environment)
                     
     def decide_state(self):
