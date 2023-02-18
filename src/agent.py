@@ -12,12 +12,12 @@ class Agent:
         self._log = logger.get_logger(__name__)
         self.env = env
         self.G = env.water_network_model.to_graph().to_directed()
+        
         self._agent_id = agent_id
         self._battery = 100
         self._current_node = start_pos
         self._previous_node = None
         self.link = None
-        
         self._path = [self._current_node]
     
     @property
@@ -39,6 +39,12 @@ class Agent:
     @property
     def path(self):
         return self._path
+    
+    def __str__(self) -> str:
+        return f"Agent {self._agent_id} at {self._current_node}"
+    
+    def __repr__(self) -> str:
+        return f"Agent {self._agent_id} at {self._current_node}"
         
     def move(self):
         """
@@ -61,10 +67,17 @@ class Agent:
             # do something
             pass
         
-    def _ping(self):
+    def _ping(self, agents):
         
-        # broadcast a ping to all agents in the same node and get the response
-        pass
+        agents_in_range = []
+        # broadcast a ping to all agents in the same node and get the response if in range
+        for agent in agents:
+            # send ping
+            if agent != self and agent.position == self._current_node:
+                # get response
+                agents_in_range.append(agent)
+                
+        return agents_in_range
         
         
     def RH_Traversal(self):
