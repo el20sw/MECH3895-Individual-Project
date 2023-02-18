@@ -12,13 +12,15 @@ class Agent:
         self._log = logger.get_logger(__name__)
         self.env = env
         self.G = env.water_network_model.to_graph().to_directed()
+        
         self._agent_id = agent_id
         self._battery = 100
         self._current_node = start_pos
         self._previous_node = None
         self.link = None
-        
         self._path = [self._current_node]
+        
+        self._agents_in_range = []
     
     @property
     def agent_id(self):
@@ -39,6 +41,16 @@ class Agent:
     @property
     def path(self):
         return self._path
+    
+    @property
+    def agents_in_range(self):
+        return self._agents_in_range
+    
+    def __str__(self) -> str:
+        return f"Agent {self._agent_id} at {self._current_node}"
+    
+    def __repr__(self) -> str:
+        return f"Agent {self._agent_id} at {self._current_node}"
         
     def move(self):
         """
@@ -55,16 +67,30 @@ class Agent:
         """
         
         # get the agents in the same node
-        agents_in_node = None
+        agents_in_range = self._agents_in_range
         # check if agents are in the same node
-        if agents_in_node:
-            # do something
-            pass
+        if agents_in_range:
+            # Enter the communication protocol
+            self._log.debug(f"{self}: Entering communication protocol")
+            
         
-    def _ping(self):
         
-        # broadcast a ping to all agents in the same node and get the response
-        pass
+    def ping(self, agents):
+        """
+        Method for the agent to broadcast a ping to other agents in the same node
+        - param: list of agents in the environment/simulation
+        - update: the agents_in_range attribute
+        """
+        
+        self._agents_in_range = []
+        # broadcast a ping to all agents in the same node and get the response if in range
+        for agent in agents:
+            # send ping
+            if agent != self and agent.position == self._current_node:
+                # get response
+                self._agents_in_range.append(agent)
+                
+        self._log.debug(f"{self} Pinged: {self._agents_in_range}")
         
         
     def RH_Traversal(self):
