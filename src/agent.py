@@ -20,7 +20,8 @@ class Agent:
         self._current_node = start_pos
         self._previous_node = None
         self.link = None
-        self._path = [self._current_node]
+        self._path = []
+        self._start_pos = start_pos
         
         self._agents_in_range = []
         self._task = None
@@ -44,6 +45,10 @@ class Agent:
     @property
     def path(self):
         return self._path
+    
+    @property
+    def start_pos(self):
+        return self._start_pos
     
     @property
     def agents_in_range(self):
