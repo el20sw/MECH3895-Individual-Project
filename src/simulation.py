@@ -1,9 +1,10 @@
-# Import logger
-import src.debug.logger as logger
-
-from typing import List
-import json
 import os
+import json
+import datetime
+import pandas as pd
+from typing import List
+
+import src.debug.logger as logger
 
 from src.agent import Agent
 from src.network import Network
@@ -28,22 +29,42 @@ class Simulation:
         self._log.info(f'Environment: {self._environment}')
         self._num_nodes = environment._num_nodes
         self._max_turns = 100
+        
+        # create unique id for this simulation
+        self._simulation_id = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
         # Initialise the agents
         self._num_agents = num_agents
         self._agents = agent_generator.generate_agents(self._environment, self._num_agents)
         self._agent_clusters = []
+        self._agent_positions = {}
 
         # Variables
         self._turns = 0 
         self._pct_explored = 0
-        self._results = {}
-
-        # Initialise the overwatch
-        # self._overwatch = Overwatch(self._environment, self._agents)
+        self._visited_nodes = set()
+        # self._results = {}
         
         # Initialise the random seed
         self._random_seed: int = 0
+        
+        # Initialise the results
+        self._results = pd.DataFrame(columns=['turn', 'pct_explored'])
+        self._results_agents = pd.DataFrame(columns=['agent_id', 'start_pos', 'path'])
+        # Add agents to results agents
+        self._results_agents['agent_id'] = [agent.agent_id for agent in self._agents]
+        self._results_agents['start_pos'] = [agent.start_pos for agent in self._agents]
+        
+        # create/find results directory
+        self._results_dir = 'results'
+        # create subdirectory for this simulation
+        self._results_subdir = f'{self._results_dir}/simulation_{self._simulation_id}'
+        # create directory
+        os.makedirs(self._results_subdir, exist_ok=True)
+        # create file for results
+        self._results_csv_file = f'{self._results_subdir}/results.csv'
+        self._agent_results_csv_file = f'{self._results_subdir}/agent_results.csv'
+        
 
     ### Methods ###
     def run(self, max_turns:int=100):
@@ -55,11 +76,15 @@ class Simulation:
         self._max_turns = max_turns
         
         # Run the simulation
-        while self._turns < self._max_turns:
+        while True:
+            if self._turns >= self._max_turns:
+                break
+            
             self.turn()
             
-        # Write the results
-        # self._write_results('results.json')
+            
+        # Save the results
+        self._save_results()
     
     def turn(self):
         """
@@ -72,6 +97,8 @@ class Simulation:
         self.comms_state()
         self.decide_state()
         self.action_state()
+        # Update results
+        self._update_results()
         # Update the turn
         self._turns += 1
     
@@ -130,8 +157,43 @@ class Simulation:
 
         # Return the clusters
         return clusters
+    
+    def _update_agent_positions(self):
+        self._agent_positions = {}
+        for agent in self._agents:
+            self._agent_positions[agent.agent_id] = agent.position
             
+    def _update_visited_nodes(self):
+        for agent in self._agents:
+            self._visited_nodes.add(agent.position)
             
+        self._pct_explored = len(self._visited_nodes) / self._num_nodes * 100
+        
+    def _update_results_df(self):
+        self._log.debug('Updating results')
+        
+        self._update_agent_positions()
+        self._update_visited_nodes()
+        
+        self._results.loc[self._turns, 'turn'] = self._turns
+        self._results.loc[self._turns, 'pct_explored'] = self._pct_explored
+        self._log.debug(f"Turn {self._turns} added to results dataframe")
+        self._log.debug(f"Percentage of nodes explored {self._pct_explored} added to results dataframe (num nodes: {self._num_nodes})")
+    
+    def _update_results(self):
+        self._log.debug('Updating results')
+        
+        self._update_agent_positions()
+        self._update_visited_nodes()
+        self._update_results_df()
+        
+    def _save_results(self):
+        self._log.debug('Saving results')
+
+        self._results_agents['path'] = [agent.path for agent in self._agents]
+        self._results_agents.to_csv(self._agent_results_csv_file, index=False)
+        
+        self._results.to_csv(self._results_csv_file, index=False) 
 
     # def _write_results(self, filename: str):
     #     """
