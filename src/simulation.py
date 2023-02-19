@@ -217,16 +217,6 @@ class Simulation:
     #     # If there is an error, log it
     #     except Exception as e:
     #         self._log.error(f"Error writing adjacency list to file: {e}")
-            
-    # def _params_to_overwatch(self):
-    #     """
-    #     Method to pass the parameters of the simulation to the overwatch
-    #     :return: None
-    #     """
-    #     # Get the parameters of the simulation
-    #     params = self.params
-    #     # Pass the parameters to the overwatch
-    #     self._overwatch._sim_params = params
         
     ### Attributes ###
     @property
@@ -252,19 +242,22 @@ class Simulation:
     @property
     def pct_explored(self) -> float:
         return self._pct_explored
-
-    # @property
-    # def results(self):
-    #     self._results_from_overwatch()
-    #     return self._results
-
-    # @property
-    # def overwatch(self) -> Overwatch:
-    #     return self._overwatch
     
     @property
     def random_seed(self) -> int:
         return self._random_seed
+    
+    @property
+    def path_to_results_file(self):
+        return self._results_csv_file
+    
+    @property
+    def path_to_agents_results_file(self):
+        return self._agent_results_csv_file
+    
+    @property
+    def path_to_results_directory(self):
+        return self._results_subdir
     
     @property
     def params(self):
