@@ -4,7 +4,6 @@ import src.debug.logger as logger
 from typing import List
 import json
 import os
-import random
 
 from src.agent import Agent
 from src.network import Network
@@ -47,8 +46,38 @@ class Simulation:
         self._random_seed: int = 0
 
     ### Methods ###
+    def run(self, max_turns:int=100):
+        """
+        Method to run the simulation
+        return: None
+        """
+        
+        self._max_turns = max_turns
+        
+        # Run the simulation
+        while self._turns < self._max_turns:
+            self.turn()
+            
+        # Write the results
+        # self._write_results('results.json')
+    
+    def turn(self):
+        """
+        Method to simulate a single turn of the simulation
+        return: None
+        """
+        # Log the turn
+        self._log.info(f'Turn: {self._turns}')
+        # Update the agents
+        self.comms_state()
+        self.decide_state()
+        self.action_state()
+        # Update the turn
+        self._turns += 1
     
     def comms_state(self):
+        self._log.debug('Comms State')
+        
         # Each agent pings
         for agent in self._agents:
             agent.ping(self._agents)
@@ -68,17 +97,20 @@ class Simulation:
                 communication.communicate(cluster, self._environment)
                     
     def decide_state(self):
+        self._log.debug('Decide State')
+        
         # Each agent decides
-        # for agent in self._agents:
-        #     agent.decide()
-        #     self._log.debug(f'{agent} decided')
-        pass
+        for agent in self._agents:
+            agent.decide()
+            self._log.debug(f'{agent} decided')
                     
     def action_state(self):
+        self._log.debug('Action State')
+        
         # Each agent moves
         for agent in self._agents:
             agent.move()
-            self._log.debug(f'{agent} moved')
+            self._log.debug(f'Agent {agent.agent_id} moved {agent.previous_node} -> {agent.position}')
             
     def _get_clusters(self):
         # Get the clusters
