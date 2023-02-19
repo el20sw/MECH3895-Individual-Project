@@ -109,7 +109,7 @@ def allocate_tasks(agents, leader, ports):
     log.debug(f'Allocating tasks to {len(working_agents)} agents')
     
     # remove the leader from the list of agents
-    working_agents.remove(leader)
+    # working_agents.remove(leader)
     
     log.debug(f'Leader: {leader}')
     log.debug(f'Agents: {working_agents}')
