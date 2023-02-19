@@ -10,6 +10,7 @@ import src.agent_generator as agent_generator
 import src.communication as communication
 
 from src.simulation import Simulation
+from src.render import Render
 
 SIM_LENGTH = 200
 
@@ -22,6 +23,11 @@ wn = env.water_network_model
 G = wn.to_graph().to_undirected()
 
 sim = Simulation(env, num_agents=5)
+
+sim.run(max_turns=100)
+
+render = Render(sim)
+render.render()
 
 # sim.agents[0]._current_node = '10'
 # sim.agents[1]._current_node = '10'
@@ -39,8 +45,6 @@ sim = Simulation(env, num_agents=5)
 # sim.decide_state()
 # log.critical(f'Action state\n')
 # sim.action_state()
-
-sim.run(max_turns=10)
 
 # num_nodes = len(G.nodes)
 # pct_explored = 0
