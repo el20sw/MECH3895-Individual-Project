@@ -1,3 +1,4 @@
+import wntr
 import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -6,28 +7,40 @@ import src.debug.logger as logger
 from src.agent import Agent
 from src.network import Network
 import src.agent_generator as agent_generator
+import src.communication as communication
 
 from src.simulation import Simulation
 
-SIM_LENGTH = 1000
+SIM_LENGTH = 200
 
 log = logger.setup_logger(file_name='logs/sandbox-2.log', level='DEBUG')
 
 env = Network('networks/Net3.inp')
-# print(env.node_names)
-agent = Agent(env=env, agent_id=0x1, start_pos='10')
+agent = Agent(env=env, agent_id=0x1, start_pos='Lake')
 
+wn = env.water_network_model
+G = wn.to_graph().to_undirected()
 
-G = env.water_network_model.to_graph().to_undirected()
+sim = Simulation(env, num_agents=5)
 
-sim = Simulation(env, num_agents=10)
+# sim.agents[0]._current_node = '10'
+# sim.agents[1]._current_node = '10'
+# sim.agents[2]._current_node = '10'
 
-sim.agents[0]._current_node = '22'
+# sim.agents[3]._current_node = '113'
+# sim.agents[4]._current_node = '113'
+# sim.agents[5]._current_node = '113'
 
-sim.agents[1]._current_node = '10'
-sim.agents[2]._current_node = '10'
+# sim.agents[6]._current_node = '197'
 
-sim._communication()
+# log.critical(f'Communication state\n')
+# sim.comms_state()
+# log.critical(f'Decide state\n')
+# sim.decide_state()
+# log.critical(f'Action state\n')
+# sim.action_state()
+
+sim.run(max_turns=10)
 
 # num_nodes = len(G.nodes)
 # pct_explored = 0
