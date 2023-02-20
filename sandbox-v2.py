@@ -22,7 +22,7 @@ agent = Agent(env=env, agent_id=0x1, start_pos='Lake')
 wn = env.water_network_model
 G = wn.to_graph().to_undirected()
 
-sim = Simulation(env, num_agents=5)
+sim = Simulation(env, num_agents=5, swarm=True)
 
 sim.run(max_turns=100)
 
