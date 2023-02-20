@@ -13,6 +13,7 @@ to be used in the simulation
 import src.debug.logger as logger
 
 import wntr
+import networkx as nx
 import matplotlib.pyplot as plt
 
 import os
@@ -306,3 +307,21 @@ class Network:
         for node in self._adj_list[start_node]:
             if self._adj_list[start_node][node]['link_name'] == link:
                 return node
+            
+    # Method to save png of network plot
+    def save_image(self, path_to_file):
+        """
+        Method to save png of network plot
+        """
+        # Plot the network - custom plot
+        G = self._wn.to_graph().to_undirected()
+        fig, ax = plt.subplots(figsize=(10, 10))
+        pos = nx.get_node_attributes(G, 'pos')
+        nx.draw_networkx_nodes(G, pos, node_size=10, node_color='black', ax=ax)
+        nx.draw_networkx_edges(G, pos, width=1, edge_color='black', ax=ax)
+        nx.draw_networkx_labels(G, pos, horizontalalignment='right', verticalalignment='top',
+            font_family='sans-serif', font_size=8, ax=ax)
+        # Save the image
+        plt.savefig(path_to_file, bbox_inches='tight')
+        # Close the plot
+        plt.close()
