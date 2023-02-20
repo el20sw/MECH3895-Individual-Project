@@ -180,8 +180,9 @@ class Render:
                                 bbox=dict(facecolor='red', alpha=0.5), font_family='sans-serif', font_size=10
                                 )
 
-        # Add title
-        plt.title('Turn: {} - {}% explored'.format(turn, pct_explored))
+        # Add title with pct explored to 2 decimal places
+        plt.title('Turn: {} - {}% explored'.format(turn, round(pct_explored, 2)))
+        # plt.title('Turn: {} - {}% explored'.format(turn, pct_explored))
 
 
     def render(self, frames=None, repeat=False, interval=250):
