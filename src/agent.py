@@ -25,6 +25,8 @@ class Agent:
         
         self._agents_in_range = []
         self._task = None
+        
+        self._log.debug(f"Agent {self._agent_id} created")
     
     @property
     def agent_id(self):
@@ -77,18 +79,24 @@ class Agent:
         self._current_node = self.env.get_node(self._current_node, self.link)
         self._log.debug(f"Agent moved from node {self._previous_node} to node {self._current_node}")
         
-    def decide(self):
+    def decide(self, swarm:bool):
         """
         Method for the agent to decide what to do - based on task allocation
         """
         
-        if self.agents_in_range:
-            self._log.debug(f"{self} has agents in range: {self.agents_in_range}")
-            self._log.debug(f"{self} action determined by task allocation")
-            self.link = self._task
-            
+        if swarm:
+            # If swarm behaviour is enabled, the agent will communicate with other agents in the same node
+            if self.agents_in_range:
+                self._log.debug(f"{self} has agents in range: {self.agents_in_range}")
+                self._log.debug(f"{self} action determined by task allocation")
+                self.link = self._task
+                
+            else:
+                self._log.debug(f"{self} has no agents in range")
+                self._log.debug(f"{self} action determined by right hand traversal rule")
+                self.link = self.RH_Traversal()
         else:
-            self._log.debug(f"{self} has no agents in range")
+            # If swarm behaviour is disabled, the agent will follow the right hand traversal rule
             self._log.debug(f"{self} action determined by right hand traversal rule")
             self.link = self.RH_Traversal()
         
