@@ -21,11 +21,12 @@ class Simulation:
     :param environment: Network object
     """
 
-    def __init__(self, environment:Network, num_agents:int=1) -> None:
+    def __init__(self, environment:Network, num_agents:int=1, swarm:bool=False) -> None:
         # Initialise the logger
         self._log = logger.get_logger(__name__)
         # Initialise the simulation
         self._environment = environment
+        self._network_file = environment.path_to_file
         self._log.info(f'Environment: {self._environment}')
         self._num_nodes = environment._num_nodes
         self._max_turns = 100
@@ -38,6 +39,7 @@ class Simulation:
         self._agents = agent_generator.generate_agents(self._environment, self._num_agents)
         self._agent_clusters = []
         self._agent_positions = {}
+        self._swarm = swarm
 
         # Variables
         self._turns = 0 
@@ -64,6 +66,12 @@ class Simulation:
         # create file for results
         self._results_csv_file = f'{self._results_subdir}/results.csv'
         self._agent_results_csv_file = f'{self._results_subdir}/agent_results.csv'
+        self._config_json_file = f'{self._results_subdir}/config.json'
+        
+        # create temporary file for image of network
+        self._network_image_file = f'{self._results_subdir}/network.png'
+        # save image of network
+        self._environment.save_image(self._network_image_file)
         
 
     ### Methods ###
@@ -105,6 +113,11 @@ class Simulation:
     def comms_state(self):
         self._log.debug('Comms State')
         
+        # If swarm, all agents communicate
+        if not self._swarm:
+            self._log.debug('Collaboration not enabled')
+            return
+        
         # Each agent pings
         for agent in self._agents:
             agent.ping(self._agents)
@@ -128,7 +141,7 @@ class Simulation:
         
         # Each agent decides
         for agent in self._agents:
-            agent.decide()
+            agent.decide(self._swarm)
             self._log.debug(f'{agent} decided')
                     
     def action_state(self):
@@ -193,7 +206,19 @@ class Simulation:
         self._results_agents['path'] = [agent.path for agent in self._agents]
         self._results_agents.to_csv(self._agent_results_csv_file, index=False)
         
-        self._results.to_csv(self._results_csv_file, index=False) 
+        self._results.to_csv(self._results_csv_file, index=False)
+        
+        self._write_config()
+        
+    def _write_config(self):
+        self._log.debug('Writing config')
+        
+        try:
+            with open(self._config_json_file, 'w') as f:
+                json.dump(self.params, f, indent=4)
+                f.close()
+        except Exception as e:
+            self._log.error(f"Error writing config file: {e}")
 
     # def _write_results(self, filename: str):
     #     """
@@ -265,7 +290,9 @@ class Simulation:
         Simulation parameters
         """
         return {
-            'random_seed': self._random_seed,
-            'max_turns': self._max_turns,
+            'network_file': self._network_file,
+            'num_agents': self._num_agents,
+            'turns': self._max_turns,
+            'swarm': self._swarm,
         }
     
