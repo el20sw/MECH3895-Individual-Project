@@ -184,7 +184,7 @@ class Render:
         plt.title('Turn: {} - {}% explored'.format(turn, pct_explored))
 
 
-    def render(self, frames=None, repeat=False, interval=500):
+    def render(self, frames=None, repeat=False, interval=250):
         """
         Function to render a simulation
         :param simulation: Simulation object
