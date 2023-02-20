@@ -14,7 +14,7 @@ def create_simulation(network_file, number_of_agents:int, turn_limit:int, swarm:
     # code for creating simulation with the given parameters
     print(f"""\nRunning simulation with parameters:
             network_file={network_file},
-            number_of_agents={number_of_agents}, 
+            number_of_agents={number_of_agents},
             turn_limit={turn_limit},
             swarm={swarm}\n""")
     
