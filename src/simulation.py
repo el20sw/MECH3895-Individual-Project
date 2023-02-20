@@ -33,6 +33,13 @@ class Simulation:
         
         # create unique id for this simulation
         self._simulation_id = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        
+        # create/find results directory
+        self._results_dir = 'results'
+        # create subdirectory for this simulation
+        self._results_subdir = f'{self._results_dir}/simulation_{self._simulation_id}'
+        # create directory
+        os.makedirs(self._results_subdir, exist_ok=True)
 
         # Initialise the agents
         self._num_agents = num_agents
@@ -57,12 +64,6 @@ class Simulation:
         self._results_agents['agent_id'] = [agent.agent_id for agent in self._agents]
         self._results_agents['start_pos'] = [agent.start_pos for agent in self._agents]
         
-        # create/find results directory
-        self._results_dir = 'results'
-        # create subdirectory for this simulation
-        self._results_subdir = f'{self._results_dir}/simulation_{self._simulation_id}'
-        # create directory
-        os.makedirs(self._results_subdir, exist_ok=True)
         # create file for results
         self._results_csv_file = f'{self._results_subdir}/results.csv'
         self._agent_results_csv_file = f'{self._results_subdir}/agent_results.csv'
