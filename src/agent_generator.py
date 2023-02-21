@@ -38,7 +38,7 @@ def generate_agents(env: Network, num_agents: int, random_seed:int=0  ) -> List[
     # Return the agents
     return agents
 
-def generate_start_positions(env: Network, num_agents: int, start_postitions=None, random_seed:int=0) -> List[tuple]:
+def generate_start_positions(env: Network, num_agents: int, random_seed:int=0) -> List[tuple]:
     """
     Method to generate a list of start positions for the agents
     
@@ -57,42 +57,36 @@ def generate_start_positions(env: Network, num_agents: int, start_postitions=Non
     # Set the random seed
     random.seed(random_seed)
     
-    # If the start positions are not given
-    if start_postitions is None:
-        # Generate the start positions
-        start_positions = [(agent_id, 'Lake') for agent_id in range(num_agents)]
-        return start_positions
+    # ask for start positions
+    start_positions = ask_start_positions(env)
     
-    start_positions = []
-    # Return the start positions
+    # If start positions is None, raise an error
+    if start_positions is None:
+        raise ValueError("Start positions are not valid")
+    
+    # Assign the start positions to the agents - round robin style so agents are evenly distributed across the start positions
+    start_positions = [(agent_id, start_positions[agent_id % len(start_positions)]) for agent_id in range(num_agents)]
+    
     return start_positions
+    
     
 def ask_start_positions(env: Network):
     """
     Method to ask the user for the start positions of the agents
     """
     
-    # Get the list of nodes
-    nodes = list(env.node_names)
-    # Create TKinter window for the selection of the start positions
-    root = tk.Tk()
-    # Create the listbox
-    listbox = tk.Listbox(root, selectmode=tk.MULTIPLE)
-    # Add the nodes to the listbox
-    for node in nodes:
-        listbox.insert(tk.END, node)
-    # Pack the listbox
-    listbox.pack()
-    # Create the button
-    button = tk.Button(root, text='OK', command=root.destroy)
-    # Pack the button
-    button.pack()
-    # Run the mainloop
-    root.mainloop()
+    # Ask the user for the start positions
+    num_start_pos = int(input("Enter number of start positions: "))
+    start_positions = []
+    for i in range(num_start_pos):
+        start_pos = input(f"Enter start position {i+1}: ")
+        start_positions.append(start_pos)
     
-    # Get the selected nodes
+    # Check that the start positions are valid
+    for start_pos in start_positions:
+        if start_pos not in env.node_names:
+            log.critical(f"Start position {start_pos} is not a valid node in the network")
+            return None
     
-    
-    
-    return None
+    return start_positions
         
