@@ -21,17 +21,20 @@ class Render:
         self.env_wn = self.env.water_network_model
 
         # get the raw data associated with the simulation
-        self.results_directory = simulation.overwatch.path_to_results_directory
-        self.results_file_path = simulation.overwatch.path_to_results_file
-        self.df = pd.read_csv(simulation.overwatch.path_to_results_file, index_col=0)
-
-        self.visited_nodes_file_path = f'{self.results_directory}/data/visited_nodes.txt'
+        self.results_directory = simulation.path_to_results_directory
+        self.results_file_path = simulation.path_to_results_file
+        self.agents_results_file_path = simulation.path_to_agents_results_file
+        self.results_df = pd.read_csv(simulation.path_to_results_file, index_col=0)
+        self.agents_results_df = pd.read_csv(simulation.path_to_agents_results_file)
         
         # get the agent ids
-        self.agent_ids = [col for col in self.df.columns if col not in ['turn', 'pct_explored']]
+        self.agent_ids = [agent.agent_id for agent in simulation.agents]
 
         # get the number of turns
-        self.num_turns = len(self.df.index)
+        self.num_turns = len(self.results_df.index)
+        # sanity check that number of turns is the same
+        if simulation.turns != self.num_turns:
+            raise ValueError('Number of turns in simulation and results do not match')
 
         # create an undirected networkx graph
         self.G = self.env_wn.to_graph().to_undirected()
@@ -55,8 +58,9 @@ class Render:
 
         # get the agents starting positions
         self.agent_start_pos = {}
+        
         for agent_id in self.agent_ids:
-            agent_node = str(self.df[agent_id][0])
+            agent_node = str(self.agents_results_df['start_pos'][agent_id])
             # get the node position
             self.agent_start_pos[agent_id] = self.env_node_pos[agent_node]
 
@@ -68,7 +72,8 @@ class Render:
         nx.set_node_attributes(self.G, self.all_pos, 'pos')
 
         # initialise the figure
-        self.fig = plt.figure(figsize=(10, 10), dpi=100, facecolor='w', edgecolor='k')
+        fig = plt.figure(figsize=(10, 10), dpi=100, facecolor='w', edgecolor='k')
+        self.plot = fig.add_subplot(111)
 
         # draw the network nodes
         nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.env_nodes, node_color='blue', node_size=10, label='Environmental Nodes')
@@ -85,13 +90,19 @@ class Render:
         nx.draw_networkx_labels(
             self.G, self.all_pos, labels=env_node_labels,
             horizontalalignment='right', verticalalignment='top',
-            font_weight='bold'
+            font_family='sans-serif', font_size=8
             )
-        nx.draw_networkx_labels(
-            self.G, self.all_pos, labels=agent_node_labels,
-            horizontalalignment='left', verticalalignment='bottom',
-            bbox=dict(facecolor='red', alpha=0.5), font_weight='bold'
-            )
+        
+    #     fig.canvas.mpl_connect('motion_notify_event', self.on_plot_hover)
+        
+    # def on_plot_hover(self, event):
+    #     # Iterate over each data point in the plot
+    #     for curve in self.plot.get_lines():
+    #         if curve.contains(event)[0]:
+    #             # If the mouse is over the data point, display the corresponding label
+    #             self.plot.set_title(curve.get_label())
+    #             # Force a redraw of the figure
+    #             self.plot.figure.canvas.draw()
 
     def animate(self, i):
 
@@ -99,33 +110,46 @@ class Render:
         if i >= self.num_turns:
             return
         # get the current turn - turns are the index of the dataframe
-        turn = self.df.index[i]
+        turn = self.results_df.index[i]
         # get the current percentage explored
-        pct_explored = self.df['pct_explored'][i]
+        pct_explored = self.results_df['pct_explored'][i]
         
         # get the current positions of the agents
         agent_pos = {}
         for agent_id in self.agent_ids:
-            agent_node = str(self.df[agent_id][i])
-            # get the node position
+            agent_path = self.agents_results_df['path'][agent_id].strip('[]').split(',')
+            for j in range(len(agent_path)):
+                agent_path[j] = agent_path[j].strip().strip("'")
+            agent_node = agent_path[turn]
             agent_pos[agent_id] = self.env_node_pos[agent_node]
+            
         
-        if i != 0:
-            # get a list of the visited nodes at that turn
-            with open(self.visited_nodes_file_path, 'r') as vnodes_file:
-                # get the line corresponding to the current turn
-                if i == self.num_turns - 1:
-                    line = vnodes_file.readlines()[i-2]
-                else:
-                    line = vnodes_file.readlines()[i]
-                # remove the turn number and newline character
-                fline = line.lstrip(f'{str(i+1)}:').rstrip('\n')
-                # split the line into a list of visited nodes
-                visited_nodes = fline.split(',')
-                # close the file
-                vnodes_file.close()
-        else:
-            visited_nodes = []
+            
+            
+        
+        
+        # agent_pos = {}
+        # for agent_id in self.agent_ids:
+        #     agent_node = str(self.results_df[agent_id][i])
+        #     # get the node position
+        #     agent_pos[agent_id] = self.env_node_pos[agent_node]
+        
+        # if i != 0:
+        #     # get a list of the visited nodes at that turn
+        #     with open(self.visited_nodes_file_path, 'r') as vnodes_file:
+        #         # get the line corresponding to the current turn
+        #         if i == self.num_turns - 1:
+        #             line = vnodes_file.readlines()[i-2]
+        #         else:
+        #             line = vnodes_file.readlines()[i]
+        #         # remove the turn number and newline character
+        #         fline = line.lstrip(f'{str(i+1)}:').rstrip('\n')
+        #         # split the line into a list of visited nodes
+        #         visited_nodes = fline.split(',')
+        #         # close the file
+        #         vnodes_file.close()
+        # else:
+        #     visited_nodes = []
 
         # update the positions of the agents
         nx.set_node_attributes(self.G, agent_pos, 'pos')
@@ -134,7 +158,7 @@ class Render:
         # update the positions of all objects
         nx.set_node_attributes(self.G, self.all_pos, 'pos')
         # update the figure
-        self.fig.clear()
+        self.plot.clear()
 
         # Draw background environment nodes
         nx.draw_networkx_nodes(self.G, self.all_pos, nodelist=self.env_nodes, node_color='blue', node_size=10, label='Environment Nodes')
@@ -152,18 +176,16 @@ class Render:
                                 font_weight='bold', font_size=10
                                 )
         nx.draw_networkx_labels(self.G, self.all_pos, labels=agent_node_labels,
-                                horizontalalignment='left', verticalalignment='bottom',
-                                bbox=dict(facecolor='red', alpha=0.5), font_weight='bold'
+                                horizontalalignment='center', verticalalignment='center',
+                                bbox=dict(facecolor='red', alpha=0.5), font_family='sans-serif', font_size=10
                                 )
 
-        # Add title
-        plt.title('Turn: {} - {}% explored'.format(turn, pct_explored))
-
-        # Add title
-        plt.title('Turn: {} - {}% explored'.format(turn, pct_explored))
+        # Add title with pct explored to 2 decimal places
+        plt.title('Turn: {} - {}% explored'.format(turn, round(pct_explored, 2)))
+        # plt.title('Turn: {} - {}% explored'.format(turn, pct_explored))
 
 
-    def render(self, frames=None, repeat=False, interval=500):
+    def render(self, frames=None, repeat=False, interval=250):
         """
         Function to render a simulation
         :param simulation: Simulation object

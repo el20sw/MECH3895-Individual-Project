@@ -1,15 +1,16 @@
-# Import logger
-import src.debug.logger as logger
-
-from typing import List
-import json
 import os
-import random
+import json
+import datetime
+import pandas as pd
+from typing import List
+
+import src.debug.logger as logger
 
 from src.agent import Agent
 from src.network import Network
-# from src.overwatch import Overwatch
+
 import src.agent_generator as agent_generator
+import src.communication as communication
 
 ### Simulation Class ###
 class Simulation:
@@ -20,51 +21,137 @@ class Simulation:
     :param environment: Network object
     """
 
-    def __init__(self, environment:Network, num_agents:int=1) -> None:
+    def __init__(self, environment:Network, num_agents:int=1, swarm:bool=False) -> None:
         # Initialise the logger
         self._log = logger.get_logger(__name__)
         # Initialise the simulation
         self._environment = environment
+        self._network_file = environment.path_to_file
         self._log.info(f'Environment: {self._environment}')
         self._num_nodes = environment._num_nodes
         self._max_turns = 100
+        
+        # create unique id for this simulation
+        self._simulation_id = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        
+        # create/find results directory
+        self._results_dir = 'results'
+        # create subdirectory for this simulation
+        self._results_subdir = f'{self._results_dir}/simulation_{self._simulation_id}'
+        # create directory
+        os.makedirs(self._results_subdir, exist_ok=True)
 
         # Initialise the agents
         self._num_agents = num_agents
         self._agents = agent_generator.generate_agents(self._environment, self._num_agents)
         self._agent_clusters = []
+        self._agent_positions = {}
+        self._swarm = swarm
 
         # Variables
         self._turns = 0 
         self._pct_explored = 0
-        self._results = {}
-
-        # Initialise the overwatch
-        # self._overwatch = Overwatch(self._environment, self._agents)
+        self._visited_nodes = set()
+        # self._results = {}
         
         # Initialise the random seed
         self._random_seed: int = 0
+        
+        # Initialise the results
+        self._results = pd.DataFrame(columns=['turn', 'pct_explored'])
+        self._results_agents = pd.DataFrame(columns=['agent_id', 'start_pos', 'path'])
+        # Add agents to results agents
+        self._results_agents['agent_id'] = [agent.agent_id for agent in self._agents]
+        self._results_agents['start_pos'] = [agent.start_pos for agent in self._agents]
+        
+        # create file for results
+        self._results_csv_file = f'{self._results_subdir}/results.csv'
+        self._agent_results_csv_file = f'{self._results_subdir}/agent_results.csv'
+        self._config_json_file = f'{self._results_subdir}/config.json'
+        
+        # create temporary file for image of network
+        self._network_image_file = f'{self._results_subdir}/network.png'
+        # save image of network
+        self._environment.save_image(self._network_image_file)
+        
 
     ### Methods ###
+    def run(self, max_turns:int=100):
+        """
+        Method to run the simulation
+        return: None
+        """
+        
+        self._max_turns = max_turns
+        
+        # Run the simulation
+        while True:
+            if self._turns >= self._max_turns:
+                break
+            
+            self.turn()
+            
+            
+        # Save the results
+        self._save_results()
     
-    def _communication(self):
+    def turn(self):
+        """
+        Method to simulate a single turn of the simulation
+        return: None
+        """
+        # Log the turn
+        self._log.info(f'Turn: {self._turns}')
+        # Update the agents
+        self.comms_state()
+        self.decide_state()
+        self.action_state()
+        # Update results
+        self._update_results()
+        # Update the turn
+        self._turns += 1
+    
+    def comms_state(self):
+        self._log.debug('Comms State')
+        
+        # If swarm, all agents communicate
+        if not self._swarm:
+            self._log.debug('Collaboration not enabled')
+            return
+        
         # Each agent pings
         for agent in self._agents:
             agent.ping(self._agents)
-            self._log.debug(f'{agent} pinged')
+            # self._log.debug(f'{agent} has pinged')
             
         # Get the clusters
         self._agent_clusters = self._get_clusters()
         for cluster in self._agent_clusters:
-            self._log.debug(f'Cluster: {cluster}')
+            cluster_pos = set(agent.position for agent in cluster)
+            self._log.debug(f'{cluster_pos} Cluster: {cluster}')
             
         # If there are clusters, agents in the same cluster communicate
         if self._agent_clusters:
+            self._log.debug('Communicating')
             for cluster in self._agent_clusters:
-                for agent in cluster:
-                    agent.communicate()
-                    self._log.debug(f'{agent} communicated')
-            
+                self._log.debug(f'Cluster: {cluster}')
+                communication.communicate(cluster, self._environment)
+                    
+    def decide_state(self):
+        self._log.debug('Decide State')
+        
+        # Each agent decides
+        for agent in self._agents:
+            agent.decide(self._swarm)
+            self._log.debug(f'{agent} decided')
+                    
+    def action_state(self):
+        self._log.debug('Action State')
+        
+        # Each agent moves
+        for agent in self._agents:
+            agent.move()
+            self._log.debug(f'Agent {agent.agent_id} moved {agent.previous_node} -> {agent.position}')
             
     def _get_clusters(self):
         # Get the clusters
@@ -84,8 +171,55 @@ class Simulation:
 
         # Return the clusters
         return clusters
+    
+    def _update_agent_positions(self):
+        self._agent_positions = {}
+        for agent in self._agents:
+            self._agent_positions[agent.agent_id] = agent.position
             
+    def _update_visited_nodes(self):
+        for agent in self._agents:
+            self._visited_nodes.add(agent.position)
             
+        self._pct_explored = len(self._visited_nodes) / self._num_nodes * 100
+        
+    def _update_results_df(self):
+        self._log.debug('Updating results')
+        
+        self._update_agent_positions()
+        self._update_visited_nodes()
+        
+        self._results.loc[self._turns, 'turn'] = self._turns
+        self._results.loc[self._turns, 'pct_explored'] = self._pct_explored
+        self._log.debug(f"Turn {self._turns} added to results dataframe")
+        self._log.debug(f"Percentage of nodes explored {self._pct_explored} added to results dataframe (num nodes: {self._num_nodes})")
+    
+    def _update_results(self):
+        self._log.debug('Updating results')
+        
+        self._update_agent_positions()
+        self._update_visited_nodes()
+        self._update_results_df()
+        
+    def _save_results(self):
+        self._log.debug('Saving results')
+
+        self._results_agents['path'] = [agent.path for agent in self._agents]
+        self._results_agents.to_csv(self._agent_results_csv_file, index=False)
+        
+        self._results.to_csv(self._results_csv_file, index=False)
+        
+        self._write_config()
+        
+    def _write_config(self):
+        self._log.debug('Writing config')
+        
+        try:
+            with open(self._config_json_file, 'w') as f:
+                json.dump(self.params, f, indent=4)
+                f.close()
+        except Exception as e:
+            self._log.error(f"Error writing config file: {e}")
 
     # def _write_results(self, filename: str):
     #     """
@@ -109,16 +243,6 @@ class Simulation:
     #     # If there is an error, log it
     #     except Exception as e:
     #         self._log.error(f"Error writing adjacency list to file: {e}")
-            
-    # def _params_to_overwatch(self):
-    #     """
-    #     Method to pass the parameters of the simulation to the overwatch
-    #     :return: None
-    #     """
-    #     # Get the parameters of the simulation
-    #     params = self.params
-    #     # Pass the parameters to the overwatch
-    #     self._overwatch._sim_params = params
         
     ### Attributes ###
     @property
@@ -144,19 +268,22 @@ class Simulation:
     @property
     def pct_explored(self) -> float:
         return self._pct_explored
-
-    # @property
-    # def results(self):
-    #     self._results_from_overwatch()
-    #     return self._results
-
-    # @property
-    # def overwatch(self) -> Overwatch:
-    #     return self._overwatch
     
     @property
     def random_seed(self) -> int:
         return self._random_seed
+    
+    @property
+    def path_to_results_file(self):
+        return self._results_csv_file
+    
+    @property
+    def path_to_agents_results_file(self):
+        return self._agent_results_csv_file
+    
+    @property
+    def path_to_results_directory(self):
+        return self._results_subdir
     
     @property
     def params(self):
@@ -164,7 +291,9 @@ class Simulation:
         Simulation parameters
         """
         return {
-            'random_seed': self._random_seed,
-            'max_turns': self._max_turns,
+            'network_file': self._network_file,
+            'num_agents': self._num_agents,
+            'turns': self._max_turns,
+            'swarm': self._swarm,
         }
     

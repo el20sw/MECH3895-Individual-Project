@@ -1,68 +1,94 @@
-# import logger
-import logging
+import wntr
+import networkx as nx
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
 import src.debug.logger as logger
+from src.agent import Agent
+from src.network import Network
+import src.agent_generator as agent_generator
+import src.communication as communication
 
 from src.simulation import Simulation
-from src.network import Network
-from src.agents.random_agent import RandomAgent
-from src.agents.greedy_agent import GreedyAgent
-from src.agents.behavioural_agent import BehaviouralAgent
-
 from src.render import Render
 
-logging.disable(logging.CRITICAL)
+SIM_LENGTH = 200
 
-### Main Function ###
-def main():
-    ### Initialise the logger
-    log = logger.setup_logger(file_name='logs/sandbox.log', level='DEBUG')
-    # Initialise the simulation
-    log.info('Initialising the simulation')
-    # Create the environment layer
-    env = Network('networks/Net2.inp')
-    log.debug(f'Environment: {env}')
-    # Create the agent layer
-    agentA = GreedyAgent(env, 'A', '11', communication_range=-1, random_seed=0)
-    agentB = GreedyAgent(env, 'B', '12', communication_range=-1, random_seed=0)
-    agentC = GreedyAgent(env, 'C', '23', communication_range=-1, random_seed=0)
-    log.debug(f'{agentA} @ {agentA.position}')
-    # log.debug(f'{agentB} @ {agentB.position}')
-    # Create the simulation layer
-    agent_list = [agentA, agentB, agentC]
-    simulation = Simulation(env)
-    log.debug(f'Simulation: {simulation}')
-    # Add agents to the simulation
-    log.debug(f'Simulation Agents: {simulation.agents}')
-    log.debug(f'Overwatch Agents: {simulation.overwatch.agents}')
-    log.debug(f'Overwatch Agent Numbers: {simulation.overwatch.num_agents}')
-    log.debug(f'Overwatch Agent Positions: {simulation.overwatch.agent_positions}')
-    log.debug(f'Overwatch Comms Buffer: {simulation.overwatch.communication_buffer}')
+log = logger.setup_logger(file_name='logs/sandbox-2.log', level='DEBUG')
 
-    simulation.add_agent(agentA)
-    simulation.add_agent(agentB)
-    simulation.add_agent(agentC)
+env = Network('networks/Net3.inp')
+agent = Agent(env=env, agent_id=0x1, start_pos='Lake')
 
-    log.debug(f'Simulation Agents: {simulation.agents}')
-    log.debug(f'Overwatch Agents: {simulation.overwatch.agents}')
-    log.debug(f'Overwatch Agent Numbers: {simulation.overwatch.num_agents}')
-    log.debug(f'Overwatch Agent Positions: {simulation.overwatch.agent_positions}')
-    log.debug(f'Overwatch Comms Buffer: {simulation.overwatch.communication_buffer}')
+wn = env.water_network_model
+G = wn.to_graph().to_undirected()
 
-    # Run the simulation
-    log.info('Running the simulation')
-    simulation.run(max_turns=100)
+sim = Simulation(env, num_agents=5, swarm=True)
 
-    # Get the results
-    # simulation._write_results('results/sandbox.json')
-    simulation.save_results()
+sim.run(max_turns=100)
 
-    # Render the network
-    # env.plot_network(show=False, node_labels=True, link_labels=True)
-    
-    render = Render(simulation)
-    render.render()
+# render = Render(sim)
+# render.render()
 
-# call main function
-if __name__ == '__main__':
-    main()
-    
+# sim.agents[0]._current_node = '10'
+# sim.agents[1]._current_node = '10'
+# sim.agents[2]._current_node = '10'
+
+# sim.agents[3]._current_node = '113'
+# sim.agents[4]._current_node = '113'
+# sim.agents[5]._current_node = '113'
+
+# sim.agents[6]._current_node = '197'
+
+# log.critical(f'Communication state\n')
+# sim.comms_state()
+# log.critical(f'Decide state\n')
+# sim.decide_state()
+# log.critical(f'Action state\n')
+# sim.action_state()
+
+# num_nodes = len(G.nodes)
+# pct_explored = 0
+# visited_nodes = set()
+# log.info(f'num_nodes: {num_nodes}')
+# log.info(f'pct_explored: {pct_explored}')
+
+# while pct_explored < 1:
+#     if SIM_LENGTH == 0:
+#         print('Simulation length exceeded')
+#         break
+
+#     visited_nodes.add(agent.position)
+#     pct_explored = len(visited_nodes) / num_nodes
+#     log.info(f'pct_explored: {pct_explored}')
+#     agent.RH_Traversal()
+#     agent.move()
+#     SIM_LENGTH -= 1
+
+# path = agent.path
+# num_frames = len(path)
+# node_pos = nx.get_node_attributes(G, 'pos')
+
+# # create a figure
+# plt.figure(figsize=(10, 10))
+# # draw the network
+# nx.draw_networkx_nodes(G, node_pos, node_size=10, node_color='blue')
+# nx.draw_networkx_edges(G, node_pos)
+# nx.draw_networkx_labels(G, node_pos, horizontalalignment='right', verticalalignment='top', font_family='serif', font_size=8)
+
+# def animate(i):
+#     if i == 0:
+#         nx.draw_networkx_nodes(G, node_pos, node_size=10, node_color='blue')
+
+#     visited_nodes = []
+#     node = path[i]
+#     visited_nodes.append(node)
+
+#     nx.draw_networkx_nodes(G, node_pos, nodelist=[node], node_size=15, node_color='red')
+#     if i > 0:
+#         prev_node = path[i-1]
+#         nx.draw_networkx_nodes(G, node_pos, nodelist=[prev_node], node_size=10, node_color='lightgreen')
+
+#     plt.title(f'Frame: {i} / {num_frames} ({round(i/num_frames*100, 2)}%)')
+
+# anim = FuncAnimation(plt.gcf(), animate, frames=num_frames, interval=100)
+# plt.show()

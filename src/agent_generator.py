@@ -14,7 +14,7 @@ from src.network import Network
 
 log = logger.get_logger(__name__)
 
-def generate_agents(env: Network, num_agents: int, num_start_pos:int=1, random_seed:int=0) -> List[Agent]:
+def generate_agents(env: Network, num_agents: int, random_seed:int=0  ) -> List[Agent]:
     """
     Method to generate a list of agents for the simulation
     
@@ -23,20 +23,22 @@ def generate_agents(env: Network, num_agents: int, num_start_pos:int=1, random_s
     
     env: environment for the agents to be generated in
     num_agents: number of agents to generate
-    num_start_pos: number of start positions to generate
     random_seed: random seed for the generation of the agents
     
     Returns
     -------
     return: list of agents
-    """   
+    """
+    
+    # Ask the user for the start positions
+    # start_positions = ask_start_positions(env)
     
     # Generate the agents
-    agents = [Agent(env, agent_id, start_pos) for agent_id, start_pos in generate_start_positions(env, num_agents, num_start_pos, random_seed)]
+    agents = [Agent(env, agent_id, start_pos) for agent_id, start_pos in generate_start_positions(env, num_agents)]
     # Return the agents
     return agents
 
-def generate_start_positions(env: Network, num_agents: int, num_start_pos:int=1, random_seed:int=0) -> List[tuple]:
+def generate_start_positions(env: Network, num_agents: int, random_seed:int=0) -> List[tuple]:
     """
     Method to generate a list of start positions for the agents
     
@@ -55,23 +57,36 @@ def generate_start_positions(env: Network, num_agents: int, num_start_pos:int=1,
     # Set the random seed
     random.seed(random_seed)
     
-    # # Create TKinter containing the map of the network and a selection of start positions
-    # root = tk.Tk()
-    # root.title("Select Start Positions")
-    # root.geometry("800x600")
-    # root.resizable(False, False)
-    # # Create the canvas
-    # canvas = tk.Canvas(root, width=800, height=600)
-    # canvas.pack()
-    # # Create the map image
-    # wntr.graphics.plot_network(env.water_network_model, node_size=5, node_labels=True, filename="temp/map.png")
-    # # Create the map
-    # map = tk.PhotoImage(file="temp/map.png")
-    # canvas.create_image(0, 0, anchor=tk.NW, image=map)
-    # # Create the start positions
-    # start_positions = []
+    # ask for start positions
+    start_positions = ask_start_positions(env)
     
-    # Generate the start positions
-    start_positions = [(agent_id, 'Lake') for agent_id in range(num_agents)]
-    # Return the start positions
+    # If start positions is None, raise an error
+    if start_positions is None:
+        raise ValueError("Start positions are not valid")
+    
+    # Assign the start positions to the agents - round robin style so agents are evenly distributed across the start positions
+    start_positions = [(agent_id, start_positions[agent_id % len(start_positions)]) for agent_id in range(num_agents)]
+    
     return start_positions
+    
+    
+def ask_start_positions(env: Network):
+    """
+    Method to ask the user for the start positions of the agents
+    """
+    
+    # Ask the user for the start positions
+    num_start_pos = int(input("Enter number of start positions: "))
+    start_positions = []
+    for i in range(num_start_pos):
+        start_pos = input(f"Enter start position {i+1}: ")
+        start_positions.append(start_pos)
+    
+    # Check that the start positions are valid
+    for start_pos in start_positions:
+        if start_pos not in env.node_names:
+            log.critical(f"Start position {start_pos} is not a valid node in the network")
+            return None
+    
+    return start_positions
+        
