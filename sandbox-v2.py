@@ -1,6 +1,7 @@
 import wntr
 import networkx as nx
 import matplotlib.pyplot as plt
+
 from matplotlib.animation import FuncAnimation
 
 import src.debug.logger as logger
@@ -12,22 +13,157 @@ import src.communication as communication
 from src.simulation import Simulation
 from src.render import Render
 
-SIM_LENGTH = 200
-
-log = logger.setup_logger(file_name='logs/sandbox-2.log', level='DEBUG')
+import tkinter as tk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
 
 env = Network('networks/Net3.inp')
-agent = Agent(env=env, agent_id=0x1, start_pos='Lake')
+agents = agent_generator.generate_agents(env, 10)
 
-wn = env.water_network_model
-G = wn.to_graph().to_undirected()
+for agent in agents:
+    print(agent.position)
 
-sim = Simulation(env, num_agents=5, swarm=True)
+# SIM_LENGTH = 200
 
-sim.run(max_turns=100)
+# log = logger.setup_logger(file_name='logs/sandbox-2.log', level='DEBUG')
 
-render = Render(sim)
-render.render()
+# env = Network('networks/Net3.inp')
+# g = env.water_network_model.to_graph().to_undirected()
+# pos = nx.get_node_attributes(g, "pos")
+
+# root = tk.Tk()
+# root.title("Select Starting Positions")
+
+# # Make a base canvas
+# base = tk.Canvas(root, width=800, height=800)
+# base.pack()
+
+# fig = Figure(figsize=(10, 10), dpi=100)
+# ax = fig.add_subplot(111)
+# nx.draw_networkx_nodes(g, pos=pos, node_size=5, ax=ax)
+# nx.draw_networkx_edges(g, pos=pos, ax=ax)
+
+# # Create a Matplotlib canvasjyy
+# canvas = FigureCanvasTkAgg(fig, master=base)
+# canvas.draw()
+# canvas.get_tk_widget().pack()
+
+# Make option to zoom in and out
+
+
+# Make nodes change color when clicked
+# def on_click(event):
+#     x, y = event.x, event.y
+#     for node in g.nodes:
+#         node_coords = pos[node] 
+#         node_x, node_y = node_coords
+#         if node_x - 5 <= x <= node_x + 5 and node_y - 5 <= y <= node_y + 5:
+#             canvas.itemconfig(node, fill="red", outline="red")
+
+# Run the Tkinter event loop
+# tk.mainloop()
+
+
+# class StartingPositionsGUI:
+#     def __init__(self, environment:Network) -> None:
+#         self.env = environment
+#         self.starting_positions = []
+        
+#         self.G = self.env.water_network_model.to_graph().to_undirected()
+#         self.node_names = self.env.node_names
+        
+#         self.window = tk.Tk()
+#         self.window.title("Select Starting Positions")
+#         self.canvas = tk.Canvas(self.window, width=800, height=800)
+#         self.canvas.pack()
+#         self.canvas.bind("<Button-1>", self.on_click)
+        
+#         self.nodes = []
+#         self.all_pos = nx.get_node_attributes(self.G, "pos")
+        
+#         for node in self.node_names:
+#             node_coords = self.all_pos[node]
+#             node_x, node_y = node_coords
+#             node_radius = 5
+#             node_color = "blue"
+#             node_id = self.canvas.create_oval(
+#                 node_x - node_radius,
+#                 node_y - node_radius,
+#                 node_x + node_radius,
+#                 node_y + node_radius,
+#                 fill=node_color,
+#                 outline=node_color,
+#             )
+#             self.nodes.append(node_id)  
+            
+#         self.start_button = tk.Button(self.window, text="Start", command=self.start)
+#         self.start_button.pack()
+    
+#     def on_click(self, event):
+#         x, y = event.x, event.y
+#         for node_id in self.nodes:
+#             node_coords = self.canvas.coords(node_id)
+#             if node_coords[0] <= x <= node_coords[2] and node_coords[1] <= y <= node_coords[3]:
+#                 node_index = self.nodes.index(node_id)
+#                 self.starting_positions.append(node_index)
+#                 self.canvas.itemconfig(node_id, fill="green")
+                
+#     def start(self):
+#         if len(self.starting_positions) > 0:
+#             self.window.destroy()
+
+#     def get_starting_positions(self):
+#         return [node for node in self.starting_positions]
+    
+# starting_positions_gui = StartingPositionsGUI(env)
+# starting_positions_gui.window.mainloop()
+# starting_positions = starting_positions_gui.get_starting_positions()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+# agent = Agent(env=env, agent_id=0x1, start_pos='Lake')
+
+# wn = env.water_network_model
+# G = wn.to_graph().to_undirected()
+
+# sim = Simulation(env, num_agents=5, swarm=True)
+
+# sim.run(max_turns=100)
+
+# render = Render(sim)
+# render.render()
 
 # sim.agents[0]._current_node = '10'
 # sim.agents[1]._current_node = '10'
