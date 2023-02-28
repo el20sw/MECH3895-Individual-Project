@@ -4,9 +4,9 @@ Agent module
 Agent's operate in the network environment. The basic behaviour of the agent is to explore the network using the right hand wall rule
 """
 from collections import Counter
+
 import src.debug.logger as logger
 from src.network import Network
-from src.observation import Observation
 
 class Agent:
     
