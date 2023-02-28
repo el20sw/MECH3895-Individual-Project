@@ -230,6 +230,8 @@ class Network:
                 length = self.calculate_link_length(start_node, end_node)
                 nx.set_edge_attributes(G, name="link_length", values={(start_node, end_node): length})
                 
+            nx.set_edge_attributes(G, name="link_type", values={(start_node, end_node): link.link_type})
+                
         uG = G.to_undirected()
     
         return uG
@@ -288,19 +290,6 @@ class Network:
 
         return state
 
-    # Method to get links from a node
-    def get_links(self, node) -> list:
-        """
-        Method to get links from a given node
-        """
-
-        # Get links
-        links = []
-        for dest_node in self._adj_list[node]:
-            links.append((node, dest_node, {'link_name': self._adj_list[node][dest_node]['link_name'],
-                                            'link_length': self._adj_list[node][dest_node]['link_length']}))
-        return links
-
     # Method to plot the network using wntr graphics api
     def plot_network(self, show=False, *args, **kwargs) -> None:
         """
@@ -323,6 +312,31 @@ class Network:
         # Get link
         return self._adj_list[start_node][end_node]
     
+    # Method to get links from a node
+    def get_links(self, node) -> list:
+        """
+        Method to get links from a given node
+        """
+
+        # Get links
+        links = []
+        for dest_node in self._adj_list[node]:
+            links.append((node, dest_node, {'link_name': self._adj_list[node][dest_node]['link_name'],
+                                            'link_length': self._adj_list[node][dest_node]['link_length']}))
+        return links
+    
+    # Method to get link names from a node
+    def get_link_names(self, node) -> list:
+        """
+        Method to get link names from a given node
+        """
+
+        # Get links
+        links = []
+        for dest_node in self._adj_list[node]:
+            links.append(self._adj_list[node][dest_node]['link_name'])
+        return links
+    
     # Method to get a node from a start node and a link
     def get_node(self, start_node, link):
         """
@@ -331,8 +345,13 @@ class Network:
 
         # Get node
         for node in self._adj_list[start_node]:
-            if self._adj_list[start_node][node]['link_name'] == link:
-                return node
+            # get the link name
+            try:
+                link_name = self.adj_list[start_node][node]['link_name']
+                if link_name == link:
+                    return node
+            except:
+                raise ValueError(f"Link {link} not found")
             
     # Method to save png of network plot
     def save_image(self, path_to_file):
