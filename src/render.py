@@ -3,7 +3,7 @@ Class for rendering a simulation
 """
 
 import matplotlib
-matplotlib.use("module://matplotlib.backends.backend_agg")
+# matplotlib.use("module://matplotlib.backends.backend_agg")
 
 import networkx as nx
 import matplotlib.pyplot as plt
