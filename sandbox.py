@@ -16,15 +16,28 @@ SIM_LENGTH = 200
 
 log = logger.setup_logger(file_name='logs/sandbox-2.log', level='DEBUG')
 
-env = Network('networks/Net3.inp')
-agent = Agent(env=env, agent_id=0x1, start_pos='Lake')
-
+env = Network('networks/Net6.inp')
 wn = env.water_network_model
-G = wn.to_graph().to_undirected()
+g = wn.to_graph().to_undirected()
 
-sim = Simulation(env, num_agents=5, swarm=True)
+pos = nx.get_node_attributes(g, 'pos')
+node_labels = {node: node for node in g.nodes()}
 
-sim.run(max_turns=100)
+fig = plt.figure(figsize=(10, 10))
+
+nx.draw_networkx_nodes(g, pos=pos, node_size=5, node_color='black')
+nx.draw_networkx_edges(g, pos=pos)
+nx.draw_networkx_labels(g, pos=pos, labels=node_labels, font_size=8)
+plt.show()
+
+# agent = Agent(env=env, agent_id=0x1, start_pos='Lake')
+
+# wn = env.water_network_model
+# G = wn.to_graph().to_undirected()
+
+# sim = Simulation(env, num_agents=5, swarm=True)
+
+# sim.run(max_turns=100)
 
 # render = Render(sim)
 # render.render()
