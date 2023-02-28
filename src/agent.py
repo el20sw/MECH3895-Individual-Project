@@ -76,7 +76,7 @@ class Agent:
         
         self._previous_node = self._current_node
         self._path.append(self._current_node)
-        self._current_node = self.env.get_node(self._current_node, self.link)
+        self._current_node = self.env.get_node(self._previous_node, self.link)
         self._log.debug(f"Agent moved from node {self._previous_node} to node {self._current_node}")
         
     def decide(self, swarm:bool):
@@ -133,8 +133,10 @@ class Agent:
         
         self._log.debug(f"{self} is following the right hand traversal rule")
         
-        # Get the links for the current node
-        links = self.env.water_network_model.get_links_for_node(self._current_node)
+        # Get the links for the current node - using the water network model
+        # links = self.env.water_network_model.get_links_for_node(self._current_node)
+        # Get the links for the current node - using the networkx graph adjacency list
+        links = self.env.get_link_names(self._current_node)
         self._log.debug(f"Links for node {self._current_node}: {links}")
         # Get the degree of the current node
         degree = len(links)
