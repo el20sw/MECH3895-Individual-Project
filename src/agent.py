@@ -149,7 +149,10 @@ class Agent:
             self._log.warning(f"Arrival port for node {self._current_node}: {arrival_port}")   
           
         # Select the next link to follow - traverse the edge with port number (arrival_port + 1) % degree
-        link = links[(arrival_port + 1) % degree]
+        try:
+            link = links[(arrival_port + 1) % degree]
+        except ZeroDivisionError:
+            raise ValueError(f"Node {self._current_node} has no links")
         self._task = link
         self._log.debug(f"Next link to traverse: {link}")
         
