@@ -67,9 +67,11 @@ class Network:
         self._frozen_links = FrozenLinks(self._link_names)
 
         # Initialise adjacency list
-        self._adj_list = {}
+        # self._adj_list = {}
         # Build adjacency list
-        self._adj_list = self._get_adj_list()
+        # self._adj_list = self._get_adj_list()
+        self._graph = self.to_graph()
+        self._adj_list = self._graph.adj
 
     @property
     def links(self) -> list:
@@ -151,9 +153,9 @@ class Network:
         return self._frozen_links
 
     @property
-    def adj_list(self) -> dict:
+    def adj_list(self):
         """
-        :py:attr:`adj_list` is a :py:class:`dict` containing the adjacency list
+        :py:attr:`adj_list` ge the adjacency list
         """
         return self._adj_list
     
@@ -172,34 +174,65 @@ class Network:
         return self._path_to_file
     
     # Get adjacency list
-    def _get_adj_list(self) -> dict:
+    # def _get_adj_list(self) -> dict:
+    #     """
+    #     Method to get adjacency list - if there is a node and a link, the robots can traverse them
+    #     If no link length is specified, i.e. in the case of a pump, the link length is calculated using the coordinates of the start and end nodes
+    #     :return: Adjacency list
+    #     """
+    #     # Iterate through links and add start_node and end_node to adjacency list
+    #     for link in self._links:
+    #         # Get start and end nodes
+    #         start_node = link['start_node_name']
+    #         end_node = link['end_node_name']
+    #         # Get link name
+    #         link_name = link['name']
+    #         # Add start and end nodes to adjacency list
+    #         if start_node not in self._adj_list:
+    #             self._adj_list[start_node] = {}
+    #         if end_node not in self._adj_list:
+    #             self._adj_list[end_node] = {}
+    #         # Add link to adjacency list
+    #         self._adj_list[start_node][end_node] = {
+    #             'link_name': link_name,
+    #             'link_length': link['length'] if 'length' in link else self.calculate_link_length(start_node, end_node)
+    #             }
+    #         self._adj_list[end_node][start_node] = {
+    #             'link_name': link_name,
+    #             'link_length': link['length'] if 'length' in link else self.calculate_link_length(start_node, end_node)
+    #             }
+    #     return self._adj_list
+    
+    def to_graph(self):
         """
-        Method to get adjacency list - if there is a node and a link, the robots can traverse them
-        If no link length is specified, i.e. in the case of a pump, the link length is calculated using the coordinates of the start and end nodes
-        :return: Adjacency list
+        Method to convert the network to an undirected graph
         """
-        # Iterate through links and add start_node and end_node to adjacency list
-        for link in self._links:
-            # Get start and end nodes
-            start_node = link['start_node_name']
-            end_node = link['end_node_name']
-            # Get link name
-            link_name = link['name']
-            # Add start and end nodes to adjacency list
-            if start_node not in self._adj_list:
-                self._adj_list[start_node] = {}
-            if end_node not in self._adj_list:
-                self._adj_list[end_node] = {}
-            # Add link to adjacency list
-            self._adj_list[start_node][end_node] = {
-                'link_name': link_name,
-                'link_length': link['length'] if 'length' in link else self.calculate_link_length(start_node, end_node)
-                }
-            self._adj_list[end_node][start_node] = {
-                'link_name': link_name,
-                'link_length': link['length'] if 'length' in link else self.calculate_link_length(start_node, end_node)
-                }
-        return self._adj_list
+        # Create graph
+        G = nx.Graph()
+        # Add nodes
+        for name, node in self._wn.nodes():
+            G.add_node(name)
+            nx.set_node_attributes(G, name="pos", values={name: node.coordinates})
+            nx.set_node_attributes(G, name="type", values={name: node.node_type})
+            
+        # Add links
+        for name, link in self._wn.links():
+            start_node = link.start_node_name
+            end_node = link.end_node_name
+            
+            G.add_edge(start_node, end_node)
+            
+            nx.set_edge_attributes(G, name="link_name", values={(start_node, end_node): name})
+            
+            try:
+                nx.set_edge_attributes(G, name="link_length", values={(start_node, end_node): link.length})
+            except AttributeError:
+                length = self.calculate_link_length(start_node, end_node)
+                nx.set_edge_attributes(G, name="link_length", values={(start_node, end_node): length})
+                
+        uG = G.to_undirected()
+    
+        return uG
 
     # Method to calculate the length of a link using the coordinates of the start and end nodes
     def calculate_link_length(self, start_node, end_node) -> float:
@@ -224,9 +257,7 @@ class Network:
         """
         Method to write the adjacency list to a file
         """
-        # Get adjacency list
-        self._get_adj_list()
-
+        
         # Check if the directory exists
         if not os.path.exists(os.path.dirname(path_to_file)):
             # If it doesn't, create it
@@ -262,13 +293,12 @@ class Network:
         """
         Method to get links from a given node
         """
-        # Get adjacency list
-        self._get_adj_list()
 
         # Get links
         links = []
         for dest_node in self._adj_list[node]:
-            links.append((node, dest_node, self._adj_list[node][dest_node]['link_length']))
+            links.append((node, dest_node, {'link_name': self._adj_list[node][dest_node]['link_name'],
+                                            'link_length': self._adj_list[node][dest_node]['link_length']}))
         return links
 
     # Method to plot the network using wntr graphics api
@@ -289,8 +319,6 @@ class Network:
         """
         Method to get a link from a start and end node
         """
-        # Get adjacency list
-        self._get_adj_list()
 
         # Get link
         return self._adj_list[start_node][end_node]
@@ -300,8 +328,6 @@ class Network:
         """
         Method to get a node from a start node and a link
         """
-        # Get adjacency list
-        self._get_adj_list()
 
         # Get node
         for node in self._adj_list[start_node]:
