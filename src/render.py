@@ -19,6 +19,7 @@ class Render:
         # get the environment from the simulation
         self.env = simulation.environment
         self.env_wn = self.env.water_network_model
+        self.num_nodes = len(self.env_wn.nodes)
 
         # get the raw data associated with the simulation
         self.results_directory = simulation.path_to_results_directory
@@ -84,25 +85,29 @@ class Render:
         # draw the edges
         nx.draw_networkx_edges(self.G, self.env_node_pos)
 
+        # draw the environment labels if the number of nodes is less than 300
+        if self.num_nodes < 300:
+            self.draw_env_labels()
+        # always draw the agent labels
+        agent_node_labels = {node: node for node in self.G.nodes() if node in self.agent_nodes}  
+        nx.draw_networkx_labels(self.G, self.all_pos, labels=agent_node_labels,
+                                horizontalalignment='center', verticalalignment='center',
+                                bbox=dict(facecolor='red', alpha=0.5), font_family='sans-serif', font_size=10
+                                )
+        
+    def draw_env_labels(self):
+        """
+        Method for drawing the labels
+        """
+        
         # draw the labels
         env_node_labels = {node: node for node in self.G.nodes() if node in self.env_nodes}
-        agent_node_labels = {node: node for node in self.G.nodes() if node in self.agent_nodes}
+        
         nx.draw_networkx_labels(
             self.G, self.all_pos, labels=env_node_labels,
             horizontalalignment='right', verticalalignment='top',
             font_family='sans-serif', font_size=8
             )
-        
-    #     fig.canvas.mpl_connect('motion_notify_event', self.on_plot_hover)
-        
-    # def on_plot_hover(self, event):
-    #     # Iterate over each data point in the plot
-    #     for curve in self.plot.get_lines():
-    #         if curve.contains(event)[0]:
-    #             # If the mouse is over the data point, display the corresponding label
-    #             self.plot.set_title(curve.get_label())
-    #             # Force a redraw of the figure
-    #             self.plot.figure.canvas.draw()
 
     def animate(self, i):
 
@@ -122,34 +127,6 @@ class Render:
                 agent_path[j] = agent_path[j].strip().strip("'")
             agent_node = agent_path[turn]
             agent_pos[agent_id] = self.env_node_pos[agent_node]
-            
-        
-            
-            
-        
-        
-        # agent_pos = {}
-        # for agent_id in self.agent_ids:
-        #     agent_node = str(self.results_df[agent_id][i])
-        #     # get the node position
-        #     agent_pos[agent_id] = self.env_node_pos[agent_node]
-        
-        # if i != 0:
-        #     # get a list of the visited nodes at that turn
-        #     with open(self.visited_nodes_file_path, 'r') as vnodes_file:
-        #         # get the line corresponding to the current turn
-        #         if i == self.num_turns - 1:
-        #             line = vnodes_file.readlines()[i-2]
-        #         else:
-        #             line = vnodes_file.readlines()[i]
-        #         # remove the turn number and newline character
-        #         fline = line.lstrip(f'{str(i+1)}:').rstrip('\n')
-        #         # split the line into a list of visited nodes
-        #         visited_nodes = fline.split(',')
-        #         # close the file
-        #         vnodes_file.close()
-        # else:
-        #     visited_nodes = []
 
         # update the positions of the agents
         nx.set_node_attributes(self.G, agent_pos, 'pos')
@@ -167,14 +144,11 @@ class Render:
         # Draw edges
         nx.draw_networkx_edges(self.G, self.all_pos)
 
-        # Draw labels - make labels to the right of the nodes if node label is environment node and to the left if it is an agent node
-        env_node_labels = {node: node for node in self.G.nodes() if node in self.env_nodes}
-        agent_node_labels = {node: node for node in self.G.nodes() if node in self.agent_nodes}
-        # Draw labels
-        nx.draw_networkx_labels(self.G, self.all_pos, labels=env_node_labels,
-                                horizontalalignment='right', verticalalignment='top',
-                                font_weight='bold', font_size=10
-                                )
+        # Draw environment labels if the number of nodes is less than 300
+        if self.num_nodes < 300:
+            self.draw_env_labels()
+        # always draw the agent labels
+        agent_node_labels = {node: node for node in self.G.nodes() if node in self.agent_nodes}  
         nx.draw_networkx_labels(self.G, self.all_pos, labels=agent_node_labels,
                                 horizontalalignment='center', verticalalignment='center',
                                 bbox=dict(facecolor='red', alpha=0.5), font_family='sans-serif', font_size=10

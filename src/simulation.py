@@ -47,7 +47,10 @@ class Simulation:
         self._agent_clusters = []
         self._agent_positions = {}
         self._swarm = swarm
-
+        self._start_positions = [agent.start_pos for agent in self._agents]
+        # remove duplicates from start positions
+        self._start_positions = list(dict.fromkeys(self._start_positions))
+        
         # Variables
         self._turns = 0 
         self._pct_explored = 0
@@ -295,5 +298,6 @@ class Simulation:
             'num_agents': self._num_agents,
             'turns': self._max_turns,
             'swarm': self._swarm,
+            'start_position': self._start_positions,
         }
     

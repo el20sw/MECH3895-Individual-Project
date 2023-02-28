@@ -2,6 +2,8 @@ import wntr
 import networkx as nx
 import matplotlib.pyplot as plt
 
+import math
+
 from matplotlib.animation import FuncAnimation
 
 import src.debug.logger as logger
@@ -17,11 +19,73 @@ import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
-env = Network('networks/Net3.inp')
-agents = agent_generator.generate_agents(env, 10)
+log = logger.setup_logger(file_name='logs/sandbox-2.log', level='DEBUG')
 
-for agent in agents:
-    print(agent.position)
+env = Network('networks/Net6.inp')
+
+wn = env.water_network_model
+g = wn.to_graph().to_undirected()
+
+adj = wn.to_dict()
+
+def calculate_link_length(wn, start_node, end_node) -> float:
+        """
+        :py:meth:`calculate_link_length` is a :py:class:`float` method to calculate the length of a link given the coordinates of the start and end nodes
+        """
+        # Get coordinates of start and end nodes
+        start_node = wn.get_node(start_node)
+        end_node = wn.get_node(end_node)
+        # try to get the coordinates
+        start_node_coords = getattr(start_node, 'coordinates', None)
+        end_node_coords = getattr(end_node, 'coordinates', None)
+        # If the coordinates are not None, calculate the length of the link
+        if start_node_coords is not None and end_node_coords is not None:
+            return math.sqrt((start_node_coords[0] - end_node_coords[0])**2 + (start_node_coords[1] - end_node_coords[1])**2)
+        # If the coordinates are None, return 10
+        else:
+            return 10
+
+def to_graph(wn):
+    uG = nx.MultiDiGraph()
+    
+    for name, node in wn.nodes():
+        uG.add_node(name)
+        nx.set_node_attributes(uG, name="pos", values={name: node.coordinates})
+        nx.set_node_attributes(uG, name="type", values={name: node.node_type})
+        
+    for name, link in wn.links():
+        start_node = link.start_node_name
+        end_node = link.end_node_name
+        
+        uG.add_edge(start_node, end_node, key=name)
+        try:
+            nx.set_edge_attributes(uG, name="type", values={(start_node, end_node, name): link.length})
+        except AttributeError:
+            length = calculate_link_length(wn, start_node, end_node)
+            nx.set_edge_attributes(uG, name="type", values={(start_node, end_node, name): length})
+      
+    return uG.to_undirected()
+
+uG = to_graph(wn)
+print(nx.is_connected(uG))
+
+# sim = Simulation(environment=env, num_agents=1, swarm=True)
+
+# wn = env.water_network_model
+# g = wn.to_graph().to_undirected()
+
+# # check that the graph is connected
+# if not nx.is_connected(g):
+#     raise ValueError('Graph is not connected')
+
+# sim.turn()
+# sim.turn()
+    
+
+
+
+
+
 
 # SIM_LENGTH = 200
 
