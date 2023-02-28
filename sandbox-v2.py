@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 import math
 
-from matplotlib.animation import FuncAnimation
+# from matplotlib.animation import FuncAnimation
 
 import src.debug.logger as logger
 from src.agent import Agent
@@ -15,18 +15,51 @@ import src.communication as communication
 from src.simulation import Simulation
 from src.render import Render
 
-import tkinter as tk
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
+# import tkinter as tk
+# from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+# from matplotlib.figure import Figure
+
+
 
 log = logger.setup_logger(file_name='logs/sandbox-2.log', level='DEBUG')
 
 env = Network('networks/Net6.inp')
-
 wn = env.water_network_model
-g = wn.to_graph().to_undirected()
+g = wn.to_graph()
+uG = g.to_undirected()
 
-adj = wn.to_dict()
+adj = env.adj_list
+
+sim = Simulation(environment=env, num_agents=1, swarm=True)
+sim.turn()
+sim.turn()
+
+# junc = adj.get('JUNCTION-0')
+# print('adj_list junc:', junc)
+
+# f = env.get_links('JUNCTION-0')
+# print('get_links:', f)
+
+# y = env.get_link_names('JUNCTION-0')
+# print('get_link_names:', y)
+
+# t = wn.get_links_for_node('JUNCTION-0')
+# print('get_links_for_node:', t)
+
+
+
+# figure = plt.figure(figsize=(10, 10))
+# pos = nx.get_node_attributes(uG, 'pos')
+# nx.draw_networkx_nodes(uG, pos, node_color='blue', node_size=1)
+# nx.draw_networkx_edges(uG, pos, edge_color='black', width=0.5)
+# # make junction-0 red
+# nx.draw_networkx_nodes(uG, pos, nodelist=['JUNCTION-0'], node_color='red', node_size=2)
+# # make links from junction-0 green
+# nx.draw_networkx_nodes(uG, pos, nodelist=['JUNCTION-1', 'RESERVOIR-3323'], node_color='green', node_size=2)
+# plt.show()
+
+# opt = wn.options.to_dict()
+# print('options:', opt)
 
 # print(env.adj_list)
 # print("Link 10 -> 11: ", env.get_link('10', '11'))
@@ -78,17 +111,17 @@ adj = wn.to_dict()
 # print(nx.is_connected(uG))
 # print(uG.adj)
 
-sim = Simulation(environment=env, num_agents=1, swarm=True)
+# 
 
-# wn = env.water_network_model
-# g = wn.to_graph().to_undirected()
+# # wn = env.water_network_model
+# # g = wn.to_graph().to_undirected()
 
-# # check that the graph is connected
-# if not nx.is_connected(g):
-#     raise ValueError('Graph is not connected')
+# # # check that the graph is connected
+# # if not nx.is_connected(g):
+# #     raise ValueError('Graph is not connected')
 
-sim.turn()
-sim.turn()
+# sim.turn()
+# sim.turn()
     
 
 
