@@ -42,17 +42,22 @@ def synchronise_port_labelling(agents: List[Agent], network: Network):
     
     Parameters
     ----------
-    agents: List[Agent] - List of agents in the communication cluster
-    network: Network - Network object (the environment)
+    
+    agents: List[Agent]
+        List of agents in the communication cluster
+    network: Network
+        Network object (the environment)
     
     Description
     -----------
+    
     In the real world, agents would have to synchronise their port labelling using some method,
     one such example might be using the bearing of each link relative to north to determine the labelling. Port labels could be
     labelled based on the bearing of the link relative to north, with the link with the smallest bearing being labelled 1, the
     second smallest being labelled 2, and so on. This would ensure that the port labelling is consistent across agents.
     
     True North is a common factor to all agents and so can be used to synchronise port labelling across agents in the network.
+    
     """
     
     # Get the current node
@@ -71,10 +76,13 @@ def establish_leader(agents: List[Agent]):
     
     Parameters
     ----------
-    agents: List[Agent] - List of agents in the communication cluster
+    
+    agents: List[Agent]
+        List of agents in the communication cluster
     
     Description
     -----------
+    
     Given that each agent has a unique ID, the agent with the lowest ID can be selected as the leader.
     This requires that the agents are all in agreement regarding which agent has the lowest ID.
     
@@ -83,6 +91,7 @@ def establish_leader(agents: List[Agent]):
     until only one agent remains, this agent will be the leader of the communication cluster
     - This is a recursive function - in practice this would be done in parallel across all agents in the cluster though this simulation, agents would
     arbitrarily select another of agent to compare their ID with
+    
     """
     
     # create a copy of the list of agents
@@ -105,6 +114,17 @@ def establish_leader(agents: List[Agent]):
 def allocate_tasks(agents, leader, ports):
     """
     Method to allocate tasks to agents in the communication cluster
+    
+    Parameters
+    ----------
+    
+    agents: List[Agent]
+        List of agents in the communication cluster
+    leader: Agent
+        Leader agent of the communication cluster
+    ports: list
+        List of port labels for the current node
+    
     """
     
     working_agents = copy(agents)
