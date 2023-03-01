@@ -183,7 +183,7 @@ class Agent:
         self._log.debug(f"Number of ports available for assignment: {num_ports - len(set(arrival_ports.values())) if num_ports > len(set(arrival_ports.values())) else 0}")
         # If number of ports is zero - raise unconnected junction error
         if num_ports == 0:
-            raise ValueError("Junction is unconnected")
+            raise ValueError(f"Junction {self._current_node} is unconnected")
         # If there is only one port, the junction is a dead-end: all agents are assigned the same port
         elif num_ports == 1:
             for agent in agents:
