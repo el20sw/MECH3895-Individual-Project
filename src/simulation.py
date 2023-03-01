@@ -16,9 +16,19 @@ import src.communication as communication
 class Simulation:
     """
     Simulation Class
-    ----------
-    Class to simulate the pipe network environment
-    :param environment: Network object
+    ----------------
+    Class to simulate the pipe network environment and the agents within it
+    
+    Parameters
+    ==========
+    
+    environment: Network object
+        The network environment to simulate agents operating in
+    num_agents: int
+        The number of agents to simulate
+    swarm: bool
+        Whether the agents should communicate with each other
+    
     """
 
     def __init__(self, environment:Network, num_agents:int=1, swarm:bool=False) -> None:
@@ -100,7 +110,7 @@ class Simulation:
     
     def turn(self):
         """
-        Method to simulate a single turn of the simulation
+        Method to step the simulation forward one turn
         return: None
         """
         # Log the turn
@@ -250,26 +260,44 @@ class Simulation:
     ### Attributes ###
     @property
     def environment(self) -> Network:
+        """
+        Returns the environment
+        """
         return self._environment
 
     @property
     def agents(self) -> List[Agent]:
+        """
+        Returns the agents
+        """
         return self._agents
 
     @property
     def num_agents(self) -> int:
+        """
+        Returns the number of agents
+        """
         return self._num_agents
 
     @property
     def turns(self) -> int:
+        """
+        Returns the number of turns
+        """
         return self._turns
     
     @property
     def max_turns(self) -> int:
+        """
+        Returns the maximum number of turns
+        """
         return self._max_turns
 
     @property
     def pct_explored(self) -> float:
+        """
+        Returns the percentage of nodes explored
+        """
         return self._pct_explored
     
     @property
@@ -286,12 +314,15 @@ class Simulation:
     
     @property
     def path_to_results_directory(self):
+        """
+        Path to the results directory
+        """
         return self._results_subdir
     
     @property
     def params(self):
         """
-        Simulation parameters
+        Returns the parameters of the simulation
         """
         return {
             'network_file': self._network_file,
