@@ -21,9 +21,12 @@ def generate_agents(env: Network, num_agents: int, random_seed:int=0  ) -> List[
     Parameters
     ----------
     
-    env: environment for the agents to be generated in
-    num_agents: number of agents to generate
-    random_seed: random seed for the generation of the agents
+    env: Network
+        environment for the agents to be generated in
+    num_agents: int
+        number of agents to generate
+    random_seed: int, optional (default=0)
+        random seed for the generation of the agents
     
     Returns
     -------
@@ -45,14 +48,16 @@ def generate_start_positions(env: Network, num_agents: int, random_seed:int=0) -
     Parameters
     ----------
     
-    env: environment for the agents to be generated in
-    num_agents: number of agents to generate
-    num_start_pos: number of start positions to generate
-    random_seed: random seed for the generation of the agents
+    env: Network
+        environment for the agents to be generated in
+    num_agents: int
+        number of agents to generate
+    random_seed: int, optional (default=0)
+        random seed for the generation of the agents
     
     Returns
     -------
-    return: list of start positions
+    list of agent start positions
     """
     # Set the random seed
     random.seed(random_seed)
@@ -73,6 +78,16 @@ def generate_start_positions(env: Network, num_agents: int, random_seed:int=0) -
 def ask_start_positions(env: Network):
     """
     Method to ask the user for the start positions of the agents
+    
+    Parameters
+    ----------
+    
+    env: Network
+        environment for the agents to be generated in
+        
+    Returns
+    -------
+    list of start positions
     """
     
     # Ask the user for the start positions

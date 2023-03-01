@@ -16,7 +16,7 @@ import src.communication as communication
 class Simulation:
     """
     Simulation Class
-    ----------------
+    -----------------
     Class to simulate the pipe network environment and the agents within it
     
     Parameters

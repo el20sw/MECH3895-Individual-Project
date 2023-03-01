@@ -16,9 +16,13 @@ def communicate(agents: List[Agent], network: Network):
     Method for enabling communication between agents in communication clusters and allocating tasks
     
     Parameters
-    ----------
-    agents: List[Agent] - List of agents in the communication cluster
-    network: Network - Network object (the environment)
+    -----------
+    
+    agents: List[Agent]
+        List of agents in the communication cluster
+    network: Network
+        Network object (the environment)
+    
     """
     
     log.debug(f"Communication between {len(agents)} agents @ {agents[0].position}")
