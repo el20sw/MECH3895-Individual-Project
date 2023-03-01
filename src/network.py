@@ -7,6 +7,14 @@ Network Module
 Network module contains the Network class which is used to create the simulation environment and extract data from the environment
 to be used in the simulation
 
+Networks are created from INP files using the Water Network Tool (WNTR) package [1] and the adjacency list is created using the NetworkX package [2].
+
+
+[1] Klise, K.A., Murray, R., Haxton, T. (2018). An overview of the Water Network Tool for Resilience (WNTR), 
+In Proceedings of the 1st International WDSA/CCWI Joint Conference, Kingston, Ontario, Canada, July 23-25, 075, 8p.
+
+[2] Aric A. Hagberg, Daniel A. Schult and Pieter J. Swart, “Exploring network structure, dynamics, and function using NetworkX”,
+in Proceedings of the 7th Python in Science Conference (SciPy2008), Gäel Varoquaux, Travis Vaught, and Jarrod Millman (Eds), (Pasadena, CA USA), pp. 11-15, Aug 2008
 """
 
 # Import modules
