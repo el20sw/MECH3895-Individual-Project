@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Agent" href="agent.html" />
-    <link rel="prev" title="API" href="../api.html" />
+    <link rel="prev" title="Simulation" href="simulation.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -40,6 +40,11 @@
 <h3>Network Module<a class="headerlink" href="#network-module" title="Permalink to this heading">¶</a></h3>
 <p>Network module contains the Network class which is used to create the simulation environment and extract data from the environment
 to be used in the simulation</p>
+<p>Networks are created from INP files using the Water Network Tool (WNTR) package [1] and the adjacency list is created using the NetworkX package [2].</p>
+<p>[1] Klise, K.A., Murray, R., Haxton, T. (2018). An overview of the Water Network Tool for Resilience (WNTR), 
+In Proceedings of the 1st International WDSA/CCWI Joint Conference, Kingston, Ontario, Canada, July 23-25, 075, 8p.</p>
+<p>[2] Aric A. Hagberg, Daniel A. Schult and Pieter J. Swart, “Exploring network structure, dynamics, and function using NetworkX”,
+in Proceedings of the 7th Python in Science Conference (SciPy2008), Gäel Varoquaux, Travis Vaught, and Jarrod Millman (Eds), (Pasadena, CA USA), pp. 11-15, Aug 2008</p>
 </section>
 <dl class="py class">
 <dt class="sig sig-object py" id="src.network.Network">
@@ -222,6 +227,7 @@ containing the names of the junctions in the network</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../framework.html">Software Framework and Limitations</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="simulation.html">Simulation</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent.html">Agent</a></li>
 </ul>
@@ -233,7 +239,7 @@ containing the names of the junctions in the network</p>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="../api.html">API</a><ul>
-      <li>Previous: <a href="../api.html" title="previous chapter">API</a></li>
+      <li>Previous: <a href="simulation.html" title="previous chapter">Simulation</a></li>
       <li>Next: <a href="agent.html" title="next chapter">Agent</a></li>
   </ul></li>
   </ul></li>
