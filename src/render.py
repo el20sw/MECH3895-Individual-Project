@@ -1,5 +1,5 @@
 """
-Class for rendering a simulation
+Class for rendering a simulation as an animation - uses matplotlib and networkx to render the simulation and save it as a video file using ffmpeg
 """
 
 import matplotlib
