@@ -125,7 +125,6 @@ class Agent:
                 
         # self._log.debug(f"{self} Pinged: {self._agents_in_range}")
         
-        
     def RH_Traversal(self):
         """
         Method for the agent to follow the right hand wall rule - selects the next link to traverse
@@ -218,8 +217,7 @@ class Agent:
                 for i, agent in enumerate(agents):
                     self._log.debug(f"Assigning port {ports[i % num_ports]} to agent {agent.agent_id}")
                     self._agent_task_allocation(agent, ports[i % num_ports])
-                
-                
+
     def _get_arrival_ports(self, agents) -> dict:
         arrival_ports = {}
         links = self.env.water_network_model.get_links_for_node(self._current_node)

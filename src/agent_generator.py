@@ -86,7 +86,7 @@ def ask_start_positions(env: Network):
     for start_pos in start_positions:
         if start_pos not in env.node_names:
             log.critical(f"Start position {start_pos} is not a valid node in the network")
-            return None
+            raise ValueError(f"Start position {start_pos} is not a valid node in the network")
     
     return start_positions
         
