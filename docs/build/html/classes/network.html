@@ -116,14 +116,26 @@ containing the names of the junctions in the network</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="src.network.Network.adj_list">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adj_list</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#src.network.Network.adj_list" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference internal" href="#src.network.Network.adj_list" title="src.network.Network.adj_list"><code class="xref py py-attr docutils literal notranslate"><span class="pre">adj_list</span></code></a> is a <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code> containing the adjacency list</p>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adj_list</span></span><a class="headerlink" href="#src.network.Network.adj_list" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#src.network.Network.adj_list" title="src.network.Network.adj_list"><code class="xref py py-attr docutils literal notranslate"><span class="pre">adj_list</span></code></a> ge the adjacency list</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="src.network.Network.water_network_model">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">water_network_model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">WaterNetworkModel</span></em><a class="headerlink" href="#src.network.Network.water_network_model" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#src.network.Network.water_network_model" title="src.network.Network.water_network_model"><code class="xref py py-attr docutils literal notranslate"><span class="pre">water_network_model</span></code></a> is a <code class="xref py py-class docutils literal notranslate"><span class="pre">wntr.network.WaterNetworkModel</span></code> - allows access to WNTR methods</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.network.Network.path_to_file">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path_to_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#src.network.Network.path_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#src.network.Network.path_to_file" title="src.network.Network.path_to_file"><code class="xref py py-attr docutils literal notranslate"><span class="pre">path_to_file</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.network.Network.to_graph">
+<span class="sig-name descname"><span class="pre">to_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.network.Network.to_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to convert the network to an undirected graph</p>
 </dd></dl>
 
 <dl class="py method">
@@ -147,15 +159,39 @@ containing the names of the junctions in the network</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="src.network.Network.plot_network">
+<span class="sig-name descname"><span class="pre">plot_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.network.Network.plot_network" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to plot the network using wntr graphics api</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.network.Network.get_link">
+<span class="sig-name descname"><span class="pre">get_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.network.Network.get_link" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to get a link from a start and end node</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="src.network.Network.get_links">
 <span class="sig-name descname"><span class="pre">get_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.network.Network.get_links" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to get links from a given node</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.network.Network.plot_network">
-<span class="sig-name descname"><span class="pre">plot_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.network.Network.plot_network" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to plot the network using wntr graphics api</p>
+<dt class="sig sig-object py" id="src.network.Network.get_link_names">
+<span class="sig-name descname"><span class="pre">get_link_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.network.Network.get_link_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to get link names from a given node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.network.Network.get_node">
+<span class="sig-name descname"><span class="pre">get_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.network.Network.get_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to get a node from a start node and a link</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.network.Network.save_image">
+<span class="sig-name descname"><span class="pre">save_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_to_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.network.Network.save_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to save png of network plot</p>
 </dd></dl>
 
 </section>
@@ -188,7 +224,6 @@ containing the names of the junctions in the network</p>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent.html">Agent</a></li>
-<li class="toctree-l2"><a class="reference internal" href="greedy_agent.html">Greedy Agent</a></li>
 </ul>
 </li>
 </ul>

@@ -24,12 +24,6 @@ Each module contains classes, methods and functions.
     | :class:`~.network.Network`                      | Network Class contains methods to create the simulation environment and extract              |
     |                                                 | data from the environment.                                                                   |
     +-------------------------------------------------+----------------------------------------------------------------------------------------------+
-    | :class:`~.agent.Agent`                          | Agent Base Class contains provides a template on which subsequent agent classes              |
-    |                                                 | are based/can be built.                                                                      |
-    +-------------------------------------------------+----------------------------------------------------------------------------------------------+
-    | :class:`~.greedy_agent.GreedyAgent`             | Greedy Agent Class - for more information on how the Greedy Agent operates see               |
-    |                                                 |                                                                                              |
-    +-------------------------------------------------+----------------------------------------------------------------------------------------------+
-    | :class:`~.behavioural_agent.BehaviouralAgent`   | Behavioural Agent Class - for more information on how the Greedy Agent operates see          |
+    | :class:`~.agent.Agent`                          | Agent Class                                                                                  |
     |                                                 |                                                                                              |
     +-------------------------------------------------+----------------------------------------------------------------------------------------------+

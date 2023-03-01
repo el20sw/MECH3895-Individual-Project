@@ -14,7 +14,6 @@
     <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Greedy Agent" href="greedy_agent.html" />
     <link rel="prev" title="Network" href="network.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -38,122 +37,74 @@
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="src.agent.Agent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">environment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">communication_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
-<section id="base-agent-class">
-<h3>Base Agent Class<a class="headerlink" href="#base-agent-class" title="Permalink to this heading">¶</a></h3>
-<p>Abstract class for agents - all agents should inherit from this class</p>
-<dl class="field-list simple">
-<dt class="field-odd">param environment<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Environment in which the agent is operating - the pipe network</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="network.html#src.network.Network" title="src.network.Network"><span class="pre">Network</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="src.agent.Agent.move">
+<span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent.move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for the agent to move in the environment</p>
+<section id="description">
+<h3>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h3>
+<p>The agent moves from one node to another node in the environment.
+The agent’s next node is determined by the link that it is currently traversing.</p>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.agent.Agent.decide">
+<span class="sig-name descname"><span class="pre">decide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">swarm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent.decide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for the agent to decide what to do - based on task allocation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.agent.Agent.ping">
+<span class="sig-name descname"><span class="pre">ping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agents</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent.ping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for the agent to broadcast a ping to other agents in the same node
+- param: list of agents in the environment/simulation
+- update: the agents_in_range attribute</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.agent.Agent.RH_Traversal">
+<span class="sig-name descname"><span class="pre">RH_Traversal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent.RH_Traversal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for the agent to follow the right hand wall rule - selects the next link to traverse</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.agent.Agent.assign_tasks">
+<span class="sig-name descname"><span class="pre">assign_tasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ports</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent.assign_tasks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for the agent to assign tasks to other agents in the communication cluster</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>agent<span class="classifier">Agent</span></dt><dd><p>The agent to assign the task</p>
 </dd>
-<dt class="field-even">param agent_id<span class="colon">:</span></dt>
-<dd class="field-even"><p>ID of the agent</p>
-</dd>
-<dt class="field-odd">param position<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Position of the agent in the environment (starting position)</p>
-</dd>
-<dt class="field-even">param communication_range<span class="colon">:</span></dt>
-<dd class="field-even"><p>Communication range of the agent</p>
+<dt>ports<span class="classifier">list</span></dt><dd><p>List of ports available for task assignment</p>
 </dd>
 </dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="src.agent.Agent.action">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent.action" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to get the action of the agent - update the action space
-:return: Action of the agent</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="src.agent.Agent.agent_id">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">agent_id</span></span><a class="headerlink" href="#src.agent.Agent.agent_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to get the ID of the agent
-:return: ID of the agent</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="src.agent.Agent.belief">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">belief</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Belief</span></em><a class="headerlink" href="#src.agent.Agent.belief" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to get the belief of the agent
-:return: Belief of the agent</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.agent.Agent.comms_part1">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">comms_part1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwatch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent.comms_part1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to send a communication to other agents in the environment
-:param overwatch: overwatcher facilitating communication
-:return: None</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.agent.Agent.comms_part2">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">comms_part2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwatch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent.comms_part2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to recieve communication from other agents in the environment
-:param overwatch: overwatcher facilitating communication
-:return: None</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.agent.Agent.communicate">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">communicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwatch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent.communicate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to communicate with other agents in the environment - send and receive transmissions
-:param environment: Environment in which the agent is communicating - the pipe network
-:return: None</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="src.agent.Agent.communication_range">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">communication_range</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#src.agent.Agent.communication_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to get the communication range of the agent
-:return: Communication range of the agent</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.agent.Agent.move">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.agent.Agent.move" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to move the agent to the new position in the environment
-:return: None</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.agent.Agent.observe">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">observe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">environment</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Observation</span></span></span><a class="headerlink" href="#src.agent.Agent.observe" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to get the observation of the agent - update the observation space
-:param environment: Environment in which the agent is observing - the pipe network
-:update: Update the visited nodes
-:return: Observation of the agent</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="src.agent.Agent.position">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">position</span></span><a class="headerlink" href="#src.agent.Agent.position" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to get the position of the agent
-:return: Position of the agent</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="src.agent.Agent.previous_position">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">previous_position</span></span><a class="headerlink" href="#src.agent.Agent.previous_position" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to get the previous position of the agent
-:return: Previous position of the agent</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.agent.Agent.step">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.agent.Agent.step" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is a turn
-:return: None</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="src.agent.Agent.visited_nodes">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">visited_nodes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></em><a class="headerlink" href="#src.agent.Agent.visited_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to get the visited nodes of the agent
-:return: Visited nodes of the agent</p>
-</dd></dl>
-
 </section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.agent.Agent.r_assign_tasks">
+<span class="sig-name descname"><span class="pre">r_assign_tasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ports</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent.r_assign_tasks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for the agent to assign tasks to other agents in the communication cluster</p>
+<section id="id1">
+<h3>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>agent<span class="classifier">Agent</span></dt><dd><p>The agent to assign the task</p>
+</dd>
+<dt>ports<span class="classifier">list</span></dt><dd><p>List of ports available for task assignment</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.agent.Agent.receive_task">
+<span class="sig-name descname"><span class="pre">receive_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent.receive_task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for the agent to receive a task</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -182,7 +133,6 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="network.html">Network</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Agent</a></li>
-<li class="toctree-l2"><a class="reference internal" href="greedy_agent.html">Greedy Agent</a></li>
 </ul>
 </li>
 </ul>
@@ -193,7 +143,6 @@
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="../api.html">API</a><ul>
       <li>Previous: <a href="network.html" title="previous chapter">Network</a></li>
-      <li>Next: <a href="greedy_agent.html" title="next chapter">Greedy Agent</a></li>
   </ul></li>
   </ul></li>
 </ul>
