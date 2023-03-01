@@ -9,6 +9,21 @@ import src.debug.logger as logger
 from src.network import Network
 
 class Agent:
+    """
+    Agent Class
+    ===========
+    
+    Parameters
+    ----------
+    
+    env : Network
+        The network environment that the agent will operate in
+    agent_id : int
+        The id of the agent
+    start_pos : int
+        The starting position of the agent in the network environment
+    
+    """
     
     def __init__(self, env: Network, agent_id, start_pos) -> None:
         self._log = logger.get_logger(__name__)
@@ -82,6 +97,13 @@ class Agent:
     def decide(self, swarm:bool):
         """
         Method for the agent to decide what to do - based on task allocation
+        
+        Parameters
+        ----------
+        
+        swarm : bool
+            Boolean value to determine if the agent should follow the right hand traversal rule at each junction or if it should
+            use swarm behaviour where applicable.
         """
         
         if swarm:
@@ -109,8 +131,19 @@ class Agent:
     def ping(self, agents):
         """
         Method for the agent to broadcast a ping to other agents in the same node
-        - param: list of agents in the environment/simulation
-        - update: the agents_in_range attribute
+        
+        Parameters
+        ----------
+        
+        agents : list
+            list of agents in the environment/simulation
+            
+        Description
+        ------------
+        
+        Method to update the agents_in_range attribute - reflects how in the real world, at each junction in the pipe network,
+        the agent would broadcast a ping to establish if there are any other agents in the same node.
+        
         """
         
         # self._log.debug(f"{self} is pinging")
@@ -165,6 +198,7 @@ class Agent:
         
         Parameters
         ----------
+        
         agent : Agent
             The agent to assign the task
         ports : list
@@ -235,8 +269,10 @@ class Agent:
             
         return arrival_ports
 
-    def r_assign_tasks(self, agents, ports):
+    def _r_assign_tasks(self, agents, ports):
         """
+        **REDUNDANT**
+        
         Method for the agent to assign tasks to other agents in the communication cluster
         
         Parameters

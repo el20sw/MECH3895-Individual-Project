@@ -17,8 +17,8 @@ and to use this simulation to explore the effects of different parameters on the
    :maxdepth: 2
    :caption: Contents:
 
-   framework
-   api
+   framework.rst
+   api.rst
 
 Indices and tables
 ==================

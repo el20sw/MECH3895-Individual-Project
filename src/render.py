@@ -13,6 +13,25 @@ from matplotlib.animation import FuncAnimation, FFMpegWriter
 from src.simulation import Simulation
 
 class Render:
+    """
+    Render Class
+    =================
+    
+    Render a given simulation as an animation
+    
+    Parameters
+    ----------
+    
+    Simulation: Simulation
+        The simulation to render
+        
+    Description
+    -----------
+    
+    The Render class is used to render a given simulation as an animation. It uses matplotlib and networkx to render the simulation and save it as a video file using ffmpeg.
+    Agents are represented as red nodes and environmental nodes are represented as blue nodes. Each turn is represented as a frame in the animation, and agents move from node to node as they explore the environment.
+    
+    """
 
     def __init__(self, simulation: Simulation):
 
@@ -162,7 +181,21 @@ class Render:
     def render(self, frames=None, repeat=False, interval=250):
         """
         Function to render a simulation
-        :param simulation: Simulation object
+        
+        Parameters
+        ----------
+        frames : int, optional
+            The number of frames to render, by default None
+        repeat : bool, optional
+            Whether to repeat the animation, by default False
+        interval : int, optional
+            The interval between frames in milliseconds, by default 250
+            
+        Description
+        ------------
+        
+        Uses the matplotlib animation library to render the simulation and write it to a video file.
+        
         """
 
         if frames is None:
