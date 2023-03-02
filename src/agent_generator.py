@@ -36,6 +36,8 @@ def generate_agents(env: Network, num_agents: int, random_seed:int=0  ) -> List[
     # Ask the user for the start positions
     # start_positions = ask_start_positions(env)
     
+    print("Creating agents...")
+    
     # Generate the agents
     agents = [Agent(env, agent_id, start_pos) for agent_id, start_pos in generate_start_positions(env, num_agents)]
     # Return the agents
@@ -71,6 +73,8 @@ def generate_start_positions(env: Network, num_agents: int, random_seed:int=0) -
     
     # Assign the start positions to the agents - round robin style so agents are evenly distributed across the start positions
     start_positions = [(agent_id, start_positions[agent_id % len(start_positions)]) for agent_id in range(num_agents)]
+    
+    print(f"Got start positions...")
     
     return start_positions
     
