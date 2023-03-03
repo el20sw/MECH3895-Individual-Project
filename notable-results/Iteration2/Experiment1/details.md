@@ -1,4 +1,9 @@
 # Experiment 1
+
+## Description
+An initial experiment conducted to determine the effect of communication and swarm control on the performance of agents exploring the environment. Further testing will be done
+in a later staage of the project.
+
 ## Aim
 To determine the effect of communication on the performance of agent exploration of the environment.
 
