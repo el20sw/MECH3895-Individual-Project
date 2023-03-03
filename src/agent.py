@@ -177,10 +177,10 @@ class Agent:
         try:
             self.env.get_link(self._previous_node, self._current_node)
             arrival_port = links.index(self.link)
-            self._log.debug(f"Arrival port for node {self._current_node}: {arrival_port}")
+            self._log.debug(f"Arrival port for node {self._current_node}: {arrival_port} ({links[arrival_port]})")
         except KeyError or ValueError:
             arrival_port = 0
-            self._log.warning(f"Arrival port for node {self._current_node}: {arrival_port}")   
+            self._log.debug(f"(DEFAULT) Arrival port for node {self._current_node}: {arrival_port} ({links[arrival_port]})")   
           
         # Select the next link to follow - traverse the edge with port number (arrival_port + 1) % degree
         try:
@@ -252,6 +252,101 @@ class Agent:
                     self._log.debug(f"Assigning port {ports[i % num_ports]} to agent {agent.agent_id}")
                     self._agent_task_allocation(agent, ports[i % num_ports])
 
+    def assign_tasks_scored(self, agents, ports):
+        """
+        Method for the agent to assign tasks to other agents in the communication cluster. This is the scored version of the assign_tasks method. The score is
+        determined by the number of agents that have arrived through a port. Agent allocation is done with preference to ports with the lowest score.
+        
+        Parameters
+        ----------
+        
+        agent : Agent
+            The agent to assign the task
+        ports : list
+            List of ports available for task assignment
+        """
+        
+        self._log.debug(f"{self} is assigning tasks")
+        
+        # Get each agent's arrival port
+        arrival_ports = self._get_arrival_ports(agents)
+        # Get the links at the current node
+        links = self.env.get_links(self._current_node)
+        # Check that links is equal to the number of ports
+        if len(links) != len(ports):
+            raise ValueError(f"Number of links at node {self._current_node} does not match number of ports")
+
+        # initialise the port score dictionary
+        port_scores = {}
+
+        # Get the number of ports available for task assignment
+        num_ports = len(ports)
+        self._log.debug(f"Ports: {ports}")
+        self._log.debug(f"Number of ports: {num_ports}")
+        self._log.debug(f'Arrival ports: {arrival_ports}')
+        # self._log.debug(f"Number of ports available for assignment: {num_ports - len(set(arrival_ports.values())) if num_ports > len(set(arrival_ports.values())) else 0}")
+        # If number of ports is zero - raise unconnected junction error
+        if num_ports == 0:
+            raise ValueError(f"Junction {self._current_node} is unconnected")
+        # If there is only one port, the junction is a dead-end: all agents are assigned the same port
+        elif num_ports == 1:
+            for agent in agents:
+                self._log.debug(f"Assigning port {ports[0]} to agent {agent.agent_id}")
+                self._agent_task_allocation(agent, ports[0])
+        else:
+            # Determine agent moves based on the right hand traversal rule
+            next_ports = {}
+            for agent in agents:
+                i_next = self._RH_Traversal(arrival_ports[agent], len(ports))
+                self._log.debug(f"Agent {agent.agent_id} RH-Traversal port: {i_next} ({ports[i_next]})")
+                next_ports.update({agent: ports[i_next]})
+            
+            # Determine port scores
+            for port in ports:
+                if port in arrival_ports.values():
+                    # if port is an arrival port, set the score to the number of agents that state that port as their arrival port
+                    port_scores.update({port: len([agent for agent in agents if arrival_ports[agent] == port])})
+                    self._log.debug(f"Port {port} is an arrival port")
+                else:
+                    # if port is not an arrival port, set the score to zero
+                    port_scores.update({port: 0})
+                    self._log.debug(f"Port {port} is not an arrival port")
+        
+            # Sort the ports by score
+            sorted_ports = sorted(port_scores.keys(), key=lambda x: port_scores[x], reverse=True)
+            self._log.debug(f"Sorted ports: {sorted_ports}, scores: {port_scores}")
+
+            
+    
+        
+            # # Determine each agent's next port according to the right hand traversal rule
+            # next_ports = {}
+            # for agent in agents:
+            #     i_next = self._RH_Traversal(arrival_ports[agent], len(ports))
+            #     self._log.debug(f"Agent {agent.agent_id} RH-Traversal port: {i_next} ({ports[i_next]})")
+            #     next_ports.update({agent: ports[i_next]})
+            # self._log.debug(f'All ports: {ports}')
+            # self._log.debug(f"Next ports: {next_ports}")
+
+            # # Distribute agents across ports
+            # # If number of ports available for assignment is less than the number of agents, assign agents to ports in a round-robin fashion
+            # if num_ports - len(set(arrival_ports.values())) < len(agents):
+            #     self._log.debug("Number of assignable ports is less than number of agents")             
+            #     for i, agent in enumerate(agents):
+            #         self._log.debug(f"Assigning port {ports[i % num_ports]} to agent {agent.agent_id}")
+            #         self._agent_task_allocation(agent, ports[i % num_ports])
+            # else:
+            #     # If number of ports available for assignment is greater than the number of agents, assign agents to ports in a round-robin fashion
+            #     self._log.debug("Number of assignable ports is greater than number of agents")
+            #     for i, agent in enumerate(agents):
+            #         self._log.debug(f"Assigning port {ports[i % num_ports]} to agent {agent.agent_id}")
+            #         self._agent_task_allocation(agent, ports[i % num_ports])
+            #     # If number of ports available for assignment is equal to the number of agents, assign agents to ports in a round-robin fashion
+            #     self._log.debug("Number of assignable ports is equal to number of agents")
+            #     for i, agent in enumerate(agents):
+            #         self._log.debug(f"Assigning port {ports[i % num_ports]} to agent {agent.agent_id}")
+            #         self._agent_task_allocation(agent, ports[i % num_ports])
+
     def _get_arrival_ports(self, agents) -> dict:
         arrival_ports = {}
         links = self.env.water_network_model.get_links_for_node(self._current_node)
@@ -261,101 +356,14 @@ class Agent:
             try:
                 link_name = self.env.get_link(agent.previous_node, agent.position)['link_name']
                 arrival_port = links.index(link_name)
-                self._log.debug(f"Arrival port for agent {agent.agent_id}: {arrival_port}")
+                self._log.debug(f"Arrival port for agent {agent.agent_id}: {arrival_port} ({links[arrival_port]})")
             except KeyError or ValueError:
                 arrival_port = 0
-                self._log.warning(f"Arrival port for agent {agent.agent_id}: {arrival_port}")
+                self._log.debug(f"(DEFAULT) Arrival port for agent {agent.agent_id}: {arrival_port} ({links[arrival_port]})")
             arrival_ports.update({agent: arrival_port})
             
         return arrival_ports
 
-    def _r_assign_tasks(self, agents, ports):
-        """
-        **REDUNDANT**
-        
-        Method for the agent to assign tasks to other agents in the communication cluster
-        
-        Parameters
-        ----------
-        agent : Agent
-            The agent to assign the task
-        ports : list
-            List of ports available for task assignment
-        """
-        
-        self._log.debug(f"Assigning tasks to agents in the communication cluster")
-        self._log.debug(f"Ports available for task assignment: {ports}")
-        self._log.debug(f"Agents in the communication cluster: {agents}")
-        
-        arrival_ports = {}
-        allocated_ports = {}
-        
-        # Check if the number of ports is greater than one
-        if len(ports) < 2:
-            if len(ports) == 0:
-                self._log.warning("No ports available for task assignment")
-            # All agents in the cluster are assigned to the same port
-            self._log.debug(f"Only one port available: {ports[0]}")
-            for agent in agents:
-                self._agent_task_allocation(agent, ports[0])
-            return
-        
-        # Get the agent's arrival port
-        else:
-            for agent in agents:
-                self._log.debug(f"Getting arrival port for {agent}")
-                try:
-                    arrival_port = self.env.get_link(agent.previous_node, agent.position)
-                    self._log.debug(f"Arrival port for agent {agent.agent_id}: {arrival_port}")
-                except KeyError or ValueError:
-                    arrival_port = 0
-                    self._log.warning(f"Arrival port for agent {agent.agent_id}: {arrival_port}")
-            
-                # Add the arrival port to the list of arrival ports
-                arrival_ports.update({agent: arrival_port})
-                self._log.debug(f"Arrival ports: {arrival_ports}")
-                # Get the label of the arrival port
-                arrival_port_label = ports[arrival_port]
-                self._log.debug(f"Arrival port label: {arrival_port_label}")
-                
-        # Get the number of agents in the cluster
-        num_agents = len(agents)
-        # Get the number of ports available for task assignment
-        num_ports = len(ports)
-        # Get the number of ports that are not occupied
-        num_free_ports = num_ports - len(arrival_ports)
-        
-        # get each agents next link to traverse based on the right hand traversal rule
-        for agent in agents:
-            # Get the agent's arrival port
-            arrival_port = arrival_ports.get(agent, 0)
-            # Get the agent's next link to traverse
-            next = self._RH_Traversal(arrival_port=arrival_port, degree=num_ports)
-            self._log.debug(f"Next link to traverse for agent {agent.agent_id}: {next}")
-            # Get the label of the next link to traverse
-            next_label = ports[next]
-            self._log.debug(f"Next link label for agent {agent.agent_id}: {next_label}")
-            # Add to the dict of allocated ports
-            allocated_ports.update({agent: next_label})
-            
-        self._log.debug(f"Allocated ports: {allocated_ports}")
-        
-        # Check if any of the ports are conflicted
-        if len(allocated_ports) != len(set(allocated_ports.values())):
-            # Get the ports that are conflicted
-            conflicted_ports = [port for port, count in Counter(allocated_ports.values()).items() if count > 1]
-            self._log.debug(f"Conflicted ports: {conflicted_ports}")
-            # Get the agents that are assigned to the conflicted ports
-            conflicted_agents = [agent for agent, port in allocated_ports.items() if port in conflicted_ports]
-            # If there are any free ports, assign the conflicted agents to the free ports
-            if num_free_ports > 0:
-                # Get the free ports
-                free_ports = [port for port in ports if port not in arrival_ports.values()]
-                self._log.debug(f"Free ports: {free_ports}")
-                # Assign the conflicted agents to the free ports
-                for agent in conflicted_agents:
-                    pass
-            
     def _RH_Traversal(self, arrival_port: int, degree: int) -> int:
         # Select the next link to follow - traverse the edge with port number (arrival_port + 1) % degree
         next = (arrival_port + 1) % degree
