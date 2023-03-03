@@ -137,6 +137,7 @@ def allocate_tasks(agents, leader, ports):
     
     log.debug(f'Leader: {leader}')
     log.debug(f'Agents: {working_agents}')
-    leader.assign_tasks(agents=working_agents, ports=working_ports)
+    # leader.assign_tasks(agents=working_agents, ports=working_ports)
+    leader.assign_tasks_scored(agents=working_agents, ports=working_ports)
 
         
