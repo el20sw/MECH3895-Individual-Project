@@ -3,6 +3,9 @@ Agent module
 ============
 Agent's operate in the network environment. The basic behaviour of the agent is to explore the network using the right hand wall rule
 """
+
+import math
+import statistics
 from collections import Counter
 
 import src.debug.logger as logger
@@ -102,7 +105,7 @@ class Agent:
         ----------
         
         swarm : bool
-            Boolean value to determine if the agent should follow the right hand traversal rule at each junction or if it should
+            Boolean value to determine if the agent should follow the right hand traversal rule at each junction or instead
             use swarm behaviour where applicable.
         """
         
@@ -252,9 +255,9 @@ class Agent:
                     self._log.debug(f"Assigning port {ports[i % num_ports]} to agent {agent.agent_id}")
                     self._agent_task_allocation(agent, ports[i % num_ports])
 
-    def assign_tasks_scored(self, agents, ports):
+    def assign_tasks_informed(self, agents, ports):
         """
-        Method for the agent to assign tasks to other agents in the communication cluster. This is the scored version of the assign_tasks method. The score is
+        Method for the agent to assign tasks to other agents in the communication cluster. This is the informed version of the assign_tasks method. The score is
         determined by the number of agents that have arrived through a port. Agent allocation is done with preference to ports with the lowest score.
         
         Parameters
@@ -266,86 +269,50 @@ class Agent:
             List of ports available for task assignment
         """
         
-        self._log.debug(f"{self} is assigning tasks")
+        self._log.debug(f"{self} is assigning tasks using informed task assignment")
         
         # Get each agent's arrival port
         arrival_ports = self._get_arrival_ports(agents)
+        self._log.debug(f'Arrival ports: {arrival_ports}')
+        # Convert arrival ports (index) to port (link) objects
+        arrival_ports = {agent: ports[arrival_ports[agent]] for agent in agents}
+        self._log.debug(f'Arrival ports (as links): {arrival_ports}')
         # Get the links at the current node
         links = self.env.get_links(self._current_node)
+        self._log.debug(f"Links at node {self._current_node}: {links}")
         # Check that links is equal to the number of ports
         if len(links) != len(ports):
             raise ValueError(f"Number of links at node {self._current_node} does not match number of ports")
 
         # initialise the port score dictionary
         port_scores = {}
+        for port in ports:
+            # if port is an arrival port, the score is the number of agents that have arrived through that port
+            if port in arrival_ports.values():
+                port_scores.update({port: len([agent for agent in agents if arrival_ports[agent] == port])})
+            else:
+                port_scores.update({port: 0})
+                
+        self._log.debug(f"Port scores: {port_scores}")
 
-        # Get the number of ports available for task assignment
-        num_ports = len(ports)
-        self._log.debug(f"Ports: {ports}")
-        self._log.debug(f"Number of ports: {num_ports}")
-        self._log.debug(f'Arrival ports: {arrival_ports}')
-        # self._log.debug(f"Number of ports available for assignment: {num_ports - len(set(arrival_ports.values())) if num_ports > len(set(arrival_ports.values())) else 0}")
-        # If number of ports is zero - raise unconnected junction error
-        if num_ports == 0:
-            raise ValueError(f"Junction {self._current_node} is unconnected")
-        # If there is only one port, the junction is a dead-end: all agents are assigned the same port
-        elif num_ports == 1:
-            for agent in agents:
-                self._log.debug(f"Assigning port {ports[0]} to agent {agent.agent_id}")
-                self._agent_task_allocation(agent, ports[0])
-        else:
-            # Determine agent moves based on the right hand traversal rule
-            next_ports = {}
-            for agent in agents:
-                i_next = self._RH_Traversal(arrival_ports[agent], len(ports))
-                self._log.debug(f"Agent {agent.agent_id} RH-Traversal port: {i_next} ({ports[i_next]})")
-                next_ports.update({agent: ports[i_next]})
+        sorted_port_scores = sorted(port_scores.items(), key=lambda x: x[1])
+        for port, score in sorted_port_scores:
+            self._log.debug(f"Port {port} has score {score}")
             
-            # Determine port scores
-            for port in ports:
-                if port in arrival_ports.values():
-                    # if port is an arrival port, set the score to the number of agents that state that port as their arrival port
-                    port_scores.update({port: len([agent for agent in agents if arrival_ports[agent] == port])})
-                    self._log.debug(f"Port {port} is an arrival port")
-                else:
-                    # if port is not an arrival port, set the score to zero
-                    port_scores.update({port: 0})
-                    self._log.debug(f"Port {port} is not an arrival port")
+        total_port_score = sum(port_scores.values())
         
-            # Sort the ports by score
-            sorted_ports = sorted(port_scores.keys(), key=lambda x: port_scores[x], reverse=True)
-            self._log.debug(f"Sorted ports: {sorted_ports}, scores: {port_scores}")
-
-            
-    
+        mean_port_score = total_port_score / len(ports)
+        median_port_score = sorted_port_scores[math.floor(len(ports) / 2)][1]
         
-            # # Determine each agent's next port according to the right hand traversal rule
-            # next_ports = {}
-            # for agent in agents:
-            #     i_next = self._RH_Traversal(arrival_ports[agent], len(ports))
-            #     self._log.debug(f"Agent {agent.agent_id} RH-Traversal port: {i_next} ({ports[i_next]})")
-            #     next_ports.update({agent: ports[i_next]})
-            # self._log.debug(f'All ports: {ports}')
-            # self._log.debug(f"Next ports: {next_ports}")
-
-            # # Distribute agents across ports
-            # # If number of ports available for assignment is less than the number of agents, assign agents to ports in a round-robin fashion
-            # if num_ports - len(set(arrival_ports.values())) < len(agents):
-            #     self._log.debug("Number of assignable ports is less than number of agents")             
-            #     for i, agent in enumerate(agents):
-            #         self._log.debug(f"Assigning port {ports[i % num_ports]} to agent {agent.agent_id}")
-            #         self._agent_task_allocation(agent, ports[i % num_ports])
-            # else:
-            #     # If number of ports available for assignment is greater than the number of agents, assign agents to ports in a round-robin fashion
-            #     self._log.debug("Number of assignable ports is greater than number of agents")
-            #     for i, agent in enumerate(agents):
-            #         self._log.debug(f"Assigning port {ports[i % num_ports]} to agent {agent.agent_id}")
-            #         self._agent_task_allocation(agent, ports[i % num_ports])
-            #     # If number of ports available for assignment is equal to the number of agents, assign agents to ports in a round-robin fashion
-            #     self._log.debug("Number of assignable ports is equal to number of agents")
-            #     for i, agent in enumerate(agents):
-            #         self._log.debug(f"Assigning port {ports[i % num_ports]} to agent {agent.agent_id}")
-            #         self._agent_task_allocation(agent, ports[i % num_ports])
+        self._log.debug(f"Mean port score: {mean_port_score}")
+        self._log.debug(f"Median port score: {median_port_score}")
+        
+        # assignment = self._mean_allocation(agents, mean_port_score, port_scores)
+        assignment = self._median_allocation(agents, median_port_score, port_scores)
+        
+        # Assign agents to ports
+        for agent, port in assignment.items():
+            self._agent_task_allocation(agent, port)
 
     def _get_arrival_ports(self, agents) -> dict:
         arrival_ports = {}
@@ -382,5 +349,119 @@ class Agent:
         self._log.debug(f"{self} received task {link}")
         self._task = link
             
+    def _mean_allocation(self, agents, mean_port_score, port_scores):
+        assignments = {agent: None for agent in agents}
         
+        # If the port score is less than the mean port score, the port is considered to be underutilised
+        underutilised_ports = [port for port, score in port_scores.items() if score < mean_port_score]
+        self._log.debug(f"(MEAN) Underutilised ports: {underutilised_ports}")
         
+        # If the port score is greater than the mean port score, the port is considered to be overutilised
+        overutilised_ports = [port for port, score in port_scores.items() if score > mean_port_score]
+        self._log.debug(f"(MEAN) Overutilised ports: {overutilised_ports}")
+        
+        # If the port score is equal to the mean port score, the port is considered to be balanced
+        balanced_ports = [port for port, score in port_scores.items() if score == mean_port_score]
+        self._log.debug(f"(MEAN) Balanced ports: {balanced_ports}")
+        
+        # Priority 1: Assign agents to underutilised ports
+        if len(underutilised_ports) > 0:
+            self._log.debug("(MEAN) Assigning agents to underutilised ports")
+            for port in underutilised_ports:
+                if len(agents) > 0:
+                    agent = agents.pop(0)
+                    assignments.update({agent: port})
+                    self._log.debug(f"(MEAN) Assigning agent {agent.agent_id} to port {port}")
+                else:
+                    self._log.debug("(MEAN) No agents to assign")
+                    
+        # Priority 2: Assign agents to balanced ports
+        if len(balanced_ports) > 0:
+            self._log.debug("(MEAN) Assigning agents to balanced ports")
+            for port in balanced_ports:
+                if len(agents) > 0:
+                    agent = agents.pop(0)
+                    assignments.update({agent: port})
+                    self._log.debug(f"(MEAN) Assigning agent {agent.agent_id} to port {port}")
+                else:
+                    self._log.debug("(MEAN) No agents to assign")
+                    
+        # Priority 3: Assign agents to overutilised ports
+        if len(overutilised_ports) > 0:
+            self._log.debug("(MEAN) Assigning agents to overutilised ports")
+            for port in overutilised_ports:
+                if len(agents) > 0:
+                    agent = agents.pop(0)
+                    assignments.update({agent: port})
+                    self._log.debug(f"(MEAN) Assigning agent {agent.agent_id} to port {port}")
+                else:
+                    self._log.debug("(MEAN) No agents to assign")
+                    
+        # Priority 4: Assign remaining agents to ports with the lowest score
+        if len(agents) > 0:
+            self._log.debug("(MEAN) Assigning remaining agents to ports with lowest score")
+            for agent in agents:
+                port = sorted(port_scores.items(), key=lambda x: x[1])[0][0]
+                assignments.update({agent: port})
+                self._log.debug(f"(MEAN) Assigning agent {agent.agent_id} to port {port}")
+                
+        return assignments
+    
+    def _median_allocation(self, agents, median_port_score, port_scores):
+        
+        assignments = {agent: None for agent in agents}
+        
+        # If the port score is less than the median port score, the port is considered to be underutilised
+        underutilised_ports = [port for port, score in port_scores.items() if score < median_port_score]
+        self._log.debug(f"(MEDIAN) Underutilised ports: {underutilised_ports}")
+        
+        # If the port score is greater than the median port score, the port is considered to be overutilised
+        overutilised_ports = [port for port, score in port_scores.items() if score > median_port_score]
+        self._log.debug(f"(MEDIAN) Overutilised ports: {overutilised_ports}")
+        
+        # If the port score is equal to the median port score, the port is considered to be balanced
+        balanced_ports = [port for port, score in port_scores.items() if score == median_port_score]
+        self._log.debug(f"(MEDIAN) Balanced ports: {balanced_ports}")
+        
+        # Priority 1: Assign agents to underutilised ports
+        if len(underutilised_ports) > 0:
+            self._log.debug("(MEDIAN) Assigning agents to underutilised ports")
+            for port in underutilised_ports:
+                if len(agents) > 0:
+                    agent = agents.pop(0)
+                    assignments.update({agent: port})
+                    self._log.debug(f"(MEDIAN) Assigning agent {agent.agent_id} to port {port}")
+                else:
+                    self._log.debug("(MEDIAN) No agents to assign")
+                    
+        # Priority 2: Assign agents to balanced ports
+        if len(balanced_ports) > 0:
+            self._log.debug("(MEDIAN) Assigning agents to balanced ports")
+            for port in balanced_ports:
+                if len(agents) > 0:
+                    agent = agents.pop(0)
+                    assignments.update({agent: port})
+                    self._log.debug(f"(MEDIAN) Assigning agent {agent.agent_id} to port {port}")
+                else:
+                    self._log.debug("(MEDIAN) No agents to assign")
+                    
+        # Priority 3: Assign agents to overutilised ports
+        if len(overutilised_ports) > 0:
+            self._log.debug("(MEDIAN) Assigning agents to overutilised ports")
+            for port in overutilised_ports:
+                if len(agents) > 0:
+                    agent = agents.pop(0)
+                    assignments.update({agent: port})
+                    self._log.debug(f"(MEDIAN) Assigning agent {agent.agent_id} to port {port}")
+                else:
+                    self._log.debug("(MEDIAN) No agents to assign")
+                    
+        # Priority 4: Assign remaining agents to ports with the lowest score
+        if len(agents) > 0:
+            self._log.debug("(MEDIAN) Assigning remaining agents to ports with lowest score")
+            for agent in agents:
+                port = sorted(port_scores.items(), key=lambda x: x[1])[0][0]
+                assignments.update({agent: port})
+                self._log.debug(f"(MEDIAN) Assigning agent {agent.agent_id} to port {port}")
+                
+        return assignments
