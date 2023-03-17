@@ -26,4 +26,5 @@ Plotting the results of the simulation, we get the following graph:
 
 A number of observations can be made from the graph above:
 * Using the informed task allocation method shows an increase in the efficieny of the agents in exploring the pipe network.
-* The swarm was able to explore more of the environment more quickly when task allocation was informed vs naive task allocation.k
+* The swarm was able to explore more of the environment more quickly when task allocation was informed vs naive task allocation.
+* Informed task allocation further mitigates the limitations of the right-hand traversal rule than the basic task allocation method.
