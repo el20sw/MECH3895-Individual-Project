@@ -53,5 +53,5 @@ ax.set_title("Pct Explored vs Turn")
 # set legend
 ax.legend()
 
-# show figure
-plt.show()
+# save figure
+fig.savefig("notable-results/Iteration3/Experiment1/analysis.png")
