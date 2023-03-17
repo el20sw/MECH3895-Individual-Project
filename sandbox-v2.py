@@ -3,6 +3,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 import math
+import copy
 
 # from matplotlib.animation import FuncAnimation
 
@@ -23,314 +24,196 @@ from src.render import Render
 
 log = logger.setup_logger(file_name='logs/sandbox-2.log', level='DEBUG')
 
-env = Network('networks/Net6.inp')
-wn = env.water_network_model
-g = wn.to_graph()
-uG = g.to_undirected()
-
-adj = env.adj_list
-
-sim = Simulation(environment=env, num_agents=1, swarm=True)
-sim.turn()
-sim.turn()
-
-# junc = adj.get('JUNCTION-0')
-# print('adj_list junc:', junc)
-
-# f = env.get_links('JUNCTION-0')
-# print('get_links:', f)
-
-# y = env.get_link_names('JUNCTION-0')
-# print('get_link_names:', y)
-
-# t = wn.get_links_for_node('JUNCTION-0')
-# print('get_links_for_node:', t)
-
-
-
-# figure = plt.figure(figsize=(10, 10))
-# pos = nx.get_node_attributes(uG, 'pos')
-# nx.draw_networkx_nodes(uG, pos, node_color='blue', node_size=1)
-# nx.draw_networkx_edges(uG, pos, edge_color='black', width=0.5)
-# # make junction-0 red
-# nx.draw_networkx_nodes(uG, pos, nodelist=['JUNCTION-0'], node_color='red', node_size=2)
-# # make links from junction-0 green
-# nx.draw_networkx_nodes(uG, pos, nodelist=['JUNCTION-1', 'RESERVOIR-3323'], node_color='green', node_size=2)
-# plt.show()
-
-# opt = wn.options.to_dict()
-# print('options:', opt)
-
-# print(env.adj_list)
-# print("Link 10 -> 11: ", env.get_link('10', '11'))
-# print("Links @ 22: ", env.get_links('22'))
-# print("Node from node 31 and link 31: ", env.get_node('31', '31'))
-
-# def calculate_link_length(wn, start_node, end_node) -> float:
-#         """
-#         :py:meth:`calculate_link_length` is a :py:class:`float` method to calculate the length of a link given the coordinates of the start and end nodes
-#         """
-#         # Get coordinates of start and end nodes
-#         start_node = wn.get_node(start_node)
-#         end_node = wn.get_node(end_node)
-#         # try to get the coordinates
-#         start_node_coords = getattr(start_node, 'coordinates', None)
-#         end_node_coords = getattr(end_node, 'coordinates', None)
-#         # If the coordinates are not None, calculate the length of the link
-#         if start_node_coords is not None and end_node_coords is not None:
-#             return math.sqrt((start_node_coords[0] - end_node_coords[0])**2 + (start_node_coords[1] - end_node_coords[1])**2)
-#         # If the coordinates are None, return 10
-#         else:
-#             return 10
-
-# def to_graph(wn):
-#     uG = nx.Graph()
-    
-#     for name, node in wn.nodes():
-#         uG.add_node(name)
-#         nx.set_node_attributes(uG, name="pos", values={name: node.coordinates})
-#         nx.set_node_attributes(uG, name="type", values={name: node.node_type})
-        
-#     for name, link in wn.links():
-#         start_node = link.start_node_name
-#         end_node = link.end_node_name
-        
-#         uG.add_edge(start_node, end_node)
-        
-#         nx.set_edge_attributes(uG, name="link_name", values={(start_node, end_node): name})
-        
-#         try:
-#             nx.set_edge_attributes(uG, name="link_length", values={(start_node, end_node): link.length})
-#         except AttributeError:
-#             length = calculate_link_length(wn, start_node, end_node)
-#             nx.set_edge_attributes(uG, name="link_length", values={(start_node, end_node): length})
-      
-#     return uG.to_undirected()
-
-# uG = to_graph(wn)
-# print(nx.is_connected(uG))
-# print(uG.adj)
-
-# 
-
-# # wn = env.water_network_model
-# # g = wn.to_graph().to_undirected()
-
-# # # check that the graph is connected
-# # if not nx.is_connected(g):
-# #     raise ValueError('Graph is not connected')
-
-# sim.turn()
-# sim.turn()
-    
-
-
-
-
-
-
-# SIM_LENGTH = 200
-
-# log = logger.setup_logger(file_name='logs/sandbox-2.log', level='DEBUG')
-
-# env = Network('networks/Net3.inp')
-# g = env.water_network_model.to_graph().to_undirected()
-# pos = nx.get_node_attributes(g, "pos")
-
-# root = tk.Tk()
-# root.title("Select Starting Positions")
-
-# # Make a base canvas
-# base = tk.Canvas(root, width=800, height=800)
-# base.pack()
-
-# fig = Figure(figsize=(10, 10), dpi=100)
-# ax = fig.add_subplot(111)
-# nx.draw_networkx_nodes(g, pos=pos, node_size=5, ax=ax)
-# nx.draw_networkx_edges(g, pos=pos, ax=ax)
-
-# # Create a Matplotlib canvasjyy
-# canvas = FigureCanvasTkAgg(fig, master=base)
-# canvas.draw()
-# canvas.get_tk_widget().pack()
-
-# Make option to zoom in and out
-
-
-# Make nodes change color when clicked
-# def on_click(event):
-#     x, y = event.x, event.y
-#     for node in g.nodes:
-#         node_coords = pos[node] 
-#         node_x, node_y = node_coords
-#         if node_x - 5 <= x <= node_x + 5 and node_y - 5 <= y <= node_y + 5:
-#             canvas.itemconfig(node, fill="red", outline="red")
-
-# Run the Tkinter event loop
-# tk.mainloop()
-
-
-# class StartingPositionsGUI:
-#     def __init__(self, environment:Network) -> None:
-#         self.env = environment
-#         self.starting_positions = []
-        
-#         self.G = self.env.water_network_model.to_graph().to_undirected()
-#         self.node_names = self.env.node_names
-        
-#         self.window = tk.Tk()
-#         self.window.title("Select Starting Positions")
-#         self.canvas = tk.Canvas(self.window, width=800, height=800)
-#         self.canvas.pack()
-#         self.canvas.bind("<Button-1>", self.on_click)
-        
-#         self.nodes = []
-#         self.all_pos = nx.get_node_attributes(self.G, "pos")
-        
-#         for node in self.node_names:
-#             node_coords = self.all_pos[node]
-#             node_x, node_y = node_coords
-#             node_radius = 5
-#             node_color = "blue"
-#             node_id = self.canvas.create_oval(
-#                 node_x - node_radius,
-#                 node_y - node_radius,
-#                 node_x + node_radius,
-#                 node_y + node_radius,
-#                 fill=node_color,
-#                 outline=node_color,
-#             )
-#             self.nodes.append(node_id)  
-            
-#         self.start_button = tk.Button(self.window, text="Start", command=self.start)
-#         self.start_button.pack()
-    
-#     def on_click(self, event):
-#         x, y = event.x, event.y
-#         for node_id in self.nodes:
-#             node_coords = self.canvas.coords(node_id)
-#             if node_coords[0] <= x <= node_coords[2] and node_coords[1] <= y <= node_coords[3]:
-#                 node_index = self.nodes.index(node_id)
-#                 self.starting_positions.append(node_index)
-#                 self.canvas.itemconfig(node_id, fill="green")
-                
-#     def start(self):
-#         if len(self.starting_positions) > 0:
-#             self.window.destroy()
-
-#     def get_starting_positions(self):
-#         return [node for node in self.starting_positions]
-    
-# starting_positions_gui = StartingPositionsGUI(env)
-# starting_positions_gui.window.mainloop()
-# starting_positions = starting_positions_gui.get_starting_positions()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   
-# agent = Agent(env=env, agent_id=0x1, start_pos='Lake')
-
+env = Network('networks/Net1.inp')
 # wn = env.water_network_model
-# G = wn.to_graph().to_undirected()
+# g = wn.to_graph()
+# uG = g.to_undirected()
 
-# sim = Simulation(env, num_agents=5, swarm=True)
+# adj = env.adj_list
 
-# sim.run(max_turns=100)
+sim = Simulation(environment=env, num_agents=10, swarm=True)
+sim.turn()
+sim.turn()
 
-# render = Render(sim)
-# render.render()
+# agents = [1, 2, 3, 4]
+# ports = ['a', 'b', 'c', 'd', 'e']
+# arrival_ports = {1: 'a', 2: 'a', 3: 'b', 4: 'c'}
+# next_ports = {1: 'b', 2: 'b', 3: 'c', 4: 'd'}
+# port_scores = {}
+# assignment_port_scores = {port: 0 for port in ports}
 
-# sim.agents[0]._current_node = '10'
-# sim.agents[1]._current_node = '10'
-# sim.agents[2]._current_node = '10'
+# for port in ports:
+#     # if port is an arrival port, add the number of agents that arrived at that port to the port score else score is 0
+#     if port in arrival_ports.values():
+#         port_scores.update({port: len([agent for agent in arrival_ports if arrival_ports[agent] == port])})
+#     else:
+#         port_scores.update({port: 0})
+        
+#     # if the port is a next port (according to RH-traversal), add the number of agents that are going to that port to the port score
+#     if port in next_ports.values():
+#         assignment_port_scores[port] += len([agent for agent in next_ports if next_ports[agent] == port])
 
-# sim.agents[3]._current_node = '113'
-# sim.agents[4]._current_node = '113'
-# sim.agents[5]._current_node = '113'
+# # print(port_scores)
+# # total_port_score = sum(port_scores.values())
+# # print(total_port_score)
 
-# sim.agents[6]._current_node = '197'
+# # print(assignment_port_scores)
 
-# log.critical(f'Communication state\n')
-# sim.comms_state()
-# log.critical(f'Decide state\n')
-# sim.decide_state()
-# log.critical(f'Action state\n')
-# sim.action_state()
+# def mean_assignment(mean_port_score, sorted_port_scores, agents):
+    
+#     assignments = {agent: None for agent in agents}
+    
+#     # If the port score is less than the mean port score, the port is considered to be underutilized
+#     mean_underutilized_ports = [port for port, score in port_scores.items() if score < mean_port_score]
+#     print(f'Underutilized ports: {mean_underutilized_ports}')
+    
+#     # If the port score is greater than the mean port score, the port is considered to be overutilized
+#     mean_overutilized_ports = [port for port, score in port_scores.items() if score > mean_port_score]
+#     print(f'Overutilized ports: {mean_overutilized_ports}')
+    
+#     # If the port score is equal to the mean port score, the port is considered to be balanced
+#     mean_balanced_ports = [port for port, score in port_scores.items() if score == mean_port_score]
+#     print(f'Balanced ports: {mean_balanced_ports}')
+    
+#     # Priority 1: Assign agents to underutilized ports
+#     if len(mean_underutilized_ports) > 0:
+#         log.info(f'Underutilized ports: {mean_underutilized_ports}')
+#         # If there are underutilized ports, assign agents to the underutilized ports
+#         for port in mean_underutilized_ports:
+#             # If there are agents available, assign them to the port
+#             if len(agents) > 0:
+#                 agent = agents.pop(0)
+#                 assignments.update({agent: port})
+#                 print(f'Agent {agent} assigned to port {port}')
+#             else:
+#                 print('No agents available')
+                
+#     # Priority 2: Assign agents to balanced ports
+#     if len(mean_balanced_ports) > 0:
+#         log.info(f'Balanced ports: {mean_balanced_ports}')
+#         # If there are balanced ports, assign agents to the balanced ports
+#         for port in mean_balanced_ports:
+#             # If there are agents available, assign them to the port
+#             if len(agents) > 0:
+#                 agent = agents.pop(0)
+#                 assignments.update({agent: port})
+#                 print(f'Agent {agent} assigned to port {port}')
+#             else:
+#                 print('No agents available')
+                
+#     # Priority 3: Assign agents to overutilized ports
+#     if len(mean_overutilized_ports) > 0:
+#         log.info(f'Overutilized ports: {mean_overutilized_ports}')
+#         # If there are overutilized ports, assign agents to the overutilized ports
+#         for port in mean_overutilized_ports:
+#             # If there are agents available, assign them to the port
+#             if len(agents) > 0:
+#                 agent = agents.pop(0)
+#                 assignments.update({agent: port})
+#                 print(f'Agent {agent} assigned to port {port}')
+#             else:
+#                 print('No agents available')
+                
+#     # If there are still agents available, assign them to the port with the lowest score
+#     if len(agents) > 0:
+#         log.info(f'Agents available: {agents}')
+#         for agent in agents:
+#             port = sorted_port_scores[0][0]
+#             assignments.update({agent: port})
+#             print(f'Agent {agent} assigned to port {port}')
+            
+#     return assignments
 
-# num_nodes = len(G.nodes)
-# pct_explored = 0
-# visited_nodes = set()
-# log.info(f'num_nodes: {num_nodes}')
-# log.info(f'pct_explored: {pct_explored}')
+# def median_assignment(median_port_score, sorted_port_scores, agents):
+    
+#     assignments = {agent: None for agent in agents}
+    
+#     # If the port score is less than the median port score, the port is considered to be underutilized
+#     median_underutilized_ports = [port for port, score in port_scores.items() if score < median_port_score]
+#     print(f'Underutilized ports: {median_underutilized_ports}')
+    
+#     # If the port score is greater than the median port score, the port is considered to be overutilized
+#     median_overutilized_ports = [port for port, score in port_scores.items() if score > median_port_score]
+#     print(f'Overutilized ports: {median_overutilized_ports}')
+    
+#     # If the port score is equal to the median port score, the port is considered to be balanced
+#     median_balanced_ports = [port for port, score in port_scores.items() if score == median_port_score]
+#     print(f'Balanced ports: {median_balanced_ports}')
+    
+#     # Priority 1: Assign agents to underutilized ports
+#     if len(median_underutilized_ports) > 0:
+#         log.info(f'Underutilized ports: {median_underutilized_ports}')
+#         # If there are underutilized ports, assign agents to the underutilized ports
+#         for port in median_underutilized_ports:
+#             # If there are agents available, assign them to the port
+#             if len(agents) > 0:
+#                 agent = agents.pop(0)
+#                 assignments.update({agent: port})
+#                 print(f'Agent {agent} assigned to port {port}')
+#             else:
+#                 print('No agents available')
+                
+#     # Priority 2: Assign agents to balanced ports
+#     if len(median_balanced_ports) > 0:
+#         log.info(f'Balanced ports: {median_balanced_ports}')
+#         # If there are balanced ports, assign agents to the balanced ports
+#         for port in median_balanced_ports:
+#             # If there are agents available, assign them to the port
+#             if len(agents) > 0:
+#                 agent = agents.pop(0)
+#                 assignments.update({agent: port})
+#                 print(f'Agent {agent} assigned to port {port}')
+#             else:
+#                 print('No agents available')
+                
+#     # Priority 3: Assign agents to overutilized ports
+#     if len(median_overutilized_ports) > 0:
+#         log.info(f'Overutilized ports: {median_overutilized_ports}')
+#         # If there are overutilized ports, assign agents to the overutilized ports
+#         for port in median_overutilized_ports:
+#             # If there are agents available, assign them to the port
+#             if len(agents) > 0:
+#                 agent = agents.pop(0)
+#                 assignments.update({agent: port})
+#                 print(f'Agent {agent} assigned to port {port}')
+#             else:
+#                 print('No agents available')
+                
+#     # If there are still agents available, assign them to the port with the lowest score
+#     if len(agents) > 0:
+#         log.info(f'Assigning agents to port with lowest score')
+#         for agent in agents:
+#             port = sorted_port_scores[0][0]
+#             assignments.update({agent: port})
+#             print(f'Agent {agent} assigned to port {port}')
+            
+#     return assignments
 
-# while pct_explored < 1:
-#     if SIM_LENGTH == 0:
-#         print('Simulation length exceeded')
-#         break
+# def assign_agents(port_scores, agents):
+#     # The leader needs to distribute the agents according to lowest port score preference (i.e. the port with the lowest score gets the most agents)
+#     sorted_port_scores = sorted(port_scores.items(), key=lambda x: x[1])
+#     for port, score in sorted_port_scores:
+#         print(f'Port: {port}, Score: {score}')
+        
+#     total_port_score = sum(port_scores.values())
+        
+#     mean_port_score = total_port_score / len(ports)
+#     print(f'Mean port score: {mean_port_score}')
+    
+#     median_port_score = sorted_port_scores[math.floor(len(ports) / 2)][1]
+#     print(f'Median port score: {median_port_score}')
 
-#     visited_nodes.add(agent.position)
-#     pct_explored = len(visited_nodes) / num_nodes
-#     log.info(f'pct_explored: {pct_explored}')
-#     agent.RH_Traversal()
-#     agent.move()
-#     SIM_LENGTH -= 1
+#     mean_agents = copy.deepcopy(agents)
+#     median_agents = copy.deepcopy(agents)
+#     assignment1 = mean_assignment(mean_port_score, sorted_port_scores, mean_agents)
+#     assignment2 = median_assignment(median_port_score, sorted_port_scores, median_agents)
+    
+#     assignments = (assignment1, assignment2)
+    
+#     return assignments
+    
+# assignments = assign_agents(port_scores, agents)
 
-# path = agent.path
-# num_frames = len(path)
-# node_pos = nx.get_node_attributes(G, 'pos')
-
-# # create a figure
-# plt.figure(figsize=(10, 10))
-# # draw the network
-# nx.draw_networkx_nodes(G, node_pos, node_size=10, node_color='blue')
-# nx.draw_networkx_edges(G, node_pos)
-# nx.draw_networkx_labels(G, node_pos, horizontalalignment='right', verticalalignment='top', font_family='serif', font_size=8)
-
-# def animate(i):
-#     if i == 0:
-#         nx.draw_networkx_nodes(G, node_pos, node_size=10, node_color='blue')
-
-#     visited_nodes = []
-#     node = path[i]
-#     visited_nodes.append(node)
-
-#     nx.draw_networkx_nodes(G, node_pos, nodelist=[node], node_size=15, node_color='red')
-#     if i > 0:
-#         prev_node = path[i-1]
-#         nx.draw_networkx_nodes(G, node_pos, nodelist=[prev_node], node_size=10, node_color='lightgreen')
-
-#     plt.title(f'Frame: {i} / {num_frames} ({round(i/num_frames*100, 2)}%)')
-
-# anim = FuncAnimation(plt.gcf(), animate, frames=num_frames, interval=100)
-# plt.show()
+# print(f'Port scores: {port_scores}')
+# print(f'Mean Assignments: {assignments[0]}')
+# print(f'Median Assignments: {assignments[1]}')

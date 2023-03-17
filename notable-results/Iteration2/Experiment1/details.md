@@ -1,4 +1,4 @@
-# Experiment 1
+# Iteration 2 - Experiment 1
 
 ## Description
 An initial experiment conducted to determine the effect of communication and swarm control on the performance of agents exploring the environment. Further testing will be done

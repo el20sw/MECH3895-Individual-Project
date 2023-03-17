@@ -135,8 +135,16 @@ def allocate_tasks(agents, leader, ports):
     # remove the leader from the list of agents
     # working_agents.remove(leader)
     
-    log.debug(f'Leader: {leader}')
+    # cast leader to an agent object
+    try:
+        lead_agent: Agent = leader
+    except TypeError:
+        log.error(f'Leader is not an agent object')
+        raise TypeError
+    
+    log.debug(f'Leader: {lead_agent}')
     log.debug(f'Agents: {working_agents}')
-    leader.assign_tasks(agents=working_agents, ports=working_ports)
+    # leader.assign_tasks(agents=working_agents, ports=working_ports)
+    lead_agent.assign_tasks_informed(agents=working_agents, ports=working_ports)
 
         
