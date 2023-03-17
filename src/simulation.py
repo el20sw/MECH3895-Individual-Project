@@ -28,12 +28,15 @@ class Simulation:
         The number of agents to simulate
     swarm: bool
         Whether the agents should communicate with each other
+    swarm_config: dict, optional (default=None)
+        Configuration for the swarm behaviour of the agents
     
     """
 
-    def __init__(self, environment:Network, num_agents:int=1, swarm:bool=False) -> None:
+    def __init__(self, environment:Network, num_agents:int=1, swarm:bool=False, swarm_config=None) -> None:
         # Initialise the logger
         self._log = logger.get_logger(__name__)
+        
         # Initialise the simulation
         self._environment = environment
         self._network_file = environment.path_to_file
@@ -50,10 +53,30 @@ class Simulation:
         self._results_subdir = f'{self._results_dir}/simulation_{self._simulation_id}'
         # create directory
         os.makedirs(self._results_subdir, exist_ok=True)
+        
+        # Initialise the swarm
+        self._swarm_config = swarm_config
+        if self._swarm_config is not None:
+            self._swarm = True
+            self._swarm_type = self._swarm_config['swarm_type']
+            try:
+                self._allocation_threshold = self._swarm_config['allocation_threshold']
+            except KeyError:
+                self._allocation_threshold = None
+        else:
+            self._swarm = False
+            self._swarm_type = None
+            self._allocation_threshold = None
+        
+        if self._swarm_type == 'informed':
+            self._informed = True
+        else:
+            self._informed = False
+            
 
         # Initialise the agents
         self._num_agents = num_agents
-        self._agents = agent_generator.generate_agents(self._environment, self._num_agents)
+        self._agents = agent_generator.generate_agents(self._environment, self._num_agents, threshold=self._allocation_threshold)
         self._agent_clusters = []
         self._agent_positions = {}
         self._swarm = swarm
@@ -148,7 +171,7 @@ class Simulation:
             self._log.debug('Communicating')
             for cluster in self._agent_clusters:
                 self._log.debug(f'Cluster: {cluster}')
-                communication.communicate(cluster, self._environment)
+                communication.communicate(cluster, self._environment, informed=self._informed)
                     
     def decide_state(self):
         self._log.debug('Decide State')
@@ -329,6 +352,8 @@ class Simulation:
             'num_agents': self._num_agents,
             'turns': self._max_turns,
             'swarm': self._swarm,
+            'swarm_type': self._swarm_type,
+            'allocation_threshold': self._allocation_threshold,
             'start_position': self._start_positions,
         }
     

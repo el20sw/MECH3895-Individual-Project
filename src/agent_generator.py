@@ -14,7 +14,7 @@ from src.network import Network
 
 log = logger.get_logger(__name__)
 
-def generate_agents(env: Network, num_agents: int, random_seed:int=0  ) -> List[Agent]:
+def generate_agents(env: Network, num_agents: int, threshold=None, random_seed:int=0) -> List[Agent]:
     """
     Method to generate a list of agents for the simulation
     
@@ -25,6 +25,8 @@ def generate_agents(env: Network, num_agents: int, random_seed:int=0  ) -> List[
         environment for the agents to be generated in
     num_agents: int
         number of agents to generate
+    threshold: str, optional (default=None)
+        threshold for the agents to use when allocating tasks in an informed way
     random_seed: int, optional (default=0)
         random seed for the generation of the agents
     
@@ -38,8 +40,12 @@ def generate_agents(env: Network, num_agents: int, random_seed:int=0  ) -> List[
     
     print("Creating agents...")
     
+    if isinstance(threshold, str):
+        # process the threshold string
+        threshold = threshold.lower().strip()
+    
     # Generate the agents
-    agents = [Agent(env, agent_id, start_pos) for agent_id, start_pos in generate_start_positions(env, num_agents)]
+    agents = [Agent(env, agent_id, start_pos, threshold) for agent_id, start_pos in generate_start_positions(env, num_agents)]
     # Return the agents
     return agents
 

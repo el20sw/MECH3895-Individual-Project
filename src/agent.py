@@ -25,10 +25,12 @@ class Agent:
         The id of the agent
     start_pos : int
         The starting position of the agent in the network environment
+    threshold : str, optional (default=None)
+        The threshold for the agent to use when allocating tasks in an informed manner
     
     """
     
-    def __init__(self, env: Network, agent_id, start_pos) -> None:
+    def __init__(self, env: Network, agent_id, start_pos, threshold=None) -> None:
         self._log = logger.get_logger(__name__)
         self.env = env
         self.G = env.water_network_model.to_graph().to_directed()
@@ -43,6 +45,8 @@ class Agent:
         
         self._agents_in_range = []
         self._task = None
+        
+        self._threshold = threshold
         
         self._log.debug(f"Agent {self._agent_id} created")
     
@@ -73,6 +77,10 @@ class Agent:
     @property
     def agents_in_range(self):
         return self._agents_in_range
+    
+    @property
+    def threshold(self):
+        return self._threshold
     
     def __str__(self) -> str:
         return f"Agent {self._agent_id} at {self._current_node}"
@@ -258,7 +266,7 @@ class Agent:
     def assign_tasks_informed(self, agents, ports):
         """
         Method for the agent to assign tasks to other agents in the communication cluster. This is the informed version of the assign_tasks method. The score is
-        determined by the number of agents that have arrived through a port. Agent allocation is done with preference to ports with the lowest score.
+        determined by the number of agents that have arrived through a port.
         
         Parameters
         ----------
@@ -267,9 +275,10 @@ class Agent:
             The agent to assign the task
         ports : list
             List of ports available for task assignment
+        
         """
         
-        self._log.debug(f"{self} is assigning tasks using informed task assignment")
+        self._log.debug(f"{self} is assigning tasks using informed - {self._threshold} - task assignment")
         
         # Get each agent's arrival port
         arrival_ports = self._get_arrival_ports(agents)
@@ -307,8 +316,12 @@ class Agent:
         self._log.debug(f"Mean port score: {mean_port_score}")
         self._log.debug(f"Median port score: {median_port_score}")
         
-        # assignment = self._mean_allocation(agents, mean_port_score, port_scores)
-        assignment = self._median_allocation(agents, median_port_score, port_scores)
+        if self._threshold == 'mean':
+            assignment = self._mean_allocation(agents, mean_port_score, port_scores)
+        elif self._threshold == 'median':
+            assignment = self._median_allocation(agents, median_port_score, port_scores)
+        else:
+            raise ValueError(f"Threshold {self._threshold} is not a valid threshold for informed task assignment")
         
         # Assign agents to ports
         for agent, port in assignment.items():
