@@ -30,10 +30,14 @@ class Simulation:
         Whether the agents should communicate with each other
     swarm_config: dict, optional (default=None)
         Configuration for the swarm behaviour of the agents
+    start_positions: list of start positions, optional (default=None)
+        list of start positions for the agents
+    filepath: str, optional (default=None)
+        filepath to save the results to
     
     """
 
-    def __init__(self, environment:Network, num_agents:int=1, swarm:bool=False, swarm_config=None) -> None:
+    def __init__(self, environment:Network, num_agents:int=1, swarm:bool=False, swarm_config=None, start_positions=None, filepath=None) -> None:
         # Initialise the logger
         self._log = logger.get_logger(__name__)
         
@@ -48,7 +52,11 @@ class Simulation:
         self._simulation_id = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
         
         # create/find results directory
-        self._results_dir = 'results'
+        if filepath is not None:
+            self._results_dir = filepath
+        else:
+            self._results_dir = 'results'
+        
         # create subdirectory for this simulation
         self._results_subdir = f'{self._results_dir}/simulation_{self._simulation_id}'
         # create directory
@@ -76,7 +84,13 @@ class Simulation:
 
         # Initialise the agents
         self._num_agents = num_agents
-        self._agents = agent_generator.generate_agents(self._environment, self._num_agents, threshold=self._allocation_threshold)
+        if start_positions is not None:
+            self._log.info(f'Generating {self._num_agents} agents with given start positions: {start_positions}')
+            self._agents = agent_generator.generate_agents(self._environment, self._num_agents, threshold=self._allocation_threshold, start_positions=start_positions)
+        else:
+            self._log.info(f'Generating {self._num_agents} agents')
+            self._agents = agent_generator.generate_agents(self._environment, self._num_agents, threshold=self._allocation_threshold)
+
         self._agent_clusters = []
         self._agent_positions = {}
         self._swarm = swarm
