@@ -48,7 +48,7 @@ class Agent:
         
         self._threshold = threshold
         
-        self._log.debug(f"Agent {self._agent_id} created")
+        self._log.debug(f"Agent {self._agent_id} created at node {self._current_node}")
     
     @property
     def agent_id(self):
