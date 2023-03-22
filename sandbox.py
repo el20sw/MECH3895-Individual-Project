@@ -14,13 +14,15 @@ from src.render import Render
 
 SIM_LENGTH = 200
 
-log = logger.setup_logger(file_name='logs/sandbox-2.log', level='DEBUG')
+log = logger.setup_logger(file_name='logs/sandbox-2.log', level='CRITICAL')
 
 env = Network('networks/Net3.inp')
-sim = Simulation(env, num_agents=10, swarm=False, start_positions=['Lake', 'River'])
+sim = Simulation(env, num_agents=10, swarm=True, swarm_config={'swarm': True, 'swarm_type': 'informed', 'allocation_threshold': 'mean'}, start_positions=['Lake'])
 sim.run(max_turns=100)
-r = Render(sim)
-r.render()
+
+print(sim.pct_explored)
+# r = Render(sim)
+# r.render()
 
 # agent = Agent(env=env, agent_id=0x1, start_pos='Lake')
 

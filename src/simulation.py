@@ -24,14 +24,26 @@ class Simulation:
     
     environment: Network object
         The network environment to simulate agents operating in
+        
     num_agents: int
         The number of agents to simulate
+        
     swarm: bool
         Whether the agents should communicate with each other
+        
     swarm_config: dict, optional (default=None)
         Configuration for the swarm behaviour of the agents
+        - swarm: bool (True if swarm is enabled, False otherwise)
+        - swarm_type: str (type of swarm behaviour)
+            - 'naive': naive swarm behaviour
+            - 'informed': informed swarm behaviour
+            - 'allocation_threshold': str (threshold for allocation of resources)
+                - 'mean': uses the mean score as the threshold
+                - 'median': uses the median score as the threshold
+                
     start_positions: list of start positions, optional (default=None)
         list of start positions for the agents
+        
     filepath: str, optional (default=None)
         filepath to save the results to
     
@@ -233,23 +245,45 @@ class Simulation:
             
         self._pct_explored = len(self._visited_nodes) / self._num_nodes * 100
         
-    def _update_results_df(self):
+    def _novelty_score(self):
+        # Get the number of new nodes visited this turn, new nodes are nodes that have not been previously visited by any agent
+        new_nodes = set()
+        for agent in self._agents:
+            new_nodes.add(agent.position)
+            
+        # Get the proportion of new nodes not in the visited nodes set
+        novelty_score = len(new_nodes - self._visited_nodes) / len(new_nodes)
+        
+        self._log.critical(f'Turn: {self._turns} - New nodes: {new_nodes}')
+        self._log.critical(f'Turn: {self._turns} - Visited nodes: {self._visited_nodes}')
+        self._log.critical(f'Turn: {self._turns} - Novelty score: {novelty_score}')
+        
+        return novelty_score
+        
+    def _update_results_df(self, **kwargs):
         self._log.debug('Updating results')
         
-        self._update_agent_positions()
-        self._update_visited_nodes()
+        # self._update_agent_positions()
+        # self._update_visited_nodes()
         
         self._results.loc[self._turns, 'turn'] = self._turns
         self._results.loc[self._turns, 'pct_explored'] = self._pct_explored
+        
         self._log.debug(f"Turn {self._turns} added to results dataframe")
         self._log.debug(f"Percentage of nodes explored {self._pct_explored} added to results dataframe (num nodes: {self._num_nodes})")
+        
+        # If novelty_score is in kwargs, add it to the results dataframe
+        if 'novelty_score' in kwargs:
+            self._results.loc[self._turns, 'novelty_score'] = kwargs['novelty_score']
+            self._log.debug(f"Novelty score {kwargs['novelty_score']} added to results dataframe")
     
     def _update_results(self):
         self._log.debug('Updating results')
         
         self._update_agent_positions()
+        novelty_score = self._novelty_score()
         self._update_visited_nodes()
-        self._update_results_df()
+        self._update_results_df(novelty_score=novelty_score)
         
     def _save_results(self):
         self._log.debug('Saving results')
