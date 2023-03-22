@@ -60,6 +60,8 @@ class Network:
         self._pipes = [link for link in self._links if link['link_type'] == 'Pipe']
         self._pipe_names = self._wn.pipe_name_list
         self._link_lengths = self._wn.query_link_attribute('length')
+        
+        self._num_links = len(self._links)
 
         self._nodes = self._wn_dict['nodes']
         self._node_names = self._wn.node_name_list
@@ -112,6 +114,13 @@ class Network:
         containing the names of the pipes in the network
         """
         return self._pipe_names
+    
+    @property
+    def num_links(self) -> int:
+        """
+        :py:attr:`num_links` is an :py:class:`int` containing the number of links in the network
+        """
+        return self._num_links
 
     @property
     def nodes(self) -> list:

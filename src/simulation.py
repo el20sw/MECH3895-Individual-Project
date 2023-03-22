@@ -58,6 +58,7 @@ class Simulation:
         self._network_file = environment.path_to_file
         self._log.info(f'Environment: {self._environment}')
         self._num_nodes = environment._num_nodes
+        self._num_links = environment._num_links
         self._max_turns = 100
         
         # create unique id for this simulation
@@ -112,8 +113,10 @@ class Simulation:
         
         # Variables
         self._turns = 0 
-        self._pct_explored = 0
+        self._pct_nodes_explored = 0
+        self._pct_links_explored = 0
         self._visited_nodes = set()
+        self._visited_links = set()
         # self._results = {}
         
         # Initialise the random seed
@@ -243,22 +246,43 @@ class Simulation:
         for agent in self._agents:
             self._visited_nodes.add(agent.position)
             
-        self._pct_explored = len(self._visited_nodes) / self._num_nodes * 100
+        self._pct_nodes_explored = len(self._visited_nodes) / self._num_nodes * 100
         
-    def _novelty_score(self):
+    def _update_visited_links(self):
+        for agent in self._agents:
+            self._visited_links.add(agent.link)
+            
+        self._pct_links_explored = len(self._visited_links) / self._num_links * 100
+        
+    def _node_novelty_score(self):
         # Get the number of new nodes visited this turn, new nodes are nodes that have not been previously visited by any agent
         new_nodes = set()
         for agent in self._agents:
             new_nodes.add(agent.position)
             
         # Get the proportion of new nodes not in the visited nodes set
-        novelty_score = len(new_nodes - self._visited_nodes) / len(new_nodes)
+        node_novelty_score = len(new_nodes - self._visited_nodes) / len(new_nodes)
         
         self._log.critical(f'Turn: {self._turns} - New nodes: {new_nodes}')
         self._log.critical(f'Turn: {self._turns} - Visited nodes: {self._visited_nodes}')
-        self._log.critical(f'Turn: {self._turns} - Novelty score: {novelty_score}')
+        self._log.critical(f'Turn: {self._turns} - Node Novelty score: {node_novelty_score}')
         
-        return novelty_score
+        return node_novelty_score
+    
+    def _link_novelty_score(self):
+        # Get the number of new links visited this turn, new links are links that have not been previously visited by any agent
+        new_links = set()
+        for agent in self._agents:
+            new_links.add(agent.link)
+            
+        # Get the proportion of new links not in the visited links set
+        link_novelty_score = len(new_links - self._visited_links) / len(new_links)
+        
+        self._log.critical(f'Turn: {self._turns} - New links: {new_links}')
+        self._log.critical(f'Turn: {self._turns} - Visited links: {self._visited_links}')
+        self._log.critical(f'Turn: {self._turns} - Link Novelty score: {link_novelty_score}')
+        
+        return link_novelty_score
         
     def _update_results_df(self, **kwargs):
         self._log.debug('Updating results')
@@ -267,28 +291,36 @@ class Simulation:
         # self._update_visited_nodes()
         
         self._results.loc[self._turns, 'turn'] = self._turns
-        self._results.loc[self._turns, 'pct_explored'] = self._pct_explored
+        self._results.loc[self._turns, 'pct_nodes_explored'] = self._pct_nodes_explored
+        self._results.loc[self._turns, 'pct_links_explored'] = self._pct_links_explored
         
         self._log.debug(f"Turn {self._turns} added to results dataframe")
-        self._log.debug(f"Percentage of nodes explored {self._pct_explored} added to results dataframe (num nodes: {self._num_nodes})")
+        self._log.debug(f"Percentage of nodes explored {self._pct_nodes_explored} added to results dataframe (num nodes: {self._num_nodes})")
+        self._log.debug(f"Percentage of links explored {self._pct_links_explored} added to results dataframe (num links: {self._num_links})")
         
         # If novelty_score is in kwargs, add it to the results dataframe
-        if 'novelty_score' in kwargs:
-            self._results.loc[self._turns, 'novelty_score'] = kwargs['novelty_score']
-            self._log.debug(f"Novelty score {kwargs['novelty_score']} added to results dataframe")
+        if 'node_novelty_score' in kwargs:
+            self._results.loc[self._turns, 'node_novelty_score'] = kwargs['node_novelty_score']
+            self._log.debug(f"Node Novelty score {kwargs['node_novelty_score']} added to results dataframe")
+            
+        if 'link_novelty_score' in kwargs:
+            self._results.loc[self._turns, 'link_novelty_score'] = kwargs['link_novelty_score']
+            self._log.debug(f"Link Novelty score {kwargs['link_novelty_score']} added to results dataframe")
     
     def _update_results(self):
         self._log.debug('Updating results')
         
         self._update_agent_positions()
-        novelty_score = self._novelty_score()
+        node_novelty_score = self._node_novelty_score()
+        link_novelty_score = self._link_novelty_score()
         self._update_visited_nodes()
-        self._update_results_df(novelty_score=novelty_score)
+        self._update_visited_links()
+        self._update_results_df(node_novelty_score=node_novelty_score, link_novelty_score=link_novelty_score)
         
     def _save_results(self):
         self._log.debug('Saving results')
 
-        self._results_agents['path'] = [agent.path for agent in self._agents]
+        self._results_agents['path'] = [agent.node_path for agent in self._agents]
         self._results_agents.to_csv(self._agent_results_csv_file, index=False)
         
         self._results.to_csv(self._results_csv_file, index=False)
@@ -365,11 +397,18 @@ class Simulation:
         return self._max_turns
 
     @property
-    def pct_explored(self) -> float:
+    def pct_nodes_explored(self) -> float:
         """
         Returns the percentage of nodes explored
         """
-        return self._pct_explored
+        return self._pct_nodes_explored
+    
+    @property
+    def pct_links_explored(self) -> float:
+        """
+        Returns the percentage of links explored
+        """
+        return self._pct_links_explored
     
     @property
     def random_seed(self) -> int:

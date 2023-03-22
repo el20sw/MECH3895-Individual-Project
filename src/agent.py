@@ -40,7 +40,8 @@ class Agent:
         self._current_node = start_pos
         self._previous_node = None
         self.link = None
-        self._path = []
+        self._node_path = []
+        self._link_path = []
         self._start_pos = start_pos
         
         self._agents_in_range = []
@@ -67,8 +68,8 @@ class Agent:
         return self._previous_node
     
     @property
-    def path(self):
-        return self._path
+    def node_path(self):
+        return self._node_path
     
     @property
     def start_pos(self):
@@ -101,7 +102,8 @@ class Agent:
         self._log.debug(f"{self} is moving along link {self.link}")
         
         self._previous_node = self._current_node
-        self._path.append(self._current_node)
+        self._node_path.append(self._current_node)
+        self._link_path.append(self.link)
         self._current_node = self.env.get_node(self._previous_node, self.link)
         self._log.debug(f"Agent moved from node {self._previous_node} to node {self._current_node}")
         
