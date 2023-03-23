@@ -123,7 +123,7 @@ class Simulation:
         self._random_seed: int = 0
         
         # Initialise the results
-        self._results = pd.DataFrame(columns=['turn', 'pct_explored'])
+        self._results = pd.DataFrame(columns=['turn', 'pct_nodes_explored', 'pct_links_explored', 'node_novelty_score', 'link_novelty_score'])
         self._results_agents = pd.DataFrame(columns=['agent_id', 'start_pos', 'path'])
         # Add agents to results agents
         self._results_agents['agent_id'] = [agent.agent_id for agent in self._agents]
