@@ -141,21 +141,56 @@ class Simulation:
         
 
     ### Methods ###
-    def run(self, max_turns:int=100):
+    def run(self, max_turns:int=100, run_until_complete:bool=False, metric:str='pct_links_explored'):
         """
         Method to run the simulation
+        
+        Parameters
+        ----------
+        max_turns: int, optional (default=100)
+            Maximum number of turns to run the simulation for
+            
+        run_until_complete: bool, optional (default=False)
+            If True, the simulation will run until all nodes have been explored or the maximum number of turns has been reached
+            
+        metric: str, optional (default='pct_links_explored')
+            Metric to use to determine if the simulation has completed
+            - 'pct_nodes_explored': percentage of nodes explored
+            - 'pct_links_explored': percentage of links explored
+            
         return: None
         """
         
         self._max_turns = max_turns
         
-        # Run the simulation
-        while True:
-            if self._turns >= self._max_turns:
-                break
-            
-            self.turn()
-            
+        # If run until complete is false, run for max turns
+        if not run_until_complete:
+            self._log.info(f'Running for {self._max_turns} turns')
+            # Run the simulation
+            while True:
+                if self._turns >= self._max_turns:
+                    break
+                
+                self.turn()
+                
+        else:
+            self._log.info(f'Running until {metric} is 100% or {self._max_turns} turns')
+            # Run the simulation
+            while True:
+                # Check if the metric is 100%
+                if metric == 'pct_nodes_explored':
+                    if self._pct_nodes_explored >= 100:
+                        break
+                elif metric == 'pct_links_explored':
+                    if self._pct_links_explored >= 100:
+                        break
+                else:
+                    raise ValueError(f'Invalid metric: {metric}')
+                # Check if the max turns has been reached
+                if self._turns >= self._max_turns:
+                    break
+                
+                self.turn()            
             
         # Save the results
         self._save_results()
