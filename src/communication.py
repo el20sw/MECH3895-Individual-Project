@@ -65,7 +65,8 @@ def synchronise_port_labelling(agents: List[Agent], network: Network):
     # Get the current node
     node = agents[0].position
     # Get the links for the current node
-    labels = network.water_network_model.get_links_for_node(node)
+    # labels = network.water_network_model.get_links_for_node(node)
+    labels = network.get_link_names(node)
     # Get the bearings for the links
     # bearings = network.water_network_model.get_bearings_for_node(node) - not an actual function as no concept of north currently exists
     # Sort the bearings
