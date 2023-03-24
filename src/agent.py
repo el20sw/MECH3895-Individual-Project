@@ -331,7 +331,8 @@ class Agent:
 
     def _get_arrival_ports(self, agents) -> dict:
         arrival_ports = {}
-        links = self.env.water_network_model.get_links_for_node(self._current_node)
+        # links = self.env.water_network_model.get_links_for_node(self._current_node)
+        links = self.env.get_link_names(self._current_node)
         
         for agent in agents:
             self._log.debug(f"Getting arrival port for {agent}")
