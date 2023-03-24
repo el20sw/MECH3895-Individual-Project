@@ -58,7 +58,9 @@ class Simulation:
         self._network_file = environment.path_to_file
         self._log.info(f'Environment: {self._environment}')
         self._num_nodes = environment._num_nodes
+        self._graph_num_nodes = environment._g_num_nodes
         self._num_links = environment._num_links
+        self._graph_num_links = environment._g_num_links
         self._max_turns = 100
         
         # create unique id for this simulation
@@ -281,13 +283,23 @@ class Simulation:
         for agent in self._agents:
             self._visited_nodes.add(agent.position)
             
-        self._pct_nodes_explored = len(self._visited_nodes) / self._num_nodes * 100
+        # Calculate the percentage of nodes explored
+        # self._pct_nodes_explored = len(self._visited_nodes) / self._num_nodes * 100
+        
+        # Use the number of nodes in the graph rather than from the WNTR network as the 
+        # WNTR network may have nodes that the agents cannot reach
+        self._pct_nodes_explored = len(self._visited_nodes) / self._graph_num_nodes * 100
         
     def _update_visited_links(self):
         for agent in self._agents:
             self._visited_links.add(agent.link)
-            
-        self._pct_links_explored = len(self._visited_links) / self._num_links * 100
+        
+        # Calculate the percentage of links explored
+        # self._pct_links_explored = len(self._visited_links) / self._num_links * 100
+        
+        # Use the number of links in the graph rather than from the WNTR network as the
+        # WNTR network may have links that the agents cannot reach/use
+        self._pct_links_explored = len(self._visited_links) / self._graph_num_links * 100
         
     def _node_novelty_score(self):
         # Get the number of new nodes visited this turn, new nodes are nodes that have not been previously visited by any agent
