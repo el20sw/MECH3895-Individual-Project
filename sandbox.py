@@ -16,12 +16,15 @@ SIM_LENGTH = 200
 
 log = logger.setup_logger(file_name='logs/sandbox-2.log', level='CRITICAL')
 
-env = Network('networks/Net2.inp')
-sim = Simulation(env, num_agents=5, swarm=True, swarm_config={'swarm': True, 'swarm_type': 'informed', 'allocation_threshold': 'mean'}, start_positions=['9'])
+env = Network('networks/Net6.inp')
+
+sim = Simulation(env, num_agents=100, swarm=True, swarm_config={'swarm': True, 'swarm_type': 'informed', 'allocation_threshold': 'mean'}, start_positions=['JUNCTION-1'])
 sim.run(max_turns=100)
 
-print(sim.pct_nodes_explored)
-print(sim.pct_links_explored)
+
+
+# print(sim.pct_nodes_explored)
+# print(sim.pct_links_explored)
 # r = Render(sim)
 # r.render()
 
