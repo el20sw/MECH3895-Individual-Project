@@ -136,7 +136,8 @@ class Render:
         # get the current turn - turns are the index of the dataframe
         turn = self.results_df.index[i]
         # get the current percentage explored
-        pct_explored = self.results_df['pct_explored'][i]
+        pct_nodes_explored = self.results_df['pct_nodes_explored'][i]
+        pct_links_explored = self.results_df['pct_links_explored'][i]
         
         # get the current positions of the agents
         agent_pos = {}
@@ -174,7 +175,7 @@ class Render:
                                 )
 
         # Add title with pct explored to 2 decimal places
-        plt.title('Turn: {} - {}% explored'.format(turn, round(pct_explored, 2)))
+        plt.title('Turn: {} - {}% Nodes explored - {}% Links explored'.format(turn, round(pct_nodes_explored, 2), round(pct_links_explored, 2)))
         # plt.title('Turn: {} - {}% explored'.format(turn, pct_explored))
 
 
