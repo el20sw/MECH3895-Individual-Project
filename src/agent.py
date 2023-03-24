@@ -273,8 +273,8 @@ class Agent:
         Parameters
         ----------
         
-        agent : Agent
-            The agent to assign the task
+        agents : Agent
+            The agents to assign tasks to
         ports : list
             List of ports available for task assignment
         
