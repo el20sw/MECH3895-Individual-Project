@@ -1,0 +1,11 @@
+{
+    "network_file": "networks/250701 K709vs2-Export.inp",
+    "num_agents": 10,
+    "turns": 100,
+    "swarm": false,
+    "swarm_type": null,
+    "allocation_threshold": null,
+    "start_position": [
+        "A5065"
+    ]
+}
