@@ -1,5 +1,6 @@
 import os
 import json
+import uuid
 import datetime
 import pandas as pd
 from typing import List
@@ -64,7 +65,9 @@ class Simulation:
         self._max_turns = 100
         
         # create unique id for this simulation
-        self._simulation_id = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        self._timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        self._unique_id = str(uuid.uuid4())[:8]
+        self._simulation_id = f'{self._timestamp}_{self._unique_id}'
         
         # create/find results directory
         if filepath is not None:
