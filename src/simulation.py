@@ -128,7 +128,16 @@ class Simulation:
         self._random_seed: int = 0
         
         # Initialise the results
-        self._results = pd.DataFrame(columns=['turn', 'pct_nodes_explored', 'pct_links_explored', 'node_novelty_score', 'link_novelty_score'])
+        self._results = pd.DataFrame(columns=[
+            'turn', 
+            'pct_nodes_explored', 
+            'pct_links_explored', 
+            'node_novelty_score', 
+            'link_novelty_score', 
+            'abs_nodes_explored', 
+            'abs_links_explored'
+            ])
+        
         self._results_agents = pd.DataFrame(columns=['agent_id', 'start_pos', 'path'])
         # Add agents to results agents
         self._results_agents['agent_id'] = [agent.agent_id for agent in self._agents]
@@ -343,10 +352,14 @@ class Simulation:
         self._results.loc[self._turns, 'turn'] = self._turns
         self._results.loc[self._turns, 'pct_nodes_explored'] = self._pct_nodes_explored
         self._results.loc[self._turns, 'pct_links_explored'] = self._pct_links_explored
+        self._results.loc[self._turns, 'abs_nodes_explored'] = len(self._visited_nodes)
+        self._results.loc[self._turns, 'abs_links_explored'] = len(self._visited_links)
         
         self._log.debug(f"Turn {self._turns} added to results dataframe")
         self._log.debug(f"Percentage of nodes explored {self._pct_nodes_explored} added to results dataframe (num nodes: {self._num_nodes})")
         self._log.debug(f"Percentage of links explored {self._pct_links_explored} added to results dataframe (num links: {self._num_links})")
+        self._log.debug(f"Absolute number of nodes explored {len(self._visited_nodes)} added to results dataframe")
+        self._log.debug(f"Absolute number of links explored {len(self._visited_links)} added to results dataframe")
         
         # If novelty_score is in kwargs, add it to the results dataframe
         if 'node_novelty_score' in kwargs:
