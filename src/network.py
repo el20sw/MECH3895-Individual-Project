@@ -209,6 +209,13 @@ class Network:
         return self._wn
     
     @property
+    def graph(self):
+        """
+        :py:attr:`graph` is a :py:class:`nx.classes.graph.Graph` - returns the graph of the network
+        """
+        return self._graph
+    
+    @property
     def path_to_file(self) -> str:
         """
         :py:attr:`path_to_file`
