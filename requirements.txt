@@ -45,6 +45,7 @@ numpy==1.24.2
 packaging==23.0
 pandas==1.5.3
 parso==0.8.3
+patsy==0.5.3
 pexpect==4.8.0
 pickleshare==0.7.5
 Pillow==9.4.0
@@ -64,6 +65,7 @@ python-dateutil==2.8.2
 pytz==2022.7.1
 pyzmq==25.0.1
 requests==2.28.2
+scikit-posthocs==0.7.0
 scipy==1.10.0
 seaborn==0.12.2
 six==1.16.0
@@ -76,6 +78,7 @@ sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
 stack-data==0.6.2
+statsmodels==0.13.5
 tenacity==8.2.0
 tomli==2.0.1
 tornado==6.2
