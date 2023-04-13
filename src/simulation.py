@@ -1,3 +1,7 @@
+"""
+Simulation Module for simulating the pipe network environment and the agents within it
+"""
+
 import os
 import json
 import uuid
@@ -46,7 +50,7 @@ class Simulation:
         list of start positions for the agents
         
     filepath: str, optional (default=None)
-        filepath to save the results to
+        filepath to save the results
     
     """
 

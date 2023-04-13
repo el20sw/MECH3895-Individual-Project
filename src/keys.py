@@ -1,7 +1,12 @@
 class FrozenNodes:
     """
     A class to hold the node keys of the pipe network and keep them frozen
-    :param node_keys: List of node keys
+    
+    Parameters
+    ----------
+    node_keys : list
+        List of node keys
+
     """
     
     def __init__(self, node_keys):

@@ -9,7 +9,7 @@
 project = 'Pipe Exploration Individual Project'
 copyright = '2023, Sam Wilson'
 author = 'Sam Wilson'
-release = '0.1'
+release = '3.0'
 
 # -- Path setup --------------------------------------------------------------
 # If extensions (or modules to document with autodoc) are in another directory,

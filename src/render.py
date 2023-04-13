@@ -106,7 +106,7 @@ class Render:
 
         # draw the environment labels if the number of nodes is less than 300
         if self.num_nodes < 300:
-            self.draw_env_labels()
+            self._draw_env_labels()
         # always draw the agent labels
         agent_node_labels = {node: node for node in self.G.nodes() if node in self.agent_nodes}  
         nx.draw_networkx_labels(self.G, self.all_pos, labels=agent_node_labels,
@@ -114,7 +114,7 @@ class Render:
                                 bbox=dict(facecolor='red', alpha=0.5), font_family='sans-serif', font_size=10
                                 )
         
-    def draw_env_labels(self):
+    def _draw_env_labels(self):
         """
         Method for drawing the labels
         """
@@ -166,7 +166,7 @@ class Render:
 
         # Draw environment labels if the number of nodes is less than 300
         if self.num_nodes < 300:
-            self.draw_env_labels()
+            self._draw_env_labels()
         # always draw the agent labels
         agent_node_labels = {node: node for node in self.G.nodes() if node in self.agent_nodes}  
         nx.draw_networkx_labels(self.G, self.all_pos, labels=agent_node_labels,

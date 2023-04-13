@@ -24,12 +24,18 @@ Each module contains classes, methods and functions.
     | :class:`~.network.Network`                      | Network Class contains methods to create the simulation environment and extract              |
     |                                                 | data from the environment.                                                                   |
     +-------------------------------------------------+----------------------------------------------------------------------------------------------+
-    | :class:`~.agent.Agent`                          | Agent Class                                                                                  |
+    | :class:`~.agent.Agent`                          | Agent Class contains methods to control, move and get data from the Agents in the simulation.|
     |                                                 |                                                                                              |
     +-------------------------------------------------+----------------------------------------------------------------------------------------------+
-    | :mod:`~.communication`                          | Communication Module                                                                         |
+    | :mod:`~.communication`                          | Communication Module contains functions to handle Agent-Agent communication.                 |
     |                                                 |                                                                                              |
     +-------------------------------------------------+----------------------------------------------------------------------------------------------+
-    | :mod:`~.simulation`                             | Simulation Module                                                                            |
+    | :mod:`~.simulation`                             | Simulation Module contains functionality for running and configuring a simulation.           |
     |                                                 |                                                                                              |
+    +-------------------------------------------------+----------------------------------------------------------------------------------------------+
+    | :mod:`~.agent_generator                         | Agent Generator Module contains functionality for generating Agents for the simulation with  |
+    |                                                 | the desired configuration.                                                                   |
+    +-------------------------------------------------+----------------------------------------------------------------------------------------------+
+    | :mod:`~.render    `                             | Render Module contains functionality for graphically displaying the agents and environment   |
+    |                                                 | in the simulation as an animation.                                                           |
     +-------------------------------------------------+----------------------------------------------------------------------------------------------+

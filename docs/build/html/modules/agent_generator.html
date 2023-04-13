@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Agent Generator &#8212; Pipe Exploration Individual Project 0.1 documentation</title>
+    <title>Agent Generator &#8212; Pipe Exploration Individual Project 3.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -37,7 +37,7 @@
 <p>Module for the generation and insertion of agents into the simulation.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="src.agent_generator.generate_agents">
-<span class="sig-name descname"><span class="pre">generate_agents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../classes/network.html#src.network.Network" title="src.network.Network"><span class="pre">Network</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_agents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../classes/agent.html#src.agent.Agent" title="src.agent.Agent"><span class="pre">Agent</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.agent_generator.generate_agents" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">generate_agents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../classes/network.html#src.network.Network" title="src.network.Network"><span class="pre">Network</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_agents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_positions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../classes/agent.html#src.agent.Agent" title="src.agent.Agent"><span class="pre">Agent</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.agent_generator.generate_agents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to generate a list of agents for the simulation</p>
 <section id="parameters">
 <h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h2>
@@ -46,7 +46,11 @@
 </dd>
 <dt>num_agents: int</dt><dd><p>number of agents to generate</p>
 </dd>
+<dt>threshold: str, optional (default=None)</dt><dd><p>threshold for the agents to use when allocating tasks in an informed way</p>
+</dd>
 <dt>random_seed: int, optional (default=0)</dt><dd><p>random seed for the generation of the agents</p>
+</dd>
+<dt>start_positions: list of start positions, optional (default=None)</dt><dd><p>list of start positions for the agents</p>
 </dd>
 </dl>
 </section>
@@ -91,6 +95,27 @@
 <section id="id4">
 <h2>Returns<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
 <p>list of start positions</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.agent_generator.assign_start_positions">
+<span class="sig-name descname"><span class="pre">assign_start_positions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../classes/network.html#src.network.Network" title="src.network.Network"><span class="pre">Network</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_agents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.agent_generator.assign_start_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to assign agents to given start positions</p>
+<section id="id5">
+<h2>Parameters<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt>env: Network</dt><dd><p>environment for the agents to be generated in</p>
+</dd>
+<dt>num_agents: int</dt><dd><p>number of agents to generate</p>
+</dd>
+<dt>start_pos: list of nodes</dt><dd><p>list of nodes to assign agents to</p>
+</dd>
+</dl>
+</section>
+<section id="id6">
+<h2>Returns<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h2>
+<p>list of agent start positions</p>
 </section>
 </dd></dl>
 
