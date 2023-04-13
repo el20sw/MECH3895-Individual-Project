@@ -24,16 +24,61 @@ from src.render import Render
 
 log = logger.setup_logger(file_name='logs/sandbox-2.log', level='DEBUG')
 
-env = Network('networks/Net1.inp')
+env1 = Network('networks/Net3.inp')
+env2 = Network('networks/250701 K709vs2-Export.inp')
+env3 = Network('networks/Net6.inp')
+
+env1_junctions = env1.graph_num_nodes
+env1_links = env1.graph_num_links
+env1_g = env1.graph
+env1_degree = env1_g.degree
+
+env1_degrees = [degree for node, degree in env1_degree]
+env1_degree_count = {degree: 0 for degree in env1_degrees}
+for node, degree in env1_degree:
+    env1_degree_count[degree] += 1
+
+print(f'env1_junctions: {env1_junctions}')
+print(f'env1_links: {env1_links}')
+print(f'env1_degree_count: {env1_degree_count}')
+
+env2_junctions = env2.graph_num_nodes
+env2_links = env2.graph_num_links
+env2_g = env2.graph
+env2_degree = env2_g.degree
+
+env2_degrees = [degree for node, degree in env2_degree]
+env2_degree_count = {degree: 0 for degree in env2_degrees}
+for node, degree in env2_degree:
+    env2_degree_count[degree] += 1
+
+print(f'env2_junctions: {env2_junctions}')
+print(f'env2_links: {env2_links}')
+print(f'env2_degree_count: {env2_degree_count}')
+
+env3_junctions = env3.graph_num_nodes
+env3_links = env3.graph_num_links
+env3_g = env3.graph
+env3_degree = env3_g.degree
+
+env3_degrees = [degree for node, degree in env3_degree]
+env3_degree_count = {degree: 0 for degree in env3_degrees}
+for node, degree in env3_degree:
+    env3_degree_count[degree] += 1
+
+print(f'env3_junctions: {env3_junctions}')
+print(f'env3_links: {env3_links}')
+print(f'env3_degree_count: {env3_degree_count}')
+
 # wn = env.water_network_model
 # g = wn.to_graph()
 # uG = g.to_undirected()
 
 # adj = env.adj_list
 
-sim = Simulation(environment=env, num_agents=10, swarm=True)
-sim.turn()
-sim.turn()
+# sim = Simulation(environment=env, num_agents=10, swarm=True)
+# sim.turn()
+# sim.turn()
 
 # agents = [1, 2, 3, 4]
 # ports = ['a', 'b', 'c', 'd', 'e']
