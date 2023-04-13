@@ -337,9 +337,9 @@ class Simulation:
         # Get the proportion of new links not in the visited links set
         link_novelty_score = len(new_links - self._visited_links) / len(new_links)
         
-        self._log.critical(f'Turn: {self._turns} - New links: {new_links}')
-        self._log.critical(f'Turn: {self._turns} - Visited links: {self._visited_links}')
-        self._log.critical(f'Turn: {self._turns} - Link Novelty score: {link_novelty_score}')
+        self._log.debug(f'Turn: {self._turns} - New links: {new_links}')
+        self._log.debug(f'Turn: {self._turns} - Visited links: {self._visited_links}')
+        self._log.debug(f'Turn: {self._turns} - Link Novelty score: {link_novelty_score}')
         
         return link_novelty_score
         
