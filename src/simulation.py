@@ -322,9 +322,9 @@ class Simulation:
         # Get the proportion of new nodes not in the visited nodes set
         node_novelty_score = len(new_nodes - self._visited_nodes) / len(new_nodes)
         
-        self._log.critical(f'Turn: {self._turns} - New nodes: {new_nodes}')
-        self._log.critical(f'Turn: {self._turns} - Visited nodes: {self._visited_nodes}')
-        self._log.critical(f'Turn: {self._turns} - Node Novelty score: {node_novelty_score}')
+        self._log.debug(f'Turn: {self._turns} - New nodes: {new_nodes}')
+        self._log.debug(f'Turn: {self._turns} - Visited nodes: {self._visited_nodes}')
+        self._log.debug(f'Turn: {self._turns} - Node Novelty score: {node_novelty_score}')
         
         return node_novelty_score
     
