@@ -20,7 +20,7 @@ make html
 
 ```
 
-A html file can then be found in the docs/build directory. `index.html` is reccomended for a point of entry into the documentation.
+A html file can then be found in the docs/build directory. `index.html` is reccomended as a point of entry into the documentation.
 
 ## Usage
 
