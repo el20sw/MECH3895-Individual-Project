@@ -313,7 +313,8 @@ class Agent:
         total_port_score = sum(port_scores.values())
         
         mean_port_score = total_port_score / len(ports)
-        median_port_score = sorted_port_scores[math.floor(len(ports) / 2)][1]
+        # median_port_score = sorted_port_scores[math.floor(len(ports) / 2)][1] if len(ports) % 2 == 1 else ((sorted_port_scores[math.floor(len(ports) / 2)][1] + sorted_port_scores[math.floor(len(ports) / 2) - 1][1])) / 2
+        median_port_score = statistics.median(port_scores.values())
         
         self._log.debug(f"Mean port score: {mean_port_score}")
         self._log.debug(f"Median port score: {median_port_score}")

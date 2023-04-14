@@ -17,40 +17,40 @@ SIM_LENGTH = 200
 
 log = logger.setup_logger(file_name='logs/sandbox-2.log', level='CRITICAL')
 
-path = "networks/Net1.inp"
+path = "networks/Net3.inp"
 env = Network(path)
-file = 'notable-results/Iteration3/no-swarm-validation'
-sim = Simulation(env, num_agents=1, swarm=False, start_positions=['9'], filepath=file)
-sim.run(max_turns=20)
-r = Render(sim)
-r.render()
+file = 'notable-results/Iteration3/temp'
+sim = Simulation(env, num_agents=10, swarm=True, swarm_config={'swarm': True, 'swarm_type': 'informed', 'allocation_threshold': 'median'}, start_positions=['Lake'], filepath=file)
+sim.run(max_turns=100)
+# r = Render(sim)
+# r.render()
 
-spath = sim.path_to_results_directory
+# spath = sim.path_to_results_directory
 
-# Plot the path of the agent over time in a static graph
-agent = sim.agents[0]
-npath = agent.node_path
+# # Plot the path of the agent over time in a static graph
+# agent = sim.agents[0]
+# npath = agent.node_path
 
-links = []
-for i in range(len(npath)-1):
-    links.append((npath[i], npath[i+1]))
+# links = []
+# for i in range(len(npath)-1):
+#     links.append((npath[i], npath[i+1]))
     
-pos = nx.get_node_attributes(env.graph, 'pos')
+# pos = nx.get_node_attributes(env.graph, 'pos')
 
-# create a figure
-plt.figure(figsize=(10, 10))
-# draw the network
-nx.draw_networkx_nodes(env.graph, pos, node_size=1, node_color='blue')
-nx.draw_networkx_edges(env.graph, pos)
-nx.draw_networkx_labels(env.graph, pos, horizontalalignment='right', verticalalignment='top', font_family='serif', font_size=8)
-# draw the path
-nx.draw_networkx_nodes(env.graph, pos, nodelist=npath, node_size=10, node_color='red')
-nx.draw_networkx_edges(env.graph, pos, edgelist=links, edge_color='red', width=2)
+# # create a figure
+# plt.figure(figsize=(10, 10))
+# # draw the network
+# nx.draw_networkx_nodes(env.graph, pos, node_size=1, node_color='blue')
+# nx.draw_networkx_edges(env.graph, pos)
+# nx.draw_networkx_labels(env.graph, pos, horizontalalignment='right', verticalalignment='top', font_family='serif', font_size=8)
+# # draw the path
+# nx.draw_networkx_nodes(env.graph, pos, nodelist=npath, node_size=10, node_color='red')
+# nx.draw_networkx_edges(env.graph, pos, edgelist=links, edge_color='red', width=2)
 
-# add a title
-plt.title('Agent Path for Base Behavior (RH Traversal)')
+# # add a title
+# plt.title('Agent Path for Base Behavior (RH Traversal)')
 
-plt.savefig(f'{spath}/agent_path.png')
+# plt.savefig(f'{spath}/agent_path.png')
 
 
 

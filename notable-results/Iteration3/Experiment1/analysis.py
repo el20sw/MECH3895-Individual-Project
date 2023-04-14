@@ -35,7 +35,7 @@ ax.plot(no_swarm_results["turn"], no_swarm_results["pct_explored"], label="No Sw
 
 # plot swarm_results
 # ax.plot(swarm_results["turn"], scipy.ndimage.gaussian_filter1d(swarm_results["pct_explored"], 5), label="Swarm")
-ax.plot(swarm_results["turn"], swarm_results["pct_explored"], label="Swarm")
+ax.plot(swarm_results["turn"], swarm_results["pct_explored"], label="Naive Swarm")
 
 # plot mean_informed_swarm_results
 ax.plot(mean_informed_swarm_results["turn"], mean_informed_swarm_results["pct_explored"], label="Mean Informed Swarm")
