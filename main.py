@@ -9,7 +9,16 @@ from src.render import Render
 
 logging.disable(logging.CRITICAL)
 
-def create_simulation(network_file, number_of_agents:int, turn_limit:int, swarm:bool, render:bool, swarm_type):
+def create_simulation(
+    network_file, 
+    number_of_agents:int, 
+    turn_limit:int, 
+    swarm:bool, 
+    start_positions:list, 
+    render:bool, 
+    swarm_type,
+    filepath
+):
     
     # if swarm_type is None, swarm is False
     if swarm_type is None:
@@ -17,8 +26,10 @@ def create_simulation(network_file, number_of_agents:int, turn_limit:int, swarm:
         network_file={network_file},
         number_of_agents={number_of_agents},
         turn_limit={turn_limit},
+        start_positions={start_positions},
         swarm={swarm},
-        render={render}\n""")
+        render={render},
+        filepath={filepath}\n""")
         
         swarm_config = None
         
@@ -28,9 +39,11 @@ def create_simulation(network_file, number_of_agents:int, turn_limit:int, swarm:
         network_file={network_file},
         number_of_agents={number_of_agents},
         turn_limit={turn_limit},
+        start_positions={start_positions},
         swarm={swarm}
         swarm_type={swarm_type}
-        render={render}\n""")
+        render={render},
+        filepath={filepath}\n""")
         
         swarm_config = {'swarm': swarm, 'swarm_type': swarm_type}
     
@@ -41,10 +54,12 @@ def create_simulation(network_file, number_of_agents:int, turn_limit:int, swarm:
         network_file={network_file},
         number_of_agents={number_of_agents},
         turn_limit={turn_limit},
+        start_positions={start_positions},
         swarm={swarm},
         swarm_type={swarm_type},
         allocation_threshold={allocation_threshold},
-        render={render}\n""")
+        render={render},
+        filepath={filepath}\n""")
         
         swarm_config = {'swarm': swarm, 'swarm_type': swarm_type, 'allocation_threshold': allocation_threshold}
         
@@ -54,7 +69,7 @@ def create_simulation(network_file, number_of_agents:int, turn_limit:int, swarm:
             
     # Create network and simulation
     env = Network(network_file)
-    simulation = Simulation(env, number_of_agents, swarm, swarm_config=swarm_config)
+    simulation = Simulation(env, number_of_agents, swarm, swarm_config=swarm_config, start_positions=start_positions, filepath=filepath)
     
     # Run the simulation
     print("\nRunning simulation...")
@@ -98,11 +113,19 @@ if __name__ == "__main__":
                 allocation_threshold = "median"
             # bundle swarm_type and allocation_threshold into a tuple
             swarm_type = (swarm_type, allocation_threshold)
-    
+            
+    start_position_num = int(input("Enter the number of start positions: ") or 1)
+    start_positions = []
+    for i in range(start_position_num):
+        start_position = input(f"Enter start position {i+1}: ")
+        start_positions.append(start_position)
+        
+    filepath = input("Enter path to save results (or press enter to save in current directory): ") or None
+        
     render_choice = input("Render? (y/n): ") or "n"
     render = True if render_choice.lower() == "y" else False
 
-    create_simulation(network_file, number_of_agents, turn_limit, swarm, render, swarm_type)
+    create_simulation(network_file, number_of_agents, turn_limit, swarm, start_positions, render, swarm_type, filepath)
 
     
         # print(f"""\nRunning simulation with parameters:

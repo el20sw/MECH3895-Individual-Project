@@ -14,7 +14,7 @@
     <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Software Framework and Limitations" href="framework.html" />
+    <link rel="next" title="Installation" href="installation.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -38,16 +38,57 @@ and to use this simulation to explore the effects of different method of swarm c
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="framework.html">Software Framework and Limitations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/simulation.html">Simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/agent_generator.html">Agent Generator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/communication.html">Communication</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/render.html">Render</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/network.html">Network</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/agent.html">Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#pre-amble">Pre-amble</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#id1">Installation</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="framework.html">Software Framework</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="framework.html#project-structure">Project Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="framework.html#network-class">Network Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="framework.html#agent-class">Agent Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="framework.html#communication-module">Communication Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="framework.html#simulation-module">Simulation Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="framework.html#agent-generator-module">Agent Generator Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="framework.html#render-module">Render Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="licence.html">Licencing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/simulation.html">Simulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/simulation.html#src.simulation.Simulation"><code class="docutils literal notranslate"><span class="pre">Simulation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/agent_generator.html">Agent Generator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/agent_generator.html#src.agent_generator.generate_agents"><code class="docutils literal notranslate"><span class="pre">generate_agents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/agent_generator.html#src.agent_generator.generate_start_positions"><code class="docutils literal notranslate"><span class="pre">generate_start_positions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/agent_generator.html#src.agent_generator.ask_start_positions"><code class="docutils literal notranslate"><span class="pre">ask_start_positions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/agent_generator.html#src.agent_generator.assign_start_positions"><code class="docutils literal notranslate"><span class="pre">assign_start_positions()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/communication.html">Communication</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/communication.html#src.communication.communicate"><code class="docutils literal notranslate"><span class="pre">communicate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/communication.html#src.communication.synchronise_port_labelling"><code class="docutils literal notranslate"><span class="pre">synchronise_port_labelling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/communication.html#src.communication.establish_leader"><code class="docutils literal notranslate"><span class="pre">establish_leader()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/communication.html#src.communication.allocate_tasks"><code class="docutils literal notranslate"><span class="pre">allocate_tasks()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/render.html">Render</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/render.html#src.render.Render"><code class="docutils literal notranslate"><span class="pre">Render</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/network.html">Network</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#network-module">Network Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/agent.html">Agent</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/agent.html#src.agent.Agent"><code class="docutils literal notranslate"><span class="pre">Agent</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 </ul>
 </div>
 </section>
@@ -79,15 +120,18 @@ and to use this simulation to explore the effects of different method of swarm c
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="framework.html">Software Framework and Limitations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="framework.html">Software Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="licence.html">Licencing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="framework.html" title="next chapter">Software Framework and Limitations</a></li>
+      <li>Next: <a href="installation.html" title="next chapter">Installation</a></li>
   </ul></li>
 </ul>
 </div>

@@ -14,7 +14,7 @@
     <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Render" href="../classes/render.html" />
+    <link rel="next" title="Render" href="render.html" />
     <link rel="prev" title="Agent Generator" href="agent_generator.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -37,7 +37,7 @@
 <p>Module for enabling communication between agents in communication clusters</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="src.communication.communicate">
-<span class="sig-name descname"><span class="pre">communicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../classes/agent.html#src.agent.Agent" title="src.agent.Agent"><span class="pre">Agent</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../classes/network.html#src.network.Network" title="src.network.Network"><span class="pre">Network</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">informed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.communication.communicate" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">communicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="agent.html#src.agent.Agent" title="src.agent.Agent"><span class="pre">Agent</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="network.html#src.network.Network" title="src.network.Network"><span class="pre">Network</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">informed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.communication.communicate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method for enabling communication between agents in communication clusters and allocating tasks</p>
 <section id="parameters">
 <h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h2>
@@ -54,7 +54,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.communication.synchronise_port_labelling">
-<span class="sig-name descname"><span class="pre">synchronise_port_labelling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../classes/agent.html#src.agent.Agent" title="src.agent.Agent"><span class="pre">Agent</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../classes/network.html#src.network.Network" title="src.network.Network"><span class="pre">Network</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.communication.synchronise_port_labelling" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">synchronise_port_labelling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="agent.html#src.agent.Agent" title="src.agent.Agent"><span class="pre">Agent</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="network.html#src.network.Network" title="src.network.Network"><span class="pre">Network</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.communication.synchronise_port_labelling" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method for agents to synchronise port labelling</p>
 <section id="id1">
 <h2>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
@@ -77,7 +77,7 @@ second smallest being labelled 2, and so on. This would ensure that the port lab
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.communication.establish_leader">
-<span class="sig-name descname"><span class="pre">establish_leader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../classes/agent.html#src.agent.Agent" title="src.agent.Agent"><span class="pre">Agent</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.communication.establish_leader" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">establish_leader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="agent.html#src.agent.Agent" title="src.agent.Agent"><span class="pre">Agent</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.communication.establish_leader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to establish a leader agent for the communication cluster</p>
 <section id="id2">
 <h2>Parameters<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
@@ -140,14 +140,14 @@ arbitrarily select another of agent to compare their ID with</p>
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../framework.html">Software Framework and Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../framework.html">Software Framework</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../classes/simulation.html">Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html">Simulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent_generator.html">Agent Generator</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Communication</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../classes/render.html">Render</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../classes/network.html">Network</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../classes/agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="render.html">Render</a></li>
+<li class="toctree-l2"><a class="reference internal" href="network.html">Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agent.html">Agent</a></li>
 </ul>
 </li>
 </ul>
@@ -158,7 +158,7 @@ arbitrarily select another of agent to compare their ID with</p>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="../api.html">API</a><ul>
       <li>Previous: <a href="agent_generator.html" title="previous chapter">Agent Generator</a></li>
-      <li>Next: <a href="../classes/render.html" title="next chapter">Render</a></li>
+      <li>Next: <a href="render.html" title="next chapter">Render</a></li>
   </ul></li>
   </ul></li>
 </ul>

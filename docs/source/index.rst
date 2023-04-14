@@ -10,11 +10,14 @@ A Level 3 Mechatronics and Robotics Project by Sam Wilson. This project aims to 
 and to use this simulation to explore the effects of different method of swarm control on the efficiency and effectiveness of the exploration.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
+   installation.rst
    framework.rst
+   licence.rst
    api.rst
+   references.rst
 
 Indices and tables
 ==================
