@@ -20,6 +20,8 @@ make html
 
 ```
 
+A html file can then be found in the docs/build directory. `index.html` is reccomended for a point of entry into the documentation.
+
 ## Usage
 
 To run a simulation, run the following command in the project root directory:
