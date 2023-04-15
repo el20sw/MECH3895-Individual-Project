@@ -1,0 +1,11 @@
+{
+    "network_file": "networks/Environment1.inp",
+    "num_agents": 50,
+    "turns": 100,
+    "swarm": true,
+    "swarm_type": "naive",
+    "allocation_threshold": null,
+    "start_position": [
+        "253"
+    ]
+}
