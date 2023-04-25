@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>API &#8212; Pipe Exploration Individual Project 0.1 documentation</title>
+    <title>API documentation &#8212; Pipe Exploration Individual Project 3.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -14,8 +14,8 @@
     <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Simulation" href="classes/simulation.html" />
-    <link rel="prev" title="Software Framework and Limitations" href="framework.html" />
+    <link rel="next" title="Simulation" href="modules/simulation.html" />
+    <link rel="prev" title="Software Framework" href="framework.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -32,16 +32,94 @@
 
           <div class="body" role="main">
             
-  <section id="api">
-<h1>API<a class="headerlink" href="#api" title="Permalink to this heading">¶</a></h1>
+  <section id="api-documentation">
+<h1>API documentation<a class="headerlink" href="#api-documentation" title="Permalink to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="classes/simulation.html">Simulation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/agent_generator.html">Agent Generator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/communication.html">Communication</a></li>
-<li class="toctree-l1"><a class="reference internal" href="classes/render.html">Render</a></li>
-<li class="toctree-l1"><a class="reference internal" href="classes/network.html">Network</a></li>
-<li class="toctree-l1"><a class="reference internal" href="classes/agent.html">Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/simulation.html">Simulation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/simulation.html#src.simulation.Simulation"><code class="docutils literal notranslate"><span class="pre">Simulation</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/simulation.html#src.simulation.Simulation.run"><code class="docutils literal notranslate"><span class="pre">Simulation.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/simulation.html#src.simulation.Simulation.turn"><code class="docutils literal notranslate"><span class="pre">Simulation.turn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/simulation.html#src.simulation.Simulation.environment"><code class="docutils literal notranslate"><span class="pre">Simulation.environment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/simulation.html#src.simulation.Simulation.agents"><code class="docutils literal notranslate"><span class="pre">Simulation.agents</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/simulation.html#src.simulation.Simulation.num_agents"><code class="docutils literal notranslate"><span class="pre">Simulation.num_agents</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/simulation.html#src.simulation.Simulation.turns"><code class="docutils literal notranslate"><span class="pre">Simulation.turns</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/simulation.html#src.simulation.Simulation.max_turns"><code class="docutils literal notranslate"><span class="pre">Simulation.max_turns</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/simulation.html#src.simulation.Simulation.pct_nodes_explored"><code class="docutils literal notranslate"><span class="pre">Simulation.pct_nodes_explored</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/simulation.html#src.simulation.Simulation.pct_links_explored"><code class="docutils literal notranslate"><span class="pre">Simulation.pct_links_explored</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/simulation.html#src.simulation.Simulation.path_to_results_directory"><code class="docutils literal notranslate"><span class="pre">Simulation.path_to_results_directory</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/simulation.html#src.simulation.Simulation.params"><code class="docutils literal notranslate"><span class="pre">Simulation.params</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/agent_generator.html">Agent Generator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/agent_generator.html#src.agent_generator.generate_agents"><code class="docutils literal notranslate"><span class="pre">generate_agents()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/agent_generator.html#src.agent_generator.generate_start_positions"><code class="docutils literal notranslate"><span class="pre">generate_start_positions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/agent_generator.html#src.agent_generator.ask_start_positions"><code class="docutils literal notranslate"><span class="pre">ask_start_positions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/agent_generator.html#src.agent_generator.assign_start_positions"><code class="docutils literal notranslate"><span class="pre">assign_start_positions()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/communication.html">Communication</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/communication.html#src.communication.communicate"><code class="docutils literal notranslate"><span class="pre">communicate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/communication.html#src.communication.synchronise_port_labelling"><code class="docutils literal notranslate"><span class="pre">synchronise_port_labelling()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/communication.html#src.communication.establish_leader"><code class="docutils literal notranslate"><span class="pre">establish_leader()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/communication.html#src.communication.allocate_tasks"><code class="docutils literal notranslate"><span class="pre">allocate_tasks()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/render.html">Render</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/render.html#src.render.Render"><code class="docutils literal notranslate"><span class="pre">Render</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/render.html#src.render.Render.render"><code class="docutils literal notranslate"><span class="pre">Render.render()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/network.html">Network</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/network.html#network-module">Network Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/network.html#src.network.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.links"><code class="docutils literal notranslate"><span class="pre">Network.links</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.link_names"><code class="docutils literal notranslate"><span class="pre">Network.link_names</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.pipes"><code class="docutils literal notranslate"><span class="pre">Network.pipes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.pipe_names"><code class="docutils literal notranslate"><span class="pre">Network.pipe_names</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.num_links"><code class="docutils literal notranslate"><span class="pre">Network.num_links</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.graph_num_links"><code class="docutils literal notranslate"><span class="pre">Network.graph_num_links</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.nodes"><code class="docutils literal notranslate"><span class="pre">Network.nodes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.node_names"><code class="docutils literal notranslate"><span class="pre">Network.node_names</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.num_nodes"><code class="docutils literal notranslate"><span class="pre">Network.num_nodes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.graph_num_nodes"><code class="docutils literal notranslate"><span class="pre">Network.graph_num_nodes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.junctions"><code class="docutils literal notranslate"><span class="pre">Network.junctions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.junction_names"><code class="docutils literal notranslate"><span class="pre">Network.junction_names</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.adj_list"><code class="docutils literal notranslate"><span class="pre">Network.adj_list</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.water_network_model"><code class="docutils literal notranslate"><span class="pre">Network.water_network_model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.graph"><code class="docutils literal notranslate"><span class="pre">Network.graph</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.path_to_file"><code class="docutils literal notranslate"><span class="pre">Network.path_to_file</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.to_graph"><code class="docutils literal notranslate"><span class="pre">Network.to_graph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.calculate_link_length"><code class="docutils literal notranslate"><span class="pre">Network.calculate_link_length()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.write_adj_list_to_file"><code class="docutils literal notranslate"><span class="pre">Network.write_adj_list_to_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.get_state"><code class="docutils literal notranslate"><span class="pre">Network.get_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.plot_network"><code class="docutils literal notranslate"><span class="pre">Network.plot_network()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.get_link"><code class="docutils literal notranslate"><span class="pre">Network.get_link()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.get_links"><code class="docutils literal notranslate"><span class="pre">Network.get_links()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.get_link_names"><code class="docutils literal notranslate"><span class="pre">Network.get_link_names()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.get_node"><code class="docutils literal notranslate"><span class="pre">Network.get_node()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/network.html#src.network.Network.save_image"><code class="docutils literal notranslate"><span class="pre">Network.save_image()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/agent.html">Agent</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/agent.html#src.agent.Agent"><code class="docutils literal notranslate"><span class="pre">Agent</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/agent.html#src.agent.Agent.move"><code class="docutils literal notranslate"><span class="pre">Agent.move()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/agent.html#src.agent.Agent.decide"><code class="docutils literal notranslate"><span class="pre">Agent.decide()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/agent.html#src.agent.Agent.ping"><code class="docutils literal notranslate"><span class="pre">Agent.ping()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/agent.html#src.agent.Agent.RH_Traversal"><code class="docutils literal notranslate"><span class="pre">Agent.RH_Traversal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/agent.html#src.agent.Agent.assign_tasks"><code class="docutils literal notranslate"><span class="pre">Agent.assign_tasks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/agent.html#src.agent.Agent.assign_tasks_informed"><code class="docutils literal notranslate"><span class="pre">Agent.assign_tasks_informed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/agent.html#src.agent.Agent.receive_task"><code class="docutils literal notranslate"><span class="pre">Agent.receive_task()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -65,14 +143,15 @@
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="framework.html">Software Framework and Limitations</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="classes/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="framework.html">Software Framework</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/simulation.html">Simulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/agent_generator.html">Agent Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/communication.html">Communication</a></li>
-<li class="toctree-l2"><a class="reference internal" href="classes/render.html">Render</a></li>
-<li class="toctree-l2"><a class="reference internal" href="classes/network.html">Network</a></li>
-<li class="toctree-l2"><a class="reference internal" href="classes/agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/render.html">Render</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/network.html">Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/agent.html">Agent</a></li>
 </ul>
 </li>
 </ul>
@@ -81,8 +160,8 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="framework.html" title="previous chapter">Software Framework and Limitations</a></li>
-      <li>Next: <a href="classes/simulation.html" title="next chapter">Simulation</a></li>
+      <li>Previous: <a href="framework.html" title="previous chapter">Software Framework</a></li>
+      <li>Next: <a href="modules/simulation.html" title="next chapter">Simulation</a></li>
   </ul></li>
 </ul>
 </div>

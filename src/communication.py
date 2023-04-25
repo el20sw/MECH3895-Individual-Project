@@ -11,7 +11,7 @@ from src.network import Network
 
 log = logger.get_logger(__name__)
 
-def communicate(agents: List[Agent], network: Network):
+def communicate(agents: List[Agent], network: Network, informed: bool=False):
     """
     Method for enabling communication between agents in communication clusters and allocating tasks
     
@@ -22,6 +22,8 @@ def communicate(agents: List[Agent], network: Network):
         List of agents in the communication cluster
     network: Network
         Network object (the environment)
+    informed: bool, optional (default=False)
+        Whether the agents are using informed task allocation or not
     
     """
     
@@ -33,7 +35,7 @@ def communicate(agents: List[Agent], network: Network):
     leader = establish_leader(agents)
     log.info(f'Leader: {leader}')
 
-    allocate_tasks(agents, leader, ports)
+    allocate_tasks(agents, leader, ports, informed)
         
 
 def synchronise_port_labelling(agents: List[Agent], network: Network):
@@ -63,7 +65,8 @@ def synchronise_port_labelling(agents: List[Agent], network: Network):
     # Get the current node
     node = agents[0].position
     # Get the links for the current node
-    labels = network.water_network_model.get_links_for_node(node)
+    # labels = network.water_network_model.get_links_for_node(node)
+    labels = network.get_link_names(node)
     # Get the bearings for the links
     # bearings = network.water_network_model.get_bearings_for_node(node) - not an actual function as no concept of north currently exists
     # Sort the bearings
@@ -111,7 +114,7 @@ def establish_leader(agents: List[Agent]):
         # Recursively call the function with the new list of agents
         return establish_leader(working_agents)
 
-def allocate_tasks(agents, leader, ports):
+def allocate_tasks(agents, leader, ports, informed: bool = False):
     """
     Method to allocate tasks to agents in the communication cluster
     
@@ -124,6 +127,8 @@ def allocate_tasks(agents, leader, ports):
         Leader agent of the communication cluster
     ports: list
         List of port labels for the current node
+    informed: bool, optional (default=False)
+        Whether the agents are using informed task allocation or not
     
     """
     
@@ -139,12 +144,15 @@ def allocate_tasks(agents, leader, ports):
     try:
         lead_agent: Agent = leader
     except TypeError:
-        log.error(f'Leader is not an agent object')
+        log.error(f'Leader is not an Agent type')
         raise TypeError
     
     log.debug(f'Leader: {lead_agent}')
     log.debug(f'Agents: {working_agents}')
-    # leader.assign_tasks(agents=working_agents, ports=working_ports)
-    lead_agent.assign_tasks_informed(agents=working_agents, ports=working_ports)
+    
+    if not informed:
+        lead_agent.assign_tasks(agents=working_agents, ports=working_ports)
+    else:
+        lead_agent.assign_tasks_informed(agents=working_agents, ports=working_ports)
 
         

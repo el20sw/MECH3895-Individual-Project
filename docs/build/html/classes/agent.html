@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Agent &#8212; Pipe Exploration Individual Project 0.1 documentation</title>
+    <title>Agent &#8212; Pipe Exploration Individual Project 3.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -35,7 +35,7 @@
 <h1>Agent<a class="headerlink" href="#agent" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="src.agent.Agent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="network.html#src.network.Network" title="src.network.Network"><span class="pre">Network</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="network.html#src.network.Network" title="src.network.Network"><span class="pre">Network</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent" title="Permalink to this definition">¶</a></dt>
 <dd><section id="agent-class">
 <h2>Agent Class<a class="headerlink" href="#agent-class" title="Permalink to this heading">¶</a></h2>
 <section id="parameters">
@@ -46,6 +46,8 @@
 <dt>agent_id<span class="classifier">int</span></dt><dd><p>The id of the agent</p>
 </dd>
 <dt>start_pos<span class="classifier">int</span></dt><dd><p>The starting position of the agent in the network environment</p>
+</dd>
+<dt>threshold<span class="classifier">str, optional (default=None)</span></dt><dd><p>The threshold for the agent to use when allocating tasks in an informed manner</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -66,7 +68,7 @@ The agent’s next node is determined by the link that it is currently traversin
 <section id="id1">
 <h4>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>swarm<span class="classifier">bool</span></dt><dd><p>Boolean value to determine if the agent should follow the right hand traversal rule at each junction or if it should
+<dt>swarm<span class="classifier">bool</span></dt><dd><p>Boolean value to determine if the agent should follow the right hand traversal rule at each junction or instead
 use swarm behaviour where applicable.</p>
 </dd>
 </dl>
@@ -113,6 +115,22 @@ the agent would broadcast a ping to establish if there are any other agents in t
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="src.agent.Agent.assign_tasks_informed">
+<span class="sig-name descname"><span class="pre">assign_tasks_informed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ports</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent.assign_tasks_informed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for the agent to assign tasks to other agents in the communication cluster. This is the informed version of the assign_tasks method. The score is
+determined by the number of agents that have arrived through a port.</p>
+<section id="id5">
+<h4>Parameters<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>agents<span class="classifier">Agent</span></dt><dd><p>The agents to assign tasks to</p>
+</dd>
+<dt>ports<span class="classifier">list</span></dt><dd><p>List of ports available for task assignment</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="src.agent.Agent.receive_task">
 <span class="sig-name descname"><span class="pre">receive_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.agent.Agent.receive_task" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method for the agent to receive a task</p>
@@ -146,6 +164,9 @@ the agent would broadcast a ping to establish if there are any other agents in t
 <li class="toctree-l1"><a class="reference internal" href="../framework.html">Software Framework and Limitations</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="simulation.html">Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/agent_generator.html">Agent Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/communication.html">Communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="render.html">Render</a></li>
 <li class="toctree-l2"><a class="reference internal" href="network.html">Network</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Agent</a></li>
 </ul>

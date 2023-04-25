@@ -106,7 +106,7 @@ class Render:
 
         # draw the environment labels if the number of nodes is less than 300
         if self.num_nodes < 300:
-            self.draw_env_labels()
+            self._draw_env_labels()
         # always draw the agent labels
         agent_node_labels = {node: node for node in self.G.nodes() if node in self.agent_nodes}  
         nx.draw_networkx_labels(self.G, self.all_pos, labels=agent_node_labels,
@@ -114,7 +114,7 @@ class Render:
                                 bbox=dict(facecolor='red', alpha=0.5), font_family='sans-serif', font_size=10
                                 )
         
-    def draw_env_labels(self):
+    def _draw_env_labels(self):
         """
         Method for drawing the labels
         """
@@ -136,7 +136,8 @@ class Render:
         # get the current turn - turns are the index of the dataframe
         turn = self.results_df.index[i]
         # get the current percentage explored
-        pct_explored = self.results_df['pct_explored'][i]
+        pct_nodes_explored = self.results_df['pct_nodes_explored'][i]
+        pct_links_explored = self.results_df['pct_links_explored'][i]
         
         # get the current positions of the agents
         agent_pos = {}
@@ -165,7 +166,7 @@ class Render:
 
         # Draw environment labels if the number of nodes is less than 300
         if self.num_nodes < 300:
-            self.draw_env_labels()
+            self._draw_env_labels()
         # always draw the agent labels
         agent_node_labels = {node: node for node in self.G.nodes() if node in self.agent_nodes}  
         nx.draw_networkx_labels(self.G, self.all_pos, labels=agent_node_labels,
@@ -174,7 +175,7 @@ class Render:
                                 )
 
         # Add title with pct explored to 2 decimal places
-        plt.title('Turn: {} - {}% explored'.format(turn, round(pct_explored, 2)))
+        plt.title('Turn: {} - {}% Nodes explored - {}% Links explored'.format(turn, round(pct_nodes_explored, 2), round(pct_links_explored, 2)))
         # plt.title('Turn: {} - {}% explored'.format(turn, pct_explored))
 
 

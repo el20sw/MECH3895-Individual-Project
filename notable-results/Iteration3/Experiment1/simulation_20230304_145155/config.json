@@ -1,8 +1,10 @@
 {
-    "network_file": "/home/swizzle/University/MECH3895/PipeSwarmSim/networks/Net3.inp",
+    "network_file": "~/PipeSwarmSim/networks/Net3.inp",
     "num_agents": 10,
     "turns": 100,
     "swarm": true,
+    "swarm_type": "informed",
+    "allocation_threshold": "median",
     "start_position": [
         "Lake"
     ]

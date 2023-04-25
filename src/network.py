@@ -54,12 +54,20 @@ class Network:
         # Initialise network dictionary
         self._wn_dict = wntr.network.to_dict(self._wn)
         
+        # Initialise adjacency list and graph
+        self._graph = self.to_graph()
+        self._adj_list = self._graph.adj
+        
         # Properties
         self._links = self._wn_dict['links']
         self._link_names = self._wn.link_name_list
         self._pipes = [link for link in self._links if link['link_type'] == 'Pipe']
         self._pipe_names = self._wn.pipe_name_list
         self._link_lengths = self._wn.query_link_attribute('length')
+        
+        self._wn_num_links = self._wn.num_links
+        self._g_num_links = len(self._graph.edges)
+        self._num_links = len(self._links)
 
         self._nodes = self._wn_dict['nodes']
         self._node_names = self._wn.node_name_list
@@ -67,19 +75,19 @@ class Network:
         self._junction_names = self._wn.junction_name_list
 
         self._wn_num_nodes = self._wn.num_nodes
+        self._g_num_nodes = len(self._graph.nodes)
         self._num_nodes = len(self._nodes)
+        
         assert self._wn_num_nodes == self._num_nodes
 
         # Create frozen nodes and links
         self._frozen_nodes = FrozenNodes(self._node_names)
         self._frozen_links = FrozenLinks(self._link_names)
 
-        # Initialise adjacency list
+        
         # self._adj_list = {}
         # Build adjacency list
         # self._adj_list = self._get_adj_list()
-        self._graph = self.to_graph()
-        self._adj_list = self._graph.adj
 
     @property
     def links(self) -> list:
@@ -112,6 +120,22 @@ class Network:
         containing the names of the pipes in the network
         """
         return self._pipe_names
+    
+    @property
+    def num_links(self) -> int:
+        """
+        :py:attr:`num_links` is an :py:class:`int` containing the number of links in the network
+        """
+        return self._num_links
+    
+    @property
+    def graph_num_links(self) -> int:
+        """
+        :py:attr:`graph_num_links` is an :py:class:`int` containing the number of links in the network
+        from the constructed graph rather than the WNTR network as the WNTR network may have links that
+        the agents cannot traverse/reach and as such are discarded so unused in the simulation
+        """
+        return self._g_num_links
 
     @property
     def nodes(self) -> list:
@@ -135,6 +159,16 @@ class Network:
         :py:attr:`num_nodes` is an :py:class:`int` containing the number of nodes in the network
         """
         return self._wn_num_nodes
+    
+    @property
+    def graph_num_nodes(self) -> int:
+        """
+        :py:attr:`graph_num_nodes` is an :py:class:`int`
+        containing the number of nodes in the network from the constructed graph rather than the WNTR network
+        as the WNTR network may have nodes that the agents cannot traverse/reach and as such are discarded
+        so unused in the simulation
+        """
+        return self._g_num_nodes
 
     @property
     def junctions(self) -> list:
@@ -173,6 +207,13 @@ class Network:
         :py:attr:`water_network_model` is a :py:class:`wntr.network.WaterNetworkModel` - allows access to WNTR methods
         """
         return self._wn
+    
+    @property
+    def graph(self):
+        """
+        :py:attr:`graph` is a :py:class:`nx.classes.graph.Graph` - returns the graph of the network
+        """
+        return self._graph
     
     @property
     def path_to_file(self) -> str:

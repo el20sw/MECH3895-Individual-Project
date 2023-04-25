@@ -1,0 +1,11 @@
+{
+    "network_file": "networks/Net3.inp",
+    "num_agents": 20,
+    "turns": 20,
+    "swarm": true,
+    "swarm_type": "informed",
+    "allocation_threshold": "mean",
+    "start_position": [
+        "Lake"
+    ]
+}

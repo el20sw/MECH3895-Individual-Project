@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Network &#8212; Pipe Exploration Individual Project 0.1 documentation</title>
+    <title>Network &#8212; Pipe Exploration Individual Project 3.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -84,6 +84,20 @@ containing the names of the pipes in the network</p>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="src.network.Network.num_links">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_links</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#src.network.Network.num_links" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#src.network.Network.num_links" title="src.network.Network.num_links"><code class="xref py py-attr docutils literal notranslate"><span class="pre">num_links</span></code></a> is an <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code> containing the number of links in the network</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.network.Network.graph_num_links">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graph_num_links</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#src.network.Network.graph_num_links" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#src.network.Network.graph_num_links" title="src.network.Network.graph_num_links"><code class="xref py py-attr docutils literal notranslate"><span class="pre">graph_num_links</span></code></a> is an <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code> containing the number of links in the network
+from the constructed graph rather than the WNTR network as the WNTR network may have links that
+the agents cannot traverse/reach and as such are discarded so unused in the simulation</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="src.network.Network.nodes">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nodes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></em><a class="headerlink" href="#src.network.Network.nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#src.network.Network.nodes" title="src.network.Network.nodes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">nodes</span></code></a> is a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code> containing
@@ -101,6 +115,15 @@ containing the names of the nodes in the network</p>
 <dt class="sig sig-object py" id="src.network.Network.num_nodes">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_nodes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#src.network.Network.num_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#src.network.Network.num_nodes" title="src.network.Network.num_nodes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">num_nodes</span></code></a> is an <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code> containing the number of nodes in the network</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.network.Network.graph_num_nodes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graph_num_nodes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#src.network.Network.graph_num_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#src.network.Network.graph_num_nodes" title="src.network.Network.graph_num_nodes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">graph_num_nodes</span></code></a> is an <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+containing the number of nodes in the network from the constructed graph rather than the WNTR network
+as the WNTR network may have nodes that the agents cannot traverse/reach and as such are discarded
+so unused in the simulation</p>
 </dd></dl>
 
 <dl class="py property">
@@ -127,6 +150,12 @@ containing the names of the junctions in the network</p>
 <dt class="sig sig-object py" id="src.network.Network.water_network_model">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">water_network_model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">WaterNetworkModel</span></em><a class="headerlink" href="#src.network.Network.water_network_model" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#src.network.Network.water_network_model" title="src.network.Network.water_network_model"><code class="xref py py-attr docutils literal notranslate"><span class="pre">water_network_model</span></code></a> is a <code class="xref py py-class docutils literal notranslate"><span class="pre">wntr.network.WaterNetworkModel</span></code> - allows access to WNTR methods</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.network.Network.graph">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graph</span></span><a class="headerlink" href="#src.network.Network.graph" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#src.network.Network.graph" title="src.network.Network.graph"><code class="xref py py-attr docutils literal notranslate"><span class="pre">graph</span></code></a> is a <code class="xref py py-class docutils literal notranslate"><span class="pre">nx.classes.graph.Graph</span></code> - returns the graph of the network</p>
 </dd></dl>
 
 <dl class="py property">
@@ -225,6 +254,8 @@ containing the names of the junctions in the network</p>
 <li class="toctree-l1"><a class="reference internal" href="../framework.html">Software Framework and Limitations</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="simulation.html">Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/agent_generator.html">Agent Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/communication.html">Communication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="render.html">Render</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent.html">Agent</a></li>

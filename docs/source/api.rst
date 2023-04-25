@@ -1,13 +1,13 @@
-API
-===
+API documentation
+=================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
 
-   classes/simulation.rst
+   modules/simulation.rst
    modules/agent_generator.rst
    modules/communication.rst
-   classes/render.rst
-   classes/network.rst
-   classes/agent.rst
+   modules/render.rst
+   modules/network.rst
+   modules/agent.rst
 

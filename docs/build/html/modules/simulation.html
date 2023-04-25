@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Simulation &#8212; Pipe Exploration Individual Project 3.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="simulation">
+<h1>Simulation<a class="headerlink" href="#simulation" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.simulation.Simulation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">environment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="network.html#src.network.Network" title="src.network.Network"><span class="pre">Network</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_agents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swarm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swarm_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_positions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.simulation.Simulation" title="Permalink to this definition">¶</a></dt>
+<dd><section id="simulation-class">
+<h2>Simulation Class<a class="headerlink" href="#simulation-class" title="Permalink to this heading">¶</a></h2>
+<p>Class to simulate the pipe network environment and the agents within it</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h3>
+<dl>
+<dt>environment: Network object</dt><dd><p>The network environment to simulate agents operating in</p>
+</dd>
+<dt>num_agents: int</dt><dd><p>The number of agents to simulate</p>
+</dd>
+<dt>swarm: bool</dt><dd><p>Whether the agents should communicate with each other</p>
+</dd>
+<dt>swarm_config: dict, optional (default=None)</dt><dd><p>Configuration for the swarm behaviour of the agents
+- swarm: bool (True if swarm is enabled, False otherwise)
+- swarm_type: str (type of swarm behaviour)</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘naive’: naive swarm behaviour</p></li>
+<li><p>‘informed’: informed swarm behaviour</p></li>
+<li><dl class="simple">
+<dt>‘allocation_threshold’: str (threshold for allocation of resources)</dt><dd><ul>
+<li><p>‘mean’: uses the mean score as the threshold</p></li>
+<li><p>‘median’: uses the median score as the threshold</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</dd>
+<dt>start_positions: list of start positions, optional (default=None)</dt><dd><p>list of start positions for the agents</p>
+</dd>
+<dt>filepath: str, optional (default=None)</dt><dd><p>filepath to save the results</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.simulation.Simulation.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_turns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_until_complete</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pct_links_explored'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.simulation.Simulation.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to run the simulation</p>
+<section id="id1">
+<h4>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>max_turns: int, optional (default=100)</dt><dd><p>Maximum number of turns to run the simulation for</p>
+</dd>
+<dt>run_until_complete: bool, optional (default=False)</dt><dd><p>If True, the simulation will run until all nodes have been explored or the maximum number of turns has been reached</p>
+</dd>
+<dt>metric: str, optional (default=’pct_links_explored’)</dt><dd><p>Metric to use to determine if the simulation has completed
+- ‘pct_nodes_explored’: percentage of nodes explored
+- ‘pct_links_explored’: percentage of links explored</p>
+</dd>
+</dl>
+<p>return: None</p>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.simulation.Simulation.turn">
+<span class="sig-name descname"><span class="pre">turn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.simulation.Simulation.turn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to step the simulation forward one turn
+return: None</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.simulation.Simulation.environment">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">environment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="network.html#src.network.Network" title="src.network.Network"><span class="pre">Network</span></a></em><a class="headerlink" href="#src.simulation.Simulation.environment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the environment</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.simulation.Simulation.agents">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">agents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="agent.html#src.agent.Agent" title="src.agent.Agent"><span class="pre">Agent</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#src.simulation.Simulation.agents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the agents</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.simulation.Simulation.num_agents">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_agents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#src.simulation.Simulation.num_agents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of agents</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.simulation.Simulation.turns">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">turns</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#src.simulation.Simulation.turns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of turns</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.simulation.Simulation.max_turns">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_turns</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#src.simulation.Simulation.max_turns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum number of turns</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.simulation.Simulation.pct_nodes_explored">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pct_nodes_explored</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#src.simulation.Simulation.pct_nodes_explored" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the percentage of nodes explored</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.simulation.Simulation.pct_links_explored">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pct_links_explored</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#src.simulation.Simulation.pct_links_explored" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the percentage of links explored</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.simulation.Simulation.path_to_results_directory">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path_to_results_directory</span></span><a class="headerlink" href="#src.simulation.Simulation.path_to_results_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to the results directory</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.simulation.Simulation.params">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">params</span></span><a class="headerlink" href="#src.simulation.Simulation.params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the parameters of the simulation</p>
+</dd></dl>
+
+</section>
+</section>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Pipe Exploration Individual Project</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../framework.html">Software Framework and Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Sam Wilson.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.1.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="../_sources/modules/simulation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
