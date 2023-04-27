@@ -12,7 +12,7 @@ simulate the environment and the agents. Further information can be found in the
 
 Installations instructions can be found in the documentation.
 
-To build the documentation, run the following command in the ~/docs directory:
+To build the documentation, run the following command from a terminal in the ~/docs directory:
 
 ```bash
 
